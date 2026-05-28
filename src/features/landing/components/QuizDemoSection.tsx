@@ -2,13 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-interface Question {
-  q: string;
-  opts: string[];
-  correct: number;
-}
-
-const questions: Question[] = [
+const questions = [
   {
     q: "What is the powerhouse of the cell?",
     opts: ["Nucleus", "Mitochondria", "Ribosome", "Golgi Apparatus"],
@@ -49,13 +43,10 @@ export function QuizDemoSection() {
   const [showBurst, setShowBurst] = useState(false);
 
   const progressRef = useRef<HTMLDivElement>(null);
-  const questionTextRef = useRef<HTMLDivElement>(null);
   const questionCountRef = useRef<HTMLSpanElement>(null);
-  const optionsContainerRef = useRef<HTMLDivElement>(null);
   const streakCountRef = useRef<HTMLSpanElement>(null);
   const floatingBadgeRef = useRef<HTMLDivElement>(null);
   const fsNumberRef = useRef<HTMLSpanElement>(null);
-  const fsBurstRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,23 +59,6 @@ export function QuizDemoSection() {
   }, []);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e, i) => {
-          if (e.isIntersecting) {
-            setTimeout(() => e.target.classList.add("visible"), i * 80);
-            observer.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
-
-    document.querySelectorAll(".fade-up").forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-
-  const updateProgress = () => {
     if (progressRef.current) {
       progressRef.current.style.width = `${(currentQ / questions.length) * 100}%`;
     }
@@ -94,10 +68,6 @@ export function QuizDemoSection() {
     if (streakCountRef.current) {
       streakCountRef.current.textContent = `${streak} streak`;
     }
-  };
-
-  useEffect(() => {
-    updateProgress();
   }, [currentQ, streak]);
 
   const selectOption = (idx: number) => {
@@ -116,20 +86,17 @@ export function QuizDemoSection() {
       setStreak(0);
     }
 
-    // Update floating streak
     setFloatingStreak(newStreak);
     if (fsNumberRef.current) {
       fsNumberRef.current.textContent = String(newStreak);
     }
 
-    // Pop animation
     if (floatingBadgeRef.current) {
       floatingBadgeRef.current.classList.remove("pop");
       void floatingBadgeRef.current.offsetWidth;
       floatingBadgeRef.current.classList.add("pop");
     }
 
-    // Burst label
     if (newStreak > 0 && newStreak % 3 === 0) {
       const labels: Record<number, string> = {
         3: "On fire!",
@@ -186,10 +153,10 @@ export function QuizDemoSection() {
             {currentQ + 1} / {questions.length}
           </span>
         </div>
-        <div className="qc-question" ref={questionTextRef}>
+        <div className="qc-question">
           {q.q}
         </div>
-        <div className="qc-options" ref={optionsContainerRef}>
+        <div className="qc-options">
           {q.opts.map((opt, i) => {
             let className = "qc-option";
             if (answered) {
@@ -222,7 +189,6 @@ export function QuizDemoSection() {
         </div>
       </div>
 
-      {/* Floating Streak Badge */}
       <div
         id="floatingStreak"
         ref={floatingBadgeRef}

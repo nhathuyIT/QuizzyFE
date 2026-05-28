@@ -3,7 +3,6 @@
 export function HeroSection() {
   return (
     <section className="hero">
-      {/* Cell 1 — big headline */}
       <div className="hero-cell hero-cell-1">
         <div className="hero-eyebrow">AI-powered learning</div>
         <h1>
@@ -17,14 +16,12 @@ export function HeroSection() {
         </h1>
       </div>
 
-      {/* Cell 2 — pink blob */}
       <div className="hero-cell hero-cell-2">
         <div className="blob">
           <div className="blob-inner"></div>
         </div>
       </div>
 
-      {/* Cell 3 — dark stats */}
       <div className="hero-cell hero-cell-3">
         <div>
           <div className="stat-pill">
@@ -44,7 +41,6 @@ export function HeroSection() {
         </div>
       </div>
 
-      {/* Row 2 */}
       <div className="hero-row2">
         <div className="hero-cell-r2-a">
           <span className="big-letter">Q</span>

@@ -1,26 +1,30 @@
-import { Navigation } from "@/components/Navigation";
-import { HeroSection } from "@/components/HeroSection";
-import { FeaturesSection } from "@/components/FeaturesSection";
-import { HowItWorksSection } from "@/components/HowItWorksSection";
-import { QuizDemoSection } from "@/components/QuizDemoSection";
-import { SubjectsSection } from "@/components/SubjectsSection";
-import { TestimonialsSection } from "@/components/TestimonialsSection";
-import { PricingSection } from "@/components/PricingSection";
-import { CTABanner } from "@/components/CTABanner";
-import { Footer } from "@/components/Footer";
+import {
+  Navigation,
+  HeroSection,
+  FeaturesSection,
+  HowItWorksSection,
+  QuizDemoSection,
+  SubjectsSection,
+  TestimonialsSection,
+  PricingSection,
+  CTABanner,
+  Footer,
+} from "@/features/landing";
 
-export default function Home() {
+export default function HomePage() {
   return (
     <>
       <Navigation />
-      <HeroSection />
-      <FeaturesSection />
-      <HowItWorksSection />
-      <QuizDemoSection />
-      <SubjectsSection />
-      <TestimonialsSection />
-      <PricingSection />
-      <CTABanner />
+      <main>
+        <HeroSection />
+        <FeaturesSection />
+        <HowItWorksSection />
+        <QuizDemoSection />
+        <SubjectsSection />
+        <TestimonialsSection />
+        <PricingSection />
+        <CTABanner />
+      </main>
       <Footer />
     </>
   );

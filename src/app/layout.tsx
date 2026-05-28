@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Syne } from "next/font/google";
+import { Providers } from "@/providers";
 import "./globals.css";
 
 const inter = Inter({
@@ -16,7 +17,9 @@ const syne = Syne({
 
 export const metadata: Metadata = {
   title: "Quizzy — Learn Smarter",
-  description: "AI-powered flashcards and quizzes that adapt to you. Study less, remember more, and ace every exam.",
+  description:
+    "AI-powered flashcards and quizzes that adapt to you. Study less, remember more, and ace every exam.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://quizzy.app"),
 };
 
 export default function RootLayout({
@@ -26,7 +29,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${syne.variable}`}>
-      <body className={`${inter.variable} ${syne.variable}`}>{children}</body>
+      <body className={`${inter.variable} ${syne.variable}`}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

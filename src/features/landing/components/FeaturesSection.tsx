@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useFadeUp } from "@/hooks/useFadeUp";
+import type { Feature } from "@/types/landing";
 
-const features = [
+const features: Feature[] = [
   {
     bg: "fc-purple",
     icon: "🧠",
@@ -42,22 +43,7 @@ const features = [
 ];
 
 export function FeaturesSection() {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e, i) => {
-          if (e.isIntersecting) {
-            setTimeout(() => e.target.classList.add("visible"), i * 80);
-            observer.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
-
-    document.querySelectorAll(".fade-up").forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  useFadeUp();
 
   return (
     <>

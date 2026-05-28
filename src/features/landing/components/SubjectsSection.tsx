@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useFadeUp } from "@/hooks/useFadeUp";
+import type { Subject } from "@/types/landing";
 
-const subjects = [
+const subjects: Subject[] = [
   { icon: "🔬", name: "Biology", count: "14,200 decks", bg: "#e8e3ff" },
   { icon: "⚗️", name: "Chemistry", count: "9,800 decks", bg: "#ffd6e8" },
   { icon: "🧮", name: "Math", count: "21,000 decks", bg: "#cff2f2" },
@@ -12,22 +13,7 @@ const subjects = [
 ];
 
 export function SubjectsSection() {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e, i) => {
-          if (e.isIntersecting) {
-            setTimeout(() => e.target.classList.add("visible"), i * 80);
-            observer.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
-
-    document.querySelectorAll(".fade-up").forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  useFadeUp();
 
   return (
     <section className="subjects-section">

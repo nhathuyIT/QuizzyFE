@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useFadeUp } from "@/hooks/useFadeUp";
+import type { Testimonial } from "@/types/landing";
 
-const testimonials = [
+const testimonials: Testimonial[] = [
   {
     quote:
       '"Quizzy completely changed how I study for exams. The adaptive engine is scary good at finding exactly what I don\'t know."',
@@ -27,22 +28,7 @@ const testimonials = [
 ];
 
 export function TestimonialsSection() {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e, i) => {
-          if (e.isIntersecting) {
-            setTimeout(() => e.target.classList.add("visible"), i * 80);
-            observer.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
-
-    document.querySelectorAll(".fade-up").forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  useFadeUp();
 
   return (
     <section className="testimonials">

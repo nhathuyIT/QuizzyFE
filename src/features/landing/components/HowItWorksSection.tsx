@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
+import { useFadeUp } from "@/hooks/useFadeUp";
+import type { Step } from "@/types/landing";
 
-const steps = [
+const steps: Step[] = [
   {
     num: "01",
     title: "Upload your material",
@@ -26,22 +27,7 @@ const steps = [
 ];
 
 export function HowItWorksSection() {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e, i) => {
-          if (e.isIntersecting) {
-            setTimeout(() => e.target.classList.add("visible"), i * 80);
-            observer.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.12 }
-    );
-
-    document.querySelectorAll(".fade-up").forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  useFadeUp();
 
   return (
     <section className="how-section">
