@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Syne } from "next/font/google";
+import { Inter, Space_Grotesk, Space_Mono } from "next/font/google";
 import { Providers } from "@/providers";
 import "./globals.css";
 
@@ -9,17 +9,22 @@ const inter = Inter({
   display: "swap",
 });
 
-const syne = Syne({
-  variable: "--font-syne",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const spaceMono = Space_Mono({
+  variable: "--font-space-mono",
+  weight: ["400", "700"],
   subsets: ["latin"],
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Quizzy — Learn Smarter",
-  description:
-    "AI-powered flashcards and quizzes that adapt to you. Study less, remember more, and ace every exam.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://quizzy.app"),
+  title: "VOXEL LEARN - AI Learning Platform",
+  description: "Level up your brain with AI-powered flashcards and quizzes.",
 };
 
 export default function RootLayout({
@@ -28,8 +33,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${syne.variable}`}>
-      <body className={`${inter.variable} ${syne.variable}`}>
+    <html lang="en" className={`scroll-smooth ${inter.variable} ${spaceGrotesk.variable} ${spaceMono.variable}`}>
+      <body className={`text-on-background font-body-md min-h-screen flex flex-col overflow-x-hidden relative ${inter.variable} ${spaceGrotesk.variable} ${spaceMono.variable}`}>
         <Providers>{children}</Providers>
       </body>
     </html>
