@@ -1,6 +1,10 @@
 import React from 'react';
 
-export function TopNavBar() {
+interface TopNavBarProps {
+  searchPlaceholder?: string;
+}
+
+export function TopNavBar({ searchPlaceholder = "Search courses, resources..." }: TopNavBarProps) {
   return (
     <header className="flex justify-between items-center px-lg py-sm w-full sticky top-0 z-50 bg-surface-container-lowest border-b border-outline-variant">
       <div className="flex-1 flex items-center">
@@ -9,7 +13,7 @@ export function TopNavBar() {
           <span className="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">search</span>
           <input 
             className="w-full bg-surface-container-low border border-outline-variant rounded-full py-xs pl-xl pr-md text-body-sm font-body-sm focus:outline-none focus:border-primary transition-colors focus:ring-1 focus:ring-primary placeholder:text-on-surface-variant" 
-            placeholder="Search courses, resources..." 
+            placeholder={searchPlaceholder} 
             type="text" 
           />
         </div>
