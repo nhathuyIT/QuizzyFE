@@ -1,10 +1,24 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
+import { decksAPI } from '@/services/api';
+import { CreateDeckModal } from '@/features/my-library/components/CreateDeckModal';
 import { CourseProgressCard } from '@/features/my-library/components/CourseProgressCard';
 import { FlashcardSetItem } from '@/features/my-library/components/FlashcardSetItem';
 import { SavedDocumentItem } from '@/features/my-library/components/SavedDocumentItem';
 
 export default function MyLibraryPage() {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const { data: decksData, isLoading } = useQuery({
+    queryKey: ['decks'],
+    queryFn: () => decksAPI.getAll(),
+  });
+
+  const decks = decksData?.data || [];
+
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col bg-background">
       {/* TopNavBar */}
@@ -95,19 +109,31 @@ export default function MyLibraryPage() {
           <section>
             <div className="flex items-center justify-between mb-md border-b border-surface-container-highest pb-sm">
               <h3 className="font-headline-lg text-headline-lg text-on-background">Flashcard Sets</h3>
-              <button className="text-primary font-label-md text-label-md hover:underline">Manage</button>
+              <button 
+                onClick={() => setIsCreateModalOpen(true)}
+                className="text-primary font-label-md text-label-md hover:underline flex items-center gap-1"
+              >
+                <span className="material-symbols-outlined text-[18px]">add</span>
+                Create Deck
+              </button>
             </div>
             <div className="flex flex-col gap-sm">
-              <FlashcardSetItem 
-                iconColorClass="bg-primary/10 text-primary"
-                title="Camera Settings Cheatsheet"
-                meta="42 Cards • Due for review"
-              />
-              <FlashcardSetItem 
-                iconColorClass="bg-secondary-container/20 text-on-secondary-container"
-                title="Audio Engineering Basics"
-                meta="18 Cards • Mastered"
-              />
+              {isLoading ? (
+                <div className="text-on-surface-variant p-4 text-center">Loading decks...</div>
+              ) : decks.length > 0 ? (
+                decks.map((deck: any) => (
+                  <FlashcardSetItem 
+                    key={deck._id}
+                    iconColorClass="bg-primary/10 text-primary"
+                    title={deck.title}
+                    meta={deck.description || "No description"}
+                  />
+                ))
+              ) : (
+                <div className="text-on-surface-variant p-4 text-center border-2 border-dashed border-outline-variant rounded-xl bg-surface-container-lowest">
+                  No decks found. Create one to get started!
+                </div>
+              )}
             </div>
           </section>
           
@@ -147,6 +173,7 @@ export default function MyLibraryPage() {
           <a className="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Terms of Service</a>
         </div>
       </footer>
+      <CreateDeckModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
     </div>
   );
 }

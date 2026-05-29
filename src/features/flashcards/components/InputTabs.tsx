@@ -1,28 +1,66 @@
 'use client';
 import React, { useState } from 'react';
 
-export function InputTabs() {
-  const [activeTab, setActiveTab] = useState<'upload' | 'paste'>('upload');
+interface InputTabsProps {
+  front: string;
+  setFront: (val: string) => void;
+  back: string;
+  setBack: (val: string) => void;
+}
+
+export function InputTabs({ front, setFront, back, setBack }: InputTabsProps) {
+  const [activeTab, setActiveTab] = useState<'manual' | 'upload' | 'paste'>('manual');
 
   return (
     <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-md custom-shadow flex-1 flex flex-col">
       {/* Input Tabs */}
-      <div className="flex border-b border-outline-variant mb-md">
+      <div className="flex border-b border-outline-variant mb-md overflow-x-auto custom-scrollbar">
         <button 
-          className={`flex items-center gap-xs px-md py-sm font-label-md text-label-md border-b-2 transition-colors ${activeTab === 'upload' ? 'text-primary border-primary' : 'text-on-surface-variant border-transparent hover:text-primary'}`}
+          className={`flex items-center gap-xs px-md py-sm font-label-md text-label-md border-b-2 transition-colors whitespace-nowrap ${activeTab === 'manual' ? 'text-primary border-primary' : 'text-on-surface-variant border-transparent hover:text-primary'}`}
+          onClick={() => setActiveTab('manual')}
+        >
+          <span className="material-symbols-outlined text-[18px]">edit_note</span>
+          Manual Input
+        </button>
+        <button 
+          className={`flex items-center gap-xs px-md py-sm font-label-md text-label-md border-b-2 transition-colors whitespace-nowrap ${activeTab === 'upload' ? 'text-primary border-primary' : 'text-on-surface-variant border-transparent hover:text-primary'}`}
           onClick={() => setActiveTab('upload')}
         >
           <span className="material-symbols-outlined text-[18px]">upload_file</span>
           Upload Document
         </button>
         <button 
-          className={`flex items-center gap-xs px-md py-sm font-label-md text-label-md border-b-2 transition-colors ${activeTab === 'paste' ? 'text-primary border-primary' : 'text-on-surface-variant border-transparent hover:text-primary'}`}
+          className={`flex items-center gap-xs px-md py-sm font-label-md text-label-md border-b-2 transition-colors whitespace-nowrap ${activeTab === 'paste' ? 'text-primary border-primary' : 'text-on-surface-variant border-transparent hover:text-primary'}`}
           onClick={() => setActiveTab('paste')}
         >
           <span className="material-symbols-outlined text-[18px]">content_paste</span>
           Paste Text
         </button>
       </div>
+
+      {/* Tab Content: Manual */}
+      {activeTab === 'manual' && (
+        <div className="flex-1 flex flex-col gap-md">
+          <div className="flex-1 flex flex-col">
+            <label className="block font-label-md text-label-md text-on-surface mb-xs">Front (Question / Term)</label>
+            <textarea 
+              className="w-full flex-1 min-h-[120px] p-md border border-outline-variant rounded-lg bg-surface font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary resize-none transition-all placeholder:text-outline" 
+              placeholder="Enter the front of the flashcard..."
+              value={front}
+              onChange={(e) => setFront(e.target.value)}
+            />
+          </div>
+          <div className="flex-1 flex flex-col">
+            <label className="block font-label-md text-label-md text-on-surface mb-xs">Back (Answer / Definition)</label>
+            <textarea 
+              className="w-full flex-1 min-h-[120px] p-md border border-outline-variant rounded-lg bg-surface font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary resize-none transition-all placeholder:text-outline" 
+              placeholder="Enter the back of the flashcard..."
+              value={back}
+              onChange={(e) => setBack(e.target.value)}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Tab Content: Upload */}
       {activeTab === 'upload' && (

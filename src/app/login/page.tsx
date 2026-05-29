@@ -1,9 +1,42 @@
 "use client";
 
-import React from 'react';
-import { User, Lock, ArrowRight, MessageSquare } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Lock, ArrowRight, MessageSquare, Loader2 } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import { authAPI } from '@/services/api';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const loginMutation = useMutation({
+    mutationFn: () => authAPI.login({ email, password }),
+    onSuccess: (response) => {
+      if (response?.data?.accessToken) {
+        localStorage.setItem('accessToken', response.data.accessToken);
+        router.push('/home');
+      } else {
+        setErrorMsg('Invalid response from server.');
+      }
+    },
+    onError: (error: any) => {
+      setErrorMsg(error.message || 'Login failed.');
+    },
+  });
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg('');
+    if (!email || !password) {
+      setErrorMsg('Please enter email and password.');
+      return;
+    }
+    loginMutation.mutate();
+  };
+
   return (
     <div className="bg-background min-h-screen flex items-center justify-center relative overflow-hidden pixel-bg font-body-md text-on-background">
       {/* Floating Background Elements */}
@@ -41,7 +74,12 @@ export default function LoginPage() {
             <div className="w-2 h-2 bg-tertiary-container border border-border-dark"></div>
           </div>
           
-          <form className="space-y-6 mt-4">
+          <form className="space-y-6 mt-4" onSubmit={handleLogin}>
+            {errorMsg && (
+              <div className="bg-error/10 border-2 border-error text-error p-3 font-body-md font-bold mb-4">
+                {errorMsg}
+              </div>
+            )}
             {/* Email Input */}
             <div className="space-y-2">
               <label className="block font-label-caps text-label-caps text-on-surface uppercase" htmlFor="email">
@@ -49,7 +87,15 @@ export default function LoginPage() {
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 text-outline w-6 h-6" />
-                <input className="w-full bg-surface border-[4px] border-border-dark p-3 pl-10 font-body-md text-on-surface focus:outline-none focus:border-primary voxel-input-shadow transition-colors" id="email" placeholder="player@voxel.edu" type="email" />
+                <input 
+                  className="w-full bg-surface border-[4px] border-border-dark p-3 pl-10 font-body-md text-on-surface focus:outline-none focus:border-primary voxel-input-shadow transition-colors" 
+                  id="email" 
+                  placeholder="player@voxel.edu" 
+                  type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={loginMutation.isPending}
+                />
               </div>
             </div>
             
@@ -60,15 +106,31 @@ export default function LoginPage() {
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-outline w-6 h-6" />
-                <input className="w-full bg-surface border-[4px] border-border-dark p-3 pl-10 font-body-md text-on-surface focus:outline-none focus:border-primary voxel-input-shadow transition-colors" id="password" placeholder="••••••••" type="password" />
+                <input 
+                  className="w-full bg-surface border-[4px] border-border-dark p-3 pl-10 font-body-md text-on-surface focus:outline-none focus:border-primary voxel-input-shadow transition-colors" 
+                  id="password" 
+                  placeholder="••••••••" 
+                  type="password" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={loginMutation.isPending}
+                />
               </div>
             </div>
             
             {/* Submit Button & Forgot Password */}
             <div className="flex flex-col items-center gap-4">
-              <button className="w-full bg-primary text-on-primary font-headline-md text-headline-md py-4 px-6 border-[4px] border-border-dark shadow-[6px_6px_0_0_#0F172A] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0_0_#0F172A] active:translate-x-[6px] active:translate-y-[6px] active:shadow-none transition-all flex items-center justify-center space-x-2 group" type="button">
-                <span>START GAME</span>
-                <ArrowRight className="group-hover:translate-x-1 transition-transform w-6 h-6" />
+              <button 
+                className="w-full bg-primary text-on-primary font-headline-md text-headline-md py-4 px-6 border-[4px] border-border-dark shadow-[6px_6px_0_0_#0F172A] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0_0_#0F172A] active:translate-x-[6px] active:translate-y-[6px] active:shadow-none transition-all flex items-center justify-center space-x-2 group disabled:opacity-70 disabled:pointer-events-none" 
+                type="submit"
+                disabled={loginMutation.isPending}
+              >
+                <span>{loginMutation.isPending ? 'CONNECTING...' : 'START GAME'}</span>
+                {loginMutation.isPending ? (
+                  <Loader2 className="animate-spin w-6 h-6 ml-2" />
+                ) : (
+                  <ArrowRight className="group-hover:translate-x-1 transition-transform w-6 h-6" />
+                )}
               </button>
               <a className="font-body-md text-sm text-primary hover:underline font-bold" href="#">Forgot password?</a>
             </div>

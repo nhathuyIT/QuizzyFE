@@ -1,6 +1,20 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { decksAPI } from '@/services/api';
 
-export function SettingsPanel() {
+interface SettingsPanelProps {
+  selectedDeckId: string;
+  onDeckChange: (id: string) => void;
+}
+
+export function SettingsPanel({ selectedDeckId, onDeckChange }: SettingsPanelProps) {
+  const { data: decksData, isLoading: isLoadingDecks } = useQuery({
+    queryKey: ['decks'],
+    queryFn: () => decksAPI.getAll(),
+  });
+
+  const decks = decksData?.data || [];
+
   return (
     <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-md custom-shadow">
       <h3 className="font-headline-md text-headline-md text-on-surface mb-md flex items-center gap-sm">
@@ -8,7 +22,25 @@ export function SettingsPanel() {
         Generation Settings
       </h3>
       <div className="flex flex-col gap-md">
-        
+        {/* Deck Selection (New) */}
+        <div>
+          <label className="block font-label-md text-label-md text-on-surface mb-xs">Select Deck</label>
+          <select 
+            value={selectedDeckId}
+            onChange={(e) => onDeckChange(e.target.value)}
+            className="w-full p-sm border border-outline-variant rounded-lg bg-surface font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary mb-md"
+          >
+            <option value="">-- Choose a Deck --</option>
+            {isLoadingDecks ? (
+              <option disabled>Loading...</option>
+            ) : (
+              decks.map((deck: any) => (
+                <option key={deck._id} value={deck._id}>{deck.title}</option>
+              ))
+            )}
+          </select>
+        </div>
+
         {/* Difficulty */}
         <div>
           <label className="block font-label-md text-label-md text-on-surface mb-xs">Difficulty Level</label>
