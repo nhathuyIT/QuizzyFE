@@ -66,6 +66,14 @@
   --spacing-margin-desktop: 40px;
   --spacing-margin-mobile: 16px;
   --spacing-unit: 8px;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  --width-max_content_width: 1200px;
 
   --font-body-lg: var(--font-inter);
   --font-headline-lg: var(--font-space-grotesk);
@@ -104,6 +112,29 @@
   --text-label-caps--line-height: 1;
   --text-label-caps--letter-spacing: 0.1em;
   --text-label-caps--font-weight: 700;
+
+  --font-display-lg: var(--font-space-grotesk);
+  --font-label-md: var(--font-jetbrains-mono);
+  --font-label-sm: var(--font-jetbrains-mono);
+  --font-body-sm: var(--font-hanken-grotesk);
+
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 56px;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 700;
+
+  --text-label-md: 14px;
+  --text-label-md--line-height: 20px;
+  --text-label-md--letter-spacing: 0.02em;
+  --text-label-md--font-weight: 500;
+
+  --text-label-sm: 12px;
+  --text-label-sm--line-height: 16px;
+  --text-label-sm--font-weight: 500;
+
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 20px;
+  --text-body-sm--font-weight: 400;
 }
 
 @layer base {
