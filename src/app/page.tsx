@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { Menu, Play, BookCopy, MessageCircleQuestion, MonitorPlay, Quote } from 'lucide-react';
+import Link from 'next/link';
 
 export default function HomePage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -99,9 +100,9 @@ export default function HomePage() {
             <a className="text-on-surface-variant hover:text-primary transition-all duration-75" href="#">Quizzes</a>
             <a className="text-on-surface-variant hover:text-primary transition-all duration-75" href="#">Library</a>
           </div>
-          <button className="bg-primary-container text-on-primary font-label-caps text-label-caps px-6 py-3 border-4 border-border-dark voxel-btn hidden md:block">
+          <Link href="/login" className="bg-primary-container text-on-primary font-label-caps text-label-caps px-6 py-3 border-4 border-border-dark voxel-btn hidden md:flex items-center justify-center">
             Start Learning
-          </button>
+          </Link>
           <button className="md:hidden p-2 text-primary">
             <Menu className="w-8 h-8" />
           </button>
@@ -125,9 +126,9 @@ export default function HomePage() {
               Tạo quiz và flashcards nhanh chóng từ bất kỳ tài liệu nào. Biến việc học thành một cuộc phiêu lưu đầy thú vị với đồ họa Voxel 3D.
             </p>
             <div className="flex flex-wrap gap-4 mt-4">
-              <button className="bg-primary-container text-on-primary font-headline-md text-headline-md px-8 py-4 border-4 border-border-dark voxel-btn flex items-center justify-center">
+              <Link href="/login" className="bg-primary-container text-on-primary font-headline-md text-headline-md px-8 py-4 border-4 border-border-dark voxel-btn flex items-center justify-center">
                 Bắt Đầu Ngay
-              </button>
+              </Link>
               <button className="bg-surface text-primary font-headline-md text-headline-md px-8 py-4 border-4 border-border-dark voxel-btn flex items-center justify-center gap-2">
                 <Play className="w-6 h-6 fill-current" /> Xem Demo
               </button>

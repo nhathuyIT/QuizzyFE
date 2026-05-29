@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`scroll-smooth ${inter.variable} ${spaceGrotesk.variable} ${spaceMono.variable}`}>
+    <html lang="en" className={`scroll-smooth ${inter.variable} ${spaceGrotesk.variable} ${spaceMono.variable}`} data-scroll-behavior="smooth">
       <body className={`text-on-background font-body-md min-h-screen flex flex-col overflow-x-hidden relative ${inter.variable} ${spaceGrotesk.variable} ${spaceMono.variable}`}>
         <Providers>{children}</Providers>
       </body>

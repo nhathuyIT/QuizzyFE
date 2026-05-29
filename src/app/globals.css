@@ -179,3 +179,75 @@
     position: relative;
     z-index: 10;
 }
+
+/* Login Page Specific Styles */
+.pixel-bg {
+    background-color: var(--color-background);
+    background-image: 
+        radial-gradient(var(--color-secondary-container) 2px, transparent 2px),
+        radial-gradient(var(--color-secondary-container) 2px, transparent 2px);
+    background-size: 32px 32px;
+    background-position: 0 0, 16px 16px;
+    animation: bgScroll 20s linear infinite;
+}
+
+@keyframes bgScroll {
+    0% { background-position: 0 0, 16px 16px; }
+    100% { background-position: 32px 32px, 48px 48px; }
+}
+
+.container-float {
+    animation: containerFloat 6s ease-in-out infinite;
+}
+
+@keyframes containerFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+@keyframes driftUp {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+}
+
+.pixel-ember {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: #f59e0b;
+    border: 2px solid var(--color-border-dark);
+    animation: driftUp linear infinite;
+}
+
+.pixel-star {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: #a78bfa;
+    border: 2px solid var(--color-border-dark);
+    animation: driftUp linear infinite;
+}
+
+.voxel-input-shadow {
+    box-shadow: inset 4px 4px 0px 0px rgba(15, 23, 42, 0.1);
+}
+
+@keyframes float-gamepad {
+    0%, 100% { transform: translateY(0px) rotate(-5deg); }
+    50% { transform: translateY(25px) rotate(5deg); }
+}
+
+@keyframes float-flame {
+    0%, 100% { transform: translateY(0px) rotate(5deg) scale(1); }
+    50% { transform: translateY(-30px) rotate(-5deg) scale(1.1); }
+}
+
+.animate-float-gamepad {
+    animation: float-gamepad 5s ease-in-out infinite;
+}
+
+.animate-float-flame {
+    animation: float-flame 6.5s ease-in-out infinite;
+}
