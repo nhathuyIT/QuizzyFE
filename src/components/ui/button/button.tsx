@@ -14,18 +14,18 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-[var(--black)] text-[var(--white)] hover:bg-[#333] active:bg-[#000] disabled:opacity-50",
+    "bg-primary text-on-primary hover:bg-primary/90 active:scale-95 disabled:opacity-50 shadow-sm hover:shadow-md",
   outline:
-    "bg-transparent text-[var(--black)] border-2 border-[var(--black)] hover:bg-[var(--black)] hover:text-[var(--white)]",
+    "bg-transparent text-on-surface border border-outline-variant hover:bg-surface-container-low active:scale-95",
   ghost:
-    "bg-transparent text-[var(--black)] hover:bg-black/5 active:bg-black/10",
-  link: "bg-transparent text-[var(--black)] underline-offset-4 hover:underline p-0",
+    "bg-transparent text-on-surface hover:bg-surface-container-low active:scale-95",
+  link: "bg-transparent text-primary underline-offset-4 hover:underline p-0",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: "text-xs px-3 py-1.5 rounded-full",
-  md: "text-sm px-5 py-3 rounded-full",
-  lg: "text-base px-8 py-4 rounded-full",
+  sm: "font-label-sm text-label-sm px-sm py-xs rounded-lg",
+  md: "font-label-md text-label-md px-md py-sm rounded-lg",
+  lg: "font-body-lg text-body-lg px-lg py-md rounded-xl",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(

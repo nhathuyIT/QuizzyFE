@@ -1,5 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
+import { CourseProgressCard } from '@/features/my-library/components/CourseProgressCard';
+import { FlashcardSetItem } from '@/features/my-library/components/FlashcardSetItem';
+import { SavedDocumentItem } from '@/features/my-library/components/SavedDocumentItem';
 
 export default function MyLibraryPage() {
   return (
@@ -63,59 +66,26 @@ export default function MyLibraryPage() {
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
-            {/* Course Card 1 */}
-            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05),0_2px_4px_-2px_rgb(0,0,0,0.05)] transition-shadow duration-300 group cursor-pointer flex flex-col">
-              <div className="h-40 w-full relative overflow-hidden bg-surface-container-highest">
-                <img 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                  alt="A striking digital composition showcasing modern video editing software interface elements floating above a sleek, dark desk setup. The lighting is crisp and studio-quality, emphasizing the professional tools of a digital creator. Subtle neon blue and purple accents reflect off a minimalist keyboard, creating an atmosphere of focused, high-end content production." 
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMOw_Do2ut--c41Gv1xefKyFmClDfy3bzKCtoAgpeO69IlYcPtwj2V88FdY9BOXpwurmQwJznx3A99q1s079vc45Aj13Xp5pJ1TJgrzp04TbeCW6LB1SlGxnij7DQdBa8iOukzUNUCtdseLOp48rfwb_hQsLB9B9BNduwoLEuHz85xjKCXaFEe8CpiyIsNjzuxFsxr7XzDfeVb-EsN2Ev3t6Sp1ZoM_Sj0qdYmeqXbHEodiZfLXg8rYScjvycqmQKGCP6IG0OScyo"
-                />
-              </div>
-              <div className="p-md flex flex-col flex-1">
-                <div className="flex items-center justify-between mb-sm">
-                  <span className="bg-secondary-container/20 text-on-secondary-container font-label-sm text-label-sm px-2 py-0.5 rounded">Video Production</span>
-                  <span className="text-on-surface-variant font-label-sm text-label-sm flex items-center gap-xs"><span className="material-symbols-outlined" style={{ fontSize: '14px' }}>play_circle</span> 12 Lessons</span>
-                </div>
-                <h4 className="font-headline-md text-headline-md text-on-surface mb-xs">Advanced Cinematic Editing</h4>
-                <p className="font-body-sm text-body-sm text-on-surface-variant mb-lg flex-1">Master color grading and dynamic pacing for professional YouTube essays.</p>
-                <div className="mt-auto">
-                  <div className="flex justify-between items-center mb-xs">
-                    <span className="font-label-sm text-label-sm text-on-surface">65% Completed</span>
-                  </div>
-                  <div className="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
-                    <div className="bg-primary h-full rounded-full transition-all duration-500 ease-in-out" style={{ width: '65%' }}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Course Card 2 */}
-            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden hover:shadow-[0_4px_6px_-1px_rgb(0,0,0,0.05),0_2px_4px_-2px_rgb(0,0,0,0.05)] transition-shadow duration-300 group cursor-pointer flex flex-col">
-              <div className="h-40 w-full relative overflow-hidden bg-surface-container-highest">
-                <img 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
-                  alt="A clean, minimalist workspace featuring a modern smartphone mounted on a sleek tripod, surrounded by soft ring-light illumination. The desk is uncluttered, constructed of light birch wood, creating a bright and airy light-mode aesthetic. The focus is on mobile content creation, conveying a sense of accessible yet professional digital broadcasting." 
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbkf7uBU6g2w5s_JrK7I73iaZkMM8sqTXEVXNUzAJpjigug2ATcNxOpuDJjvbulRulcuvSebTEZXzXOvE-CrG0hmxc6_Zu3kHegjwgSqFkP76e3qMYh7MiBDlX_uxzMR0wkE6Ivo7eTqyY_y5IkIQViCQTsbDsDied_1SgDHQ2oclYVV7WqiNDdN8QIT1gEFVN2VZorFkVs1VhmhTJ19djYzhe-DPvwtyNq_Bt6pmosy-vuAS3y-PikoqO7cUJydN0EJy-F9vLnAU"
-                />
-              </div>
-              <div className="p-md flex flex-col flex-1">
-                <div className="flex items-center justify-between mb-sm">
-                  <span className="bg-tertiary-container/20 text-on-tertiary-container font-label-sm text-label-sm px-2 py-0.5 rounded">Growth</span>
-                  <span className="text-on-surface-variant font-label-sm text-label-sm flex items-center gap-xs"><span className="material-symbols-outlined" style={{ fontSize: '14px' }}>play_circle</span> 8 Lessons</span>
-                </div>
-                <h4 className="font-headline-md text-headline-md text-on-surface mb-xs">Algorithmic Reach Strategies</h4>
-                <p className="font-body-sm text-body-sm text-on-surface-variant mb-lg flex-1">Understand the underlying mechanics of content discovery on modern platforms.</p>
-                <div className="mt-auto">
-                  <div className="flex justify-between items-center mb-xs">
-                    <span className="font-label-sm text-label-sm text-on-surface">12% Completed</span>
-                  </div>
-                  <div className="w-full bg-surface-container rounded-full h-1.5 overflow-hidden">
-                    <div className="bg-primary h-full rounded-full transition-all duration-500 ease-in-out" style={{ width: '12%' }}></div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <CourseProgressCard 
+              category="Video Production"
+              categoryColorClass="bg-secondary-container/20 text-on-secondary-container"
+              lessons={12}
+              title="Advanced Cinematic Editing"
+              description="Master color grading and dynamic pacing for professional YouTube essays."
+              progressPercentage={65}
+              imageSrc="https://lh3.googleusercontent.com/aida-public/AB6AXuAMOw_Do2ut--c41Gv1xefKyFmClDfy3bzKCtoAgpeO69IlYcPtwj2V88FdY9BOXpwurmQwJznx3A99q1s079vc45Aj13Xp5pJ1TJgrzp04TbeCW6LB1SlGxnij7DQdBa8iOukzUNUCtdseLOp48rfwb_hQsLB9B9BNduwoLEuHz85xjKCXaFEe8CpiyIsNjzuxFsxr7XzDfeVb-EsN2Ev3t6Sp1ZoM_Sj0qdYmeqXbHEodiZfLXg8rYScjvycqmQKGCP6IG0OScyo"
+              imageAlt="Video Production thumbnail"
+            />
+            <CourseProgressCard 
+              category="Growth"
+              categoryColorClass="bg-tertiary-container/20 text-on-tertiary-container"
+              lessons={8}
+              title="Algorithmic Reach Strategies"
+              description="Understand the underlying mechanics of content discovery on modern platforms."
+              progressPercentage={12}
+              imageSrc="https://lh3.googleusercontent.com/aida-public/AB6AXuDbkf7uBU6g2w5s_JrK7I73iaZkMM8sqTXEVXNUzAJpjigug2ATcNxOpuDJjvbulRulcuvSebTEZXzXOvE-CrG0hmxc6_Zu3kHegjwgSqFkP76e3qMYh7MiBDlX_uxzMR0wkE6Ivo7eTqyY_y5IkIQViCQTsbDsDied_1SgDHQ2oclYVV7WqiNDdN8QIT1gEFVN2VZorFkVs1VhmhTJ19djYzhe-DPvwtyNq_Bt6pmosy-vuAS3y-PikoqO7cUJydN0EJy-F9vLnAU"
+              imageAlt="Growth thumbnail"
+            />
           </div>
         </section>
         
@@ -128,34 +98,16 @@ export default function MyLibraryPage() {
               <button className="text-primary font-label-md text-label-md hover:underline">Manage</button>
             </div>
             <div className="flex flex-col gap-sm">
-              <div className="bg-surface-container-lowest border border-outline-variant p-md rounded-lg flex items-center justify-between hover:bg-surface-container-low transition-colors cursor-pointer">
-                <div className="flex items-center gap-md">
-                  <div className="w-10 h-10 rounded bg-primary/10 flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined">style</span>
-                  </div>
-                  <div>
-                    <h4 className="font-headline-md text-body-lg text-on-surface">Camera Settings Cheatsheet</h4>
-                    <p className="font-label-sm text-label-sm text-on-surface-variant">42 Cards • Due for review</p>
-                  </div>
-                </div>
-                <button className="w-8 h-8 flex items-center justify-center rounded-full border border-outline-variant hover:border-primary hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_forward</span>
-                </button>
-              </div>
-              <div className="bg-surface-container-lowest border border-outline-variant p-md rounded-lg flex items-center justify-between hover:bg-surface-container-low transition-colors cursor-pointer">
-                <div className="flex items-center gap-md">
-                  <div className="w-10 h-10 rounded bg-secondary-container/20 flex items-center justify-center text-on-secondary-container">
-                    <span className="material-symbols-outlined">style</span>
-                  </div>
-                  <div>
-                    <h4 className="font-headline-md text-body-lg text-on-surface">Audio Engineering Basics</h4>
-                    <p className="font-label-sm text-label-sm text-on-surface-variant">18 Cards • Mastered</p>
-                  </div>
-                </div>
-                <button className="w-8 h-8 flex items-center justify-center rounded-full border border-outline-variant hover:border-primary hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_forward</span>
-                </button>
-              </div>
+              <FlashcardSetItem 
+                iconColorClass="bg-primary/10 text-primary"
+                title="Camera Settings Cheatsheet"
+                meta="42 Cards • Due for review"
+              />
+              <FlashcardSetItem 
+                iconColorClass="bg-secondary-container/20 text-on-secondary-container"
+                title="Audio Engineering Basics"
+                meta="18 Cards • Mastered"
+              />
             </div>
           </section>
           
@@ -166,30 +118,16 @@ export default function MyLibraryPage() {
               <button className="text-primary font-label-md text-label-md hover:underline">View All</button>
             </div>
             <div className="flex flex-col gap-sm">
-              <div className="bg-surface-container-lowest border border-outline-variant p-md rounded-lg flex items-center justify-between hover:bg-surface-container-low transition-colors cursor-pointer">
-                <div className="flex items-center gap-md">
-                  <div className="text-outline-variant">
-                    <span className="material-symbols-outlined">description</span>
-                  </div>
-                  <div>
-                    <h4 className="font-body-md text-body-md font-medium text-on-surface">Sponsorship Outreach Template</h4>
-                    <p className="font-label-sm text-label-sm text-on-surface-variant">Added 2 days ago</p>
-                  </div>
-                </div>
-                <span className="material-symbols-outlined text-on-surface-variant hover:text-error transition-colors" style={{ fontSize: '20px' }}>bookmark_remove</span>
-              </div>
-              <div className="bg-surface-container-lowest border border-outline-variant p-md rounded-lg flex items-center justify-between hover:bg-surface-container-low transition-colors cursor-pointer">
-                <div className="flex items-center gap-md">
-                  <div className="text-outline-variant">
-                    <span className="material-symbols-outlined">picture_as_pdf</span>
-                  </div>
-                  <div>
-                    <h4 className="font-body-md text-body-md font-medium text-on-surface">Lighting Setup Diagrams.pdf</h4>
-                    <p className="font-label-sm text-label-sm text-on-surface-variant">Added 1 week ago</p>
-                  </div>
-                </div>
-                <span className="material-symbols-outlined text-on-surface-variant hover:text-error transition-colors" style={{ fontSize: '20px' }}>bookmark_remove</span>
-              </div>
+              <SavedDocumentItem 
+                icon="description"
+                title="Sponsorship Outreach Template"
+                meta="Added 2 days ago"
+              />
+              <SavedDocumentItem 
+                icon="picture_as_pdf"
+                title="Lighting Setup Diagrams.pdf"
+                meta="Added 1 week ago"
+              />
             </div>
           </section>
         </div>
