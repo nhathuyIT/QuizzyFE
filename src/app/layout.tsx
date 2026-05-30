@@ -41,8 +41,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "VOXEL LEARN - AI Learning Platform",
-  description: "Level up your brain with AI-powered flashcards and quizzes.",
+  title: "Quizzy AI - Learn Smarter",
+  description: "Turn your notes into focused flashcards, quizzes, and review sessions with AI.",
 };
 
 export default function RootLayout({
