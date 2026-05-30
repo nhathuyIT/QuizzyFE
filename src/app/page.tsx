@@ -86,7 +86,7 @@ export default function HomePage() {
       <canvas id="pixel-canvas" ref={canvasRef}></canvas>
       <div className="content-wrapper flex flex-col min-h-screen">
         {/* TopNavBar */}
-        <nav className="bg-surface text-primary font-headline-md text-headline-md docked full-width top-0 border-b-4 border-border-dark shadow-[0px_4px_0px_0px_#5B21B6] mb-voxel-depth-md flex justify-between items-center px-margin-desktop py-4 w-full sticky z-50">
+        <nav className="bg-surface text-primary font-headline-md text-headline-md docked full-width top-0 border-b-4 border-border-dark shadow-[0px_4px_0px_0px_#5B21B6] mb-voxel-depth-md flex justify-between items-center px-[16px] md:px-[40px] py-4 w-full sticky z-50">
           <div className="flex items-center gap-4">
             <img 
               alt="Voxel Learn Logo" 
@@ -109,7 +109,7 @@ export default function HomePage() {
         </nav>
 
         {/* Hero Section */}
-        <header className="relative w-full px-margin-mobile md:px-margin-desktop py-20 md:py-32 flex flex-col md:flex-row items-center justify-between gap-12 overflow-hidden">
+        <header className="relative w-full px-[16px] md:px-[40px] py-20 md:py-32 flex flex-col md:flex-row items-center justify-between gap-12 overflow-hidden">
           {/* Floating Elements */}
           <div className="absolute top-10 left-10 w-16 h-16 bg-accent-yellow border-4 border-border-dark voxel-shadow animate-float z-0"></div>
           <div className="absolute bottom-20 right-20 w-24 h-24 bg-tertiary-container border-4 border-border-dark voxel-shadow animate-float-delayed z-0 rotate-12"></div>
@@ -122,7 +122,7 @@ export default function HomePage() {
             <h1 className="font-headline-xl text-headline-xl md:text-[64px] font-bold text-on-background leading-tight">
               Học tập gây nghiện với <span className="text-primary-container inline-block translate-y-[-4px] drop-shadow-[4px_4px_0_#0F172A]">AI</span>
             </h1>
-            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-lg">
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-[32rem]">
               Tạo quiz và flashcards nhanh chóng từ bất kỳ tài liệu nào. Biến việc học thành một cuộc phiêu lưu đầy thú vị với đồ họa Voxel 3D.
             </p>
             <div className="flex flex-wrap gap-4 mt-4">
@@ -159,11 +159,11 @@ export default function HomePage() {
         </header>
 
         {/* Features Section */}
-        <section className="px-margin-mobile md:px-margin-desktop py-20 bg-surface-container-high/90 backdrop-blur-md w-full border-t-4 border-border-dark">
-          <div className="max-w-6xl mx-auto relative z-10">
+        <section className="px-[16px] md:px-[40px] py-20 bg-surface-container-high/90 backdrop-blur-md w-full border-t-4 border-border-dark">
+          <div className="max-w-[72rem] mx-auto relative z-10">
             <div className="text-center mb-16">
               <h2 className="font-headline-lg text-headline-lg text-on-background mb-4">Sức Mạnh Của AI</h2>
-              <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">Công cụ mạnh mẽ giúp bạn tiếp thu kiến thức nhanh hơn bao giờ hết.</p>
+              <p className="font-body-md text-body-md text-on-surface-variant max-w-[42rem] mx-auto">Công cụ mạnh mẽ giúp bạn tiếp thu kiến thức nhanh hơn bao giờ hết.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="bg-surface p-8 border-4 border-border-dark voxel-shadow flex flex-col items-start gap-4 hover:translate-y-[-8px] transition-transform duration-300">
@@ -192,8 +192,8 @@ export default function HomePage() {
         </section>
 
         {/* Testimonials Section */}
-        <section className="px-margin-mobile md:px-margin-desktop py-24 bg-surface/90 backdrop-blur-md w-full border-t-4 border-border-dark overflow-hidden relative">
-          <div className="max-w-5xl mx-auto relative z-10">
+        <section className="px-[16px] md:px-[40px] py-24 bg-surface/90 backdrop-blur-md w-full border-t-4 border-border-dark overflow-hidden relative">
+          <div className="max-w-[64rem] mx-auto relative z-10">
             <h2 className="font-headline-lg text-headline-lg text-center text-on-background mb-16">Học Viên Nói Gì?</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="bg-surface-white p-8 border-4 border-border-dark voxel-shadow-primary relative">
@@ -231,7 +231,7 @@ export default function HomePage() {
         </section>
 
         {/* Footer */}
-        <footer className="bg-surface-container/90 backdrop-blur-md text-secondary font-body-md text-body-md full-width mt-auto border-t-4 border-border-dark flex flex-col md:flex-row justify-between items-center px-margin-desktop py-12 w-full gap-8 relative z-10">
+        <footer className="bg-surface-container/90 backdrop-blur-md text-secondary font-body-md text-body-md full-width mt-auto border-t-4 border-border-dark flex flex-col md:flex-row justify-between items-center px-[16px] md:px-[40px] py-12 w-full gap-8 relative z-10">
           <div className="flex items-center gap-2">
             <span className="font-headline-md text-headline-md text-primary font-bold">QUIZZY</span>
           </div>
