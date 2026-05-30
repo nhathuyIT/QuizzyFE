@@ -84,7 +84,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-start justify-center bg-[#fbf9f4] p-4 text-[#1b1c19] md:p-8">
+    <main className="flex min-h-screen items-center justify-center bg-[#fbf9f4] p-4 text-[#1b1c19] md:p-8">
       <section className="grid min-h-[760px] w-full max-w-[1280px] overflow-hidden rounded-[32px] border border-black/5 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.08)] lg:grid-cols-2">
         <div
           className="relative flex min-h-[520px] flex-col justify-between overflow-hidden bg-[#9b87f5] p-6 sm:p-10 lg:min-h-full"
@@ -118,7 +118,7 @@ export default function LoginPage() {
               Instantly.
             </h1>
 
-            <p className="mt-6 max-w-md text-base leading-7 text-[#311485]/80 sm:text-lg">
+            <p className="mt-6 max-w-[440px] text-base leading-7 text-[#311485]/80 sm:text-lg">
               Join 2 million learners using AI to turn messy notes into focused flashcards,
               quizzes, and review sessions.
             </p>
