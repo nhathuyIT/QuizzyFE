@@ -1,69 +1,44 @@
-import React from 'react';
-import { TopNavBar } from '@/components/dashboard/TopNavBar';
-import { ClassCard, ClassCardProps } from '@/features/classes/components/ClassCard';
+import { CalendarDays, Clock3, Plus, UsersRound } from "lucide-react";
 
-const CLASSES_DATA: ClassCardProps[] = [
-  {
-    status: 'In Progress',
-    title: 'Advanced UI Design',
-    instructor: 'Elena Rodriguez',
-    members: 24,
-    nextSession: 'Today, 2:00 PM',
-  },
-  {
-    status: 'Scheduled',
-    title: 'React Fundamentals',
-    instructor: 'Marcus Chen',
-    members: 18,
-    nextSession: 'Oct 24, 10:00 AM',
-  },
-  {
-    status: 'Joined',
-    title: 'Data Structures 101',
-    instructor: 'Dr. Sarah Jenkins',
-    members: 42,
-    nextSession: 'Oct 26, 1:00 PM',
-  },
+const groups = [
+  { title: "Biology study circle", members: 12, next: "Thursday, 7:00 PM", color: "bg-[#e6deff] text-[#614db7]" },
+  { title: "Academic English", members: 8, next: "Saturday, 9:30 AM", color: "bg-[#ffd9e4] text-[#7b3451]" },
+  { title: "Data structures", members: 16, next: "Monday, 6:00 PM", color: "bg-[#d7f2e3] text-[#276345]" },
 ];
 
 export default function ClassesPage() {
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-background overflow-y-auto custom-scrollbar">
-      {/* TopNavBar */}
-      <TopNavBar searchPlaceholder="Search classes, members..." />
-      
-      {/* Main Canvas */}
-      <main className="flex-1 w-full max-w-max_content_width mx-auto p-md md:p-lg flex flex-col gap-lg">
-        {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-md mb-sm">
+    <div className="h-full overflow-y-auto bg-[#fbf9f4] custom-scrollbar">
+      <div className="mx-auto w-full max-w-[1240px] px-4 py-8 sm:px-6 lg:px-8">
+        <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="font-headline-lg text-headline-lg text-on-surface">Classes Management</h2>
-            <p className="font-body-md text-body-md text-on-surface-variant mt-xs">Overview of your joined and managed study groups.</p>
+            <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.15em] text-[#614db7]">Learn together</p>
+            <h1 className="[font-family:var(--font-outfit)] text-3xl font-extrabold tracking-[-0.03em] sm:text-4xl">Study groups</h1>
+            <p className="mt-2 max-w-[680px] text-sm leading-6 text-[#6e6b68] sm:text-base">A future space for shared decks, group review sessions, and class collaboration.</p>
           </div>
-          <button className="bg-primary text-on-primary font-label-md text-label-md px-md py-sm rounded-lg flex items-center justify-center gap-sm hover:bg-primary/90 transition-colors shadow-sm whitespace-nowrap w-full md:w-auto">
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            Create New Class
-          </button>
-        </div>
-        
-        {/* Dashboard Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-md">
-          {CLASSES_DATA.map((cls, idx) => (
-            <ClassCard key={idx} {...cls} />
+          <button className="inline-flex w-fit items-center gap-2 rounded-full bg-[#1b1c19] px-5 py-3 text-sm font-bold text-white opacity-60" disabled type="button"><Plus className="h-4 w-4" />New group</button>
+        </header>
+
+        <section className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {groups.map((group) => (
+            <article className="rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_12px_36px_rgba(27,28,25,0.05)]" key={group.title}>
+              <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${group.color}`}><UsersRound className="h-6 w-6" /></span>
+              <h2 className="mt-5 [font-family:var(--font-outfit)] text-xl font-extrabold">{group.title}</h2>
+              <div className="mt-5 space-y-3 text-sm font-semibold text-[#777474]">
+                <p className="flex items-center gap-2"><UsersRound className="h-4 w-4" />{group.members} learners</p>
+                <p className="flex items-center gap-2"><CalendarDays className="h-4 w-4" />Next session</p>
+                <p className="flex items-center gap-2 text-[#1b1c19]"><Clock3 className="h-4 w-4 text-[#614db7]" />{group.next}</p>
+              </div>
+              <button className="mt-6 w-full rounded-full border border-black/10 px-4 py-3 text-sm font-bold text-[#777474]" disabled type="button">Coming soon</button>
+            </article>
           ))}
-        </div>
-      </main>
-      
-      {/* Footer */}
-      <footer className="w-full py-md px-lg flex flex-col md:flex-row justify-between items-center max-w-max_content_width mx-auto bg-surface-container-low border-t border-outline-variant mt-auto">
-        <div className="font-headline-md text-headline-md text-primary mb-sm md:mb-0 hidden md:block">Creator Academy</div>
-        <p className="font-label-sm text-label-sm text-on-surface-variant">© 2024 Creator Academy. All rights reserved.</p>
-        <div className="flex gap-md mt-sm md:mt-0">
-          <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Support</a>
-          <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Privacy Policy</a>
-          <a className="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Terms of Service</a>
-        </div>
-      </footer>
+        </section>
+
+        <section className="mt-8 rounded-[28px] border border-[#cabeff] bg-[#f2eefe] p-6 sm:p-8">
+          <h2 className="[font-family:var(--font-outfit)] text-2xl font-extrabold text-[#311485]">Backend support is not available yet</h2>
+          <p className="mt-3 max-w-[720px] text-sm leading-6 text-[#5f4d94]">These cards are a visual preview only. A real study group feature will need class, membership, shared deck, and invitation APIs before the controls are enabled.</p>
+        </section>
+      </div>
     </div>
   );
 }

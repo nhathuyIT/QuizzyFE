@@ -1,68 +1,148 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import {
+  BookOpenText,
+  BrainCircuit,
+  CircleHelp,
+  History,
+  FolderPlus,
+  Home,
+  Library,
+  LogOut,
+  Settings,
+  Sparkles,
+  UsersRound,
+  Rows3,
+  X,
+} from "lucide-react";
 
-const MAIN_LINKS = [
-  { href: '/home', icon: 'home', label: 'Home' },
-  { href: '/my-library', icon: 'library_books', label: 'My Library' },
-  { href: '/ai-tutor', icon: 'smart_toy', label: 'AI Tutor' },
-  { href: '/flashcards', icon: 'style', label: 'Flashcards' },
-  { href: '/classes', icon: 'school', label: 'Classes' },
+const mainLinks = [
+  { href: "/home", icon: Home, label: "Home" },
+  { href: "/my-library", icon: Library, label: "My Library" },
+  { href: "/cards", icon: Rows3, label: "All cards" },
+  { href: "/flashcards", icon: BookOpenText, label: "Create cards" },
+  { href: "/study-history", icon: History, label: "Study history" },
+  { href: "/ai-tutor", icon: Sparkles, label: "AI Tutor" },
+  { href: "/classes", icon: UsersRound, label: "Study groups" },
 ];
 
-const FOOTER_LINKS = [
-  { href: '#', icon: 'settings', label: 'Settings' },
-  { href: '#', icon: 'help', label: 'Help Center' },
-];
+interface SideNavBarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
 
-export function SideNavBar() {
+export function SideNavBar({ isOpen = false, onClose }: SideNavBarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  function logout() {
+    localStorage.removeItem("accessToken");
+    router.push("/login");
+  }
 
   return (
-    <nav className="hidden md:flex flex-col w-[260px] h-screen fixed left-0 top-0 py-lg z-40 bg-surface-container-lowest border-r border-outline-variant overflow-y-auto custom-scrollbar">
-      <div className="px-lg mb-xl flex flex-col gap-xs mt-sm">
-        <span className="font-headline-md text-headline-md font-bold text-primary">Creator Academy</span>
-        <span className="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Pro Workspace</span>
-      </div>
-      
-      <div className="flex-grow flex flex-col gap-sm px-sm">
-        {MAIN_LINKS.map((link) => {
-          const isActive = pathname.startsWith(link.href);
-          
-          if (isActive) {
+    <>
+      {isOpen && (
+        <button
+          aria-label="Close navigation"
+          className="fixed inset-0 z-40 bg-[#1b1c19]/25 backdrop-blur-sm md:hidden"
+          onClick={onClose}
+          type="button"
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-[272px] flex-col border-r border-black/5 bg-white px-4 py-5 transition-transform duration-300 md:translate-x-0 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="mb-8 flex items-center justify-between px-2">
+          <Link className="flex items-center gap-3" href="/home" onClick={onClose}>
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#1b1c19] text-white">
+              <BrainCircuit aria-hidden="true" className="h-6 w-6" />
+            </span>
+            <div>
+              <p className="[font-family:var(--font-outfit)] text-xl font-extrabold tracking-[-0.02em]">
+                Quizzy AI
+              </p>
+              <p className="text-xs font-semibold text-[#777474]">Study workspace</p>
+            </div>
+          </Link>
+
+          <button
+            aria-label="Close navigation"
+            className="rounded-full p-2 text-[#777474] hover:bg-[#f3f0eb] md:hidden"
+            onClick={onClose}
+            type="button"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <nav className="space-y-1.5">
+          {mainLinks.map((link) => {
+            const Icon = link.icon;
+            const isActive = pathname.startsWith(link.href);
+
             return (
-              <Link key={link.href} href={link.href} className="flex items-center gap-md bg-primary/10 text-primary border-l-4 border-primary px-md py-sm rounded-r-lg font-label-md text-label-md cursor-pointer transition-all duration-200">
-                <span className="material-symbols-outlined fill-icon">{link.icon}</span>
+              <Link
+                className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition ${
+                  isActive
+                    ? "bg-[#e6deff] text-[#311485]"
+                    : "text-[#5f5e5e] hover:bg-[#f6f3ee] hover:text-[#1b1c19]"
+                }`}
+                href={link.href}
+                key={link.href}
+                onClick={onClose}
+              >
+                <Icon aria-hidden="true" className="h-5 w-5" />
                 {link.label}
               </Link>
             );
-          }
-          
-          return (
-            <Link key={link.href} href={link.href} className="flex items-center gap-md text-on-surface-variant px-md py-sm rounded-lg hover:bg-surface-container transition-all cursor-pointer duration-200 font-label-md text-label-md">
-              <span className="material-symbols-outlined">{link.icon}</span>
-              {link.label}
-            </Link>
-          );
-        })}
-      </div>
-      
-      <div className="px-md mt-auto mb-lg">
-        <button className="w-full bg-primary-container text-on-primary-container font-label-md text-label-md py-sm rounded-lg hover:opacity-90 transition-opacity">
-          Upgrade to Pro
-        </button>
-      </div>
-      
-      <div className="flex flex-col gap-sm px-sm border-t border-outline-variant pt-sm mb-lg">
-        {FOOTER_LINKS.map((link) => (
-          <Link key={link.label} href={link.href} className="flex items-center gap-md text-on-surface-variant px-md py-sm rounded-lg hover:bg-surface-container transition-all cursor-pointer duration-200 font-label-md text-label-md">
-            <span className="material-symbols-outlined">{link.icon}</span>
-            {link.label}
+          })}
+        </nav>
+
+        <div className="my-6 h-px bg-black/5" />
+
+        <p className="px-4 text-[11px] font-extrabold uppercase tracking-[0.14em] text-[#9a9692]">
+          Your workspace
+        </p>
+        <Link
+          className="mt-3 flex items-center gap-3 rounded-2xl border border-dashed border-[#9b87f5]/50 bg-[#f8f5ff] px-4 py-3 text-sm font-bold text-[#614db7] transition hover:border-[#614db7] hover:bg-[#efe9ff]"
+          href="/my-library"
+          onClick={onClose}
+        >
+          <FolderPlus aria-hidden="true" className="h-5 w-5" />
+          Create a new deck
+        </Link>
+
+        <div className="mt-auto space-y-1.5 pt-6">
+          <Link
+            className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#777474] hover:bg-[#f6f3ee] hover:text-[#1b1c19]"
+            href="#"
+          >
+            <Settings className="h-5 w-5" />
+            Settings
           </Link>
-        ))}
-      </div>
-    </nav>
+          <Link
+            className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#777474] hover:bg-[#f6f3ee] hover:text-[#1b1c19]"
+            href="#"
+          >
+            <CircleHelp className="h-5 w-5" />
+            Help center
+          </Link>
+          <button
+            className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#777474] hover:bg-[#fff0f0] hover:text-[#a33a3a]"
+            onClick={logout}
+            type="button"
+          >
+            <LogOut className="h-5 w-5" />
+            Log out
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

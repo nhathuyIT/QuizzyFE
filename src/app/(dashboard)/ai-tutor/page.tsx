@@ -1,72 +1,58 @@
-import React from 'react';
-import { ChatSidebar } from '@/features/ai-tutor/components/ChatSidebar';
-import { ChatMessage } from '@/features/ai-tutor/components/ChatMessage';
-import { ChatInput } from '@/features/ai-tutor/components/ChatInput';
+import Link from "next/link";
+import {
+  ArrowRight,
+  BookOpenText,
+  BrainCircuit,
+  FileText,
+  MessageSquareText,
+  Sparkles,
+} from "lucide-react";
 
 export default function AITutorPage() {
   return (
-    <div className="flex-1 flex overflow-hidden w-full">
-      <ChatSidebar />
-      
-      <section className="flex-1 h-full flex flex-col bg-surface-bright relative min-w-0">
-        <header className="h-16 border-b border-outline-variant flex items-center justify-between px-lg bg-surface-container-lowest shrink-0 z-10 shadow-sm shadow-surface-container-low/50">
-          <div className="flex items-center gap-md">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>science</span>
+    <div className="h-full overflow-y-auto bg-[#fbf9f4] custom-scrollbar">
+      <div className="mx-auto w-full max-w-[1240px] px-4 py-8 sm:px-6 lg:px-8">
+        <header>
+          <p className="mb-2 inline-flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.15em] text-[#614db7]"><Sparkles className="h-4 w-4" />AI study tools</p>
+          <h1 className="[font-family:var(--font-outfit)] text-3xl font-extrabold tracking-[-0.03em] sm:text-4xl">AI Tutor</h1>
+          <p className="mt-2 max-w-[680px] text-sm leading-6 text-[#6e6b68] sm:text-base">A calm place to ask questions about your material. The conversation UI is ready for the backend chat capability.</p>
+        </header>
+
+        <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <section className="overflow-hidden rounded-[30px] border border-black/5 bg-white shadow-[0_16px_44px_rgba(27,28,25,0.06)]">
+            <div className="flex items-center gap-3 border-b border-black/5 px-5 py-4 sm:px-6">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#e6deff] text-[#614db7]"><BrainCircuit className="h-6 w-6" /></span>
+              <div><h2 className="[font-family:var(--font-outfit)] text-lg font-extrabold">Quizzy study assistant</h2><p className="text-xs font-semibold text-[#9a9692]">Preview conversation</p></div>
             </div>
-            <div>
-              <h2 className="font-headline-md text-[20px] font-bold text-on-surface leading-none">Quantum Physics</h2>
-              <div className="flex items-center gap-sm mt-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <p className="font-label-sm text-label-sm text-on-surface-variant">AI Tutor Active</p>
+            <div className="space-y-6 bg-[#fbf9f4] p-5 sm:p-8">
+              <div className="ml-auto max-w-[75%] rounded-[22px] rounded-br-md bg-[#614db7] px-5 py-4 text-sm leading-6 text-white">Can you explain spaced repetition in simple terms?</div>
+              <div className="flex max-w-[88%] gap-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#1b1c19] text-white"><BrainCircuit className="h-5 w-5" /></span>
+                <div className="rounded-[22px] rounded-tl-md border border-black/5 bg-white px-5 py-4 text-sm leading-6 text-[#5f5e5e] shadow-sm">Spaced repetition brings a card back just before you are likely to forget it. Easy cards wait longer; difficult cards return sooner, so your study time stays focused.</div>
+              </div>
+              <div className="rounded-[22px] border border-dashed border-[#cabeff] bg-white p-4">
+                <div className="flex items-center gap-3 text-[#777474]"><MessageSquareText className="h-5 w-5" /><span className="text-sm font-semibold">Ask a follow-up question...</span></div>
               </div>
             </div>
-          </div>
-          <div className="flex items-center gap-sm">
-            <button className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors">
-              <span className="material-symbols-outlined">ios_share</span>
-            </button>
-            <button className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors">
-              <span className="material-symbols-outlined">more_vert</span>
-            </button>
-          </div>
-        </header>
-        
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-lg flex flex-col gap-xl">
-          <div className="text-center my-md">
-            <span className="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm px-md py-sm rounded-full border border-outline-variant/50">Today, 2:45 PM</span>
-          </div>
-          
-          <ChatMessage 
-            type="user" 
-            content="Can you explain the double-slit experiment in simple terms? I'm having trouble visualizing how observation changes the outcome." 
-          />
-          
-          <ChatMessage 
-            type="bot" 
-            content={
-              <>
-                <p>It's one of the most mind-bending concepts in physics! Let's break it down using a macroscopic analogy.</p>
-                <div className="bg-surface-container-low rounded-xl p-md border border-outline-variant/50 border-l-4 border-l-secondary">
-                  <p className="font-semibold mb-sm text-secondary font-label-md text-label-md">The Classic Analogy</p>
-                  <p className="text-on-surface-variant text-body-sm font-body-sm">Imagine throwing tennis balls at a wall that has two vertical slits cut into it. Behind that wall is a second wall acting as a screen. If you throw balls randomly, they will only pass through the slits and form two corresponding bands on the back screen. This represents how classical particles behave.</p>
-                </div>
-                <p>Now, imagine doing the same with water waves. The waves pass through both slits, interfering with each other, and create an interference pattern on the back screen (multiple bands of varying intensity). This is how waves behave.</p>
-                <p>The bizarre part? When we fire single electrons (particles) through the slits, they build up an interference pattern over time, suggesting they act like waves passing through both slits simultaneously.</p>
-              </>
-            }
-          />
-          
-          <ChatMessage 
-            type="user" 
-            content="Wait, so if we watch them go through, they act like particles?" 
-          />
-          
-          <ChatMessage type="typing" />
+          </section>
+
+          <aside className="space-y-5">
+            <section className="rounded-[26px] bg-[#311485] p-6 text-white shadow-[0_16px_40px_rgba(49,20,133,0.18)]">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-[#f5d547]"><Sparkles className="h-6 w-6" /></span>
+              <h2 className="mt-5 [font-family:var(--font-outfit)] text-2xl font-extrabold">Chat integration is next</h2>
+              <p className="mt-3 text-sm leading-6 text-white/65">The current backend supports AI source and job models, but it does not expose a tutor chat endpoint yet.</p>
+            </section>
+            <section className="rounded-[26px] border border-black/5 bg-white p-5 shadow-[0_12px_36px_rgba(27,28,25,0.05)]">
+              <h2 className="[font-family:var(--font-outfit)] text-lg font-extrabold">What works today</h2>
+              <div className="mt-5 space-y-4">
+                <div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#ffd9e4] text-[#7b3451]"><BookOpenText className="h-5 w-5" /></span><div><p className="text-sm font-bold">Manual flashcards</p><p className="text-xs text-[#9a9692]">Create cards inside your decks</p></div></div>
+                <div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#d7f2e3] text-[#276345]"><FileText className="h-5 w-5" /></span><div><p className="text-sm font-bold">Organized library</p><p className="text-xs text-[#9a9692]">Keep your materials together</p></div></div>
+              </div>
+              <Link className="mt-6 inline-flex items-center gap-2 text-sm font-extrabold text-[#614db7]" href="/flashcards">Create cards now <ArrowRight className="h-4 w-4" /></Link>
+            </section>
+          </aside>
         </div>
-        
-        <ChatInput />
-      </section>
+      </div>
     </div>
   );
 }

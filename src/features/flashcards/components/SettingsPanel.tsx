@@ -1,75 +1,22 @@
-import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { decksAPI } from '@/services/api';
+"use client";
 
-interface SettingsPanelProps {
-  selectedDeckId: string;
-  onDeckChange: (id: string) => void;
-}
+import { useQuery } from "@tanstack/react-query";
+import { Layers3, SlidersHorizontal } from "lucide-react";
+import { decksAPI } from "@/services/api";
+
+interface DeckOption { _id: string; title: string }
+interface DecksResponse { data?: DeckOption[] }
+interface SettingsPanelProps { selectedDeckId: string; onDeckChange: (id: string) => void }
 
 export function SettingsPanel({ selectedDeckId, onDeckChange }: SettingsPanelProps) {
-  const { data: decksData, isLoading: isLoadingDecks } = useQuery({
-    queryKey: ['decks'],
-    queryFn: () => decksAPI.getAll(),
-  });
-
-  const decks = decksData?.data || [];
+  const decksQuery = useQuery({ queryKey: ["decks"], queryFn: () => decksAPI.getAll() });
+  const decks = (decksQuery.data as DecksResponse | undefined)?.data ?? [];
 
   return (
-    <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-md custom-shadow">
-      <h3 className="font-headline-md text-headline-md text-on-surface mb-md flex items-center gap-sm">
-        <span className="material-symbols-outlined text-primary">tune</span>
-        Generation Settings
-      </h3>
-      <div className="flex flex-col gap-md">
-        {/* Deck Selection (New) */}
-        <div>
-          <label className="block font-label-md text-label-md text-on-surface mb-xs">Select Deck</label>
-          <select 
-            value={selectedDeckId}
-            onChange={(e) => onDeckChange(e.target.value)}
-            className="w-full p-sm border border-outline-variant rounded-lg bg-surface font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary mb-md"
-          >
-            <option value="">-- Choose a Deck --</option>
-            {isLoadingDecks ? (
-              <option disabled>Loading...</option>
-            ) : (
-              decks.map((deck: any) => (
-                <option key={deck._id} value={deck._id}>{deck.title}</option>
-              ))
-            )}
-          </select>
-        </div>
-
-        {/* Difficulty */}
-        <div>
-          <label className="block font-label-md text-label-md text-on-surface mb-xs">Difficulty Level</label>
-          <div className="grid grid-cols-3 gap-sm">
-            <button className="py-sm border border-outline-variant rounded-lg font-label-sm text-label-sm text-on-surface hover:bg-surface-container transition-colors">Beginner</button>
-            <button className="py-sm border-2 border-primary bg-primary/5 rounded-lg font-label-sm text-label-sm text-primary font-semibold">Intermediate</button>
-            <button className="py-sm border border-outline-variant rounded-lg font-label-sm text-label-sm text-on-surface hover:bg-surface-container transition-colors">Advanced</button>
-          </div>
-        </div>
-
-        {/* Card Type */}
-        <div>
-          <label className="block font-label-md text-label-md text-on-surface mb-xs">Card Style</label>
-          <select className="w-full p-sm border border-outline-variant rounded-lg bg-surface font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary">
-            <option>Q&A (Standard)</option>
-            <option>Fill in the Blank</option>
-            <option>Vocabulary (Term/Definition)</option>
-          </select>
-        </div>
-
-        {/* Amount */}
-        <div>
-          <div className="flex justify-between items-center mb-xs">
-            <label className="block font-label-md text-label-md text-on-surface">Target Amount</label>
-            <span className="font-label-sm text-label-sm text-primary bg-primary/10 px-xs py-base rounded">~20 Cards</span>
-          </div>
-          <input className="w-full accent-primary" max="50" min="5" type="range" defaultValue="20" />
-        </div>
-      </div>
-    </div>
+    <section className="rounded-[26px] border border-black/5 bg-white p-5 shadow-[0_12px_36px_rgba(27,28,25,0.05)]">
+      <div className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#f2eefe] text-[#614db7]"><SlidersHorizontal className="h-5 w-5" /></span><div><h2 className="[font-family:var(--font-outfit)] text-lg font-extrabold">Card settings</h2><p className="text-xs font-semibold text-[#9a9692]">Choose where this card belongs.</p></div></div>
+      <label className="mt-6 block text-sm font-bold">Deck<select className="mt-2 h-12 w-full rounded-2xl border border-black/10 bg-[#fbf9f4] px-4 font-medium outline-none focus:border-[#9b87f5] focus:ring-4 focus:ring-[#9b87f5]/10" onChange={(event) => onDeckChange(event.target.value)} value={selectedDeckId}><option value="">Choose a deck</option>{decksQuery.isLoading ? <option disabled>Loading decks...</option> : decks.map((deck) => <option key={deck._id} value={deck._id}>{deck.title}</option>)}</select></label>
+      <div className="mt-5 rounded-2xl bg-[#f6f3ee] p-4"><div className="flex items-center gap-2 text-sm font-bold text-[#5f5e5e]"><Layers3 className="h-4 w-4" />Manual flashcard</div><p className="mt-2 text-xs leading-5 text-[#8a8784]">This version creates one standard question-and-answer card at a time.</p></div>
+    </section>
   );
 }

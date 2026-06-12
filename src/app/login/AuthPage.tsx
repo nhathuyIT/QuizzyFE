@@ -489,7 +489,7 @@ export function AuthPage({ initialMode = "login" }: { initialMode?: AuthMode }) 
         >
           <motion.div
             animate={{ scale: 1, y: 0 }}
-            className="flex w-full max-w-sm flex-col items-center rounded-[32px] border border-black/5 bg-[#fbf9f4] p-8 text-center shadow-2xl"
+            className="flex w-full max-w-[384px] flex-col items-center rounded-[32px] border border-black/5 bg-[#fbf9f4] p-8 text-center shadow-2xl"
             initial={{ scale: 0.96, y: 12 }}
           >
             <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#e6deff] text-[#311485]">

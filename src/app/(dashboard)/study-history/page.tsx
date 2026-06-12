@@ -1,0 +1,14 @@
+"use client";
+
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+import { CalendarDays, CheckCircle2, Clock3, History, Loader2 } from "lucide-react";
+import { decksAPI, studyAPI } from "@/services/api";
+
+export default function StudyHistoryPage() {
+  const sessionsQuery = useQuery({ queryKey: ["study", "sessions"], queryFn: () => studyAPI.getSessions() });
+  const decksQuery = useQuery({ queryKey: ["decks", "all"], queryFn: () => decksAPI.getAll() });
+  const deckMap = new Map((decksQuery.data?.data ?? []).map((deck) => [deck._id, deck.title]));
+  const sessions = sessionsQuery.data?.data ?? [];
+  return <div className="h-full overflow-y-auto bg-[#fbf9f4] p-4 sm:p-8"><div className="mx-auto max-w-[1040px]"><header><p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#614db7]">Your activity</p><h1 className="mt-2 [font-family:var(--font-outfit)] text-3xl font-extrabold sm:text-4xl">Study history</h1><p className="mt-2 text-sm text-[#777474]">Every backend study session, including unfinished work.</p></header>{sessionsQuery.isLoading ? <Loader2 className="mt-10 h-7 w-7 animate-spin text-[#614db7]" /> : sessionsQuery.isError ? <div className="mt-8 rounded-2xl bg-[#fff0f0] p-5 font-bold text-[#a33a3a]">{sessionsQuery.error.message}</div> : sessions.length ? <div className="mt-8 space-y-4">{sessions.map((session) => { const total = session.stats.correct + session.stats.wrong; const destination = session.finishedAt ? `/study/${session._id}/result` : `/study/${session._id}`; return <Link className="flex flex-col gap-4 rounded-[24px] border border-black/5 bg-white p-5 shadow-sm transition hover:border-[#cabeff] sm:flex-row sm:items-center" href={destination} key={session._id}><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#e6deff] text-[#614db7]"><History className="h-6 w-6" /></span><div className="min-w-0 flex-1"><h2 className="truncate font-extrabold">{deckMap.get(session.deckId) ?? "Deck session"}</h2><div className="mt-2 flex flex-wrap gap-4 text-xs font-bold text-[#777474]"><span className="inline-flex items-center gap-1"><CalendarDays className="h-3.5 w-3.5" />{new Date(session.startedAt).toLocaleString()}</span><span className="inline-flex items-center gap-1"><CheckCircle2 className="h-3.5 w-3.5" />{session.stats.correct}/{total} correct</span><span className="inline-flex items-center gap-1"><Clock3 className="h-3.5 w-3.5" />{session.stats.timeSpentSec}s</span></div></div><span className={`w-fit rounded-full px-3 py-1.5 text-xs font-bold ${session.finishedAt ? "bg-[#d7f2e3] text-[#276345]" : "bg-[#fff1b3] text-[#8a5a00]"}`}>{session.finishedAt ? "Completed" : "Continue"}</span></Link>; })}</div> : <div className="mt-8 rounded-[28px] border border-dashed border-[#cabeff] p-10 text-center"><History className="mx-auto h-9 w-9 text-[#614db7]" /><p className="mt-4 font-bold">No study sessions yet.</p></div>}</div></div>;
+}

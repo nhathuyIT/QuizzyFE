@@ -9,7 +9,7 @@ export function HeroSection() {
       
       <div className="flex flex-col gap-sm z-10 w-full md:w-1/2">
         <h1 className="font-headline-lg md:font-headline-lg text-headline-lg md:text-headline-lg text-on-surface">Welcome back, Alex.</h1>
-        <p className="font-body-lg text-body-lg text-on-surface-variant">You're on track to hit your weekly learning goal. Keep up the momentum!</p>
+        <p className="font-body-lg text-body-lg text-on-surface-variant">You&apos;re on track to hit your weekly learning goal. Keep up the momentum!</p>
         <div className="mt-sm">
           <button className="bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded-lg hover:opacity-90 transition-opacity">
             View Study Plan

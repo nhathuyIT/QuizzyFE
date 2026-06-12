@@ -1,39 +1,84 @@
-import React from 'react';
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { Bell, Menu, Plus, Search } from "lucide-react";
+import { authAPI } from "@/services/api";
 
 interface TopNavBarProps {
+  onMenuClick?: () => void;
   searchPlaceholder?: string;
 }
 
-export function TopNavBar({ searchPlaceholder = "Search courses, resources..." }: TopNavBarProps) {
+export function TopNavBar({
+  onMenuClick,
+  searchPlaceholder = "Search your decks and cards",
+}: TopNavBarProps) {
+  const router = useRouter();
+  const userQuery = useQuery({ queryKey: ["auth", "me"], queryFn: () => authAPI.getMe(), retry: false });
+  const user = userQuery.data?.data;
+  const initials = user?.name
+    ?.split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("") || "Q";
+
+  function handleSearch(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const keyword = String(form.get("keyword") ?? "").trim();
+    router.push(keyword ? `/my-library?keyword=${encodeURIComponent(keyword)}` : "/my-library");
+  }
+
   return (
-    <header className="flex justify-between items-center px-lg py-sm w-full sticky top-0 z-50 bg-surface-container-lowest border-b border-outline-variant">
-      <div className="flex-1 flex items-center">
-        {/* Search Bar */}
-        <div className="relative w-full max-w-md hidden sm:block">
-          <span className="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">search</span>
-          <input 
-            className="w-full bg-surface-container-low border border-outline-variant rounded-full py-xs pl-xl pr-md text-body-sm font-body-sm focus:outline-none focus:border-primary transition-colors focus:ring-1 focus:ring-primary placeholder:text-on-surface-variant" 
-            placeholder={searchPlaceholder} 
-            type="text" 
-          />
-        </div>
-      </div>
-      
-      <div className="flex items-center gap-md">
-        <button className="text-on-surface-variant hover:bg-surface-container-low p-sm rounded-full transition-colors cursor-pointer active:scale-95 duration-200 flex items-center justify-center">
-          <span className="material-symbols-outlined">local_fire_department</span>
+    <header className="sticky top-0 z-30 flex h-[76px] items-center gap-3 border-b border-black/5 bg-[#fbf9f4]/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+      <button
+        aria-label="Open navigation"
+        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-black/5 bg-white text-[#1b1c19] shadow-sm md:hidden"
+        onClick={onMenuClick}
+        type="button"
+      >
+        <Menu className="h-5 w-5" />
+      </button>
+
+      <form className="relative mx-auto w-full max-w-[720px]" onSubmit={handleSearch}>
+        <Search
+          aria-hidden="true"
+          className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8a8784]"
+        />
+        <input
+          aria-label="Search"
+          className="h-12 w-full rounded-2xl border border-black/5 bg-white pl-12 pr-4 text-sm font-medium text-[#1b1c19] shadow-sm outline-none transition placeholder:text-[#9a9692] focus:border-[#9b87f5] focus:ring-4 focus:ring-[#9b87f5]/10"
+          name="keyword"
+          placeholder={searchPlaceholder}
+          type="search"
+        />
+      </form>
+
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+        <Link
+          aria-label="Create flashcards"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-[#614db7] text-white shadow-lg shadow-[#614db7]/20 transition hover:-translate-y-0.5 hover:bg-[#49339d]"
+          href="/flashcards"
+        >
+          <Plus className="h-5 w-5" />
+        </Link>
+        <button
+          aria-label="Notifications"
+          className="hidden h-11 w-11 items-center justify-center rounded-full border border-black/5 bg-white text-[#5f5e5e] shadow-sm transition hover:text-[#614db7] sm:flex"
+          type="button"
+        >
+          <Bell className="h-5 w-5" />
         </button>
-        <button className="text-on-surface-variant hover:bg-surface-container-low p-sm rounded-full transition-colors cursor-pointer active:scale-95 duration-200 flex items-center justify-center relative">
-          <span className="material-symbols-outlined">notifications</span>
-          <span className="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span>
+        <button
+          aria-label="Open profile"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f5d547] text-sm font-extrabold text-[#493600] ring-4 ring-white"
+          type="button"
+        >
+          {initials}
         </button>
-        <div className="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary transition-all">
-          <img 
-            alt="User profile avatar" 
-            className="w-full h-full object-cover" 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpQwU_agneRvLq_aRQOysrZ-jA_1SLPcPmVgZn5HlCmstD64IhPuKYelzccuTuYWwid8YAZE0sdsTEWPlNu-PIAzzZBIWnVilAsk-TbXPk2-j5NmBJ_RCraLm5VN5TaqYTwnAiMA-CfBwvF8AaVPoehfILFO_JxdrtZxg_iMdtIjGtttTx1WtpRZGTSkjA19ZZEQ-mn9HbqavdzVR2n_KH6zVY4aLDY4va_-u3uILhwxpRcEULx7lyLDbBdek3rbHLZcTKF9eRB04"
-          />
-        </div>
       </div>
     </header>
   );

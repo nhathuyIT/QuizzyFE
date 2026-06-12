@@ -9,7 +9,7 @@ export function ChatMessage({ type, content }: ChatMessageProps) {
   if (type === 'user') {
     return (
       <div className="flex justify-end pl-12 md:pl-24">
-        <div className="bg-primary text-on-primary rounded-2xl rounded-tr-sm p-md font-body-md text-body-md shadow-sm max-w-2xl relative group">
+        <div className="bg-primary text-on-primary rounded-2xl rounded-tr-sm p-md font-body-md text-body-md shadow-sm max-w-[42rem] relative group">
           {content}
           <div className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button className="text-outline hover:text-primary"><span className="material-symbols-outlined text-[20px]">content_copy</span></button>

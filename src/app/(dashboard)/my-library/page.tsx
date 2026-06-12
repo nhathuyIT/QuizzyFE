@@ -1,178 +1,93 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { useQuery } from '@tanstack/react-query';
-import { decksAPI } from '@/services/api';
-import { CreateDeckModal } from '@/features/my-library/components/CreateDeckModal';
-import { CourseProgressCard } from '@/features/my-library/components/CourseProgressCard';
-import { FlashcardSetItem } from '@/features/my-library/components/FlashcardSetItem';
-import { SavedDocumentItem } from '@/features/my-library/components/SavedDocumentItem';
+import { useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { BookOpenText, ChevronLeft, ChevronRight, Layers3, LockKeyhole, Plus, Search, Sparkles } from "lucide-react";
+import { decksAPI, type DeckVisibility } from "@/services/api";
+import { CreateDeckModal } from "@/features/my-library/components/CreateDeckModal";
 
 export default function MyLibraryPage() {
+  const searchParams = useSearchParams();
+  const initialKeyword = searchParams.get("keyword") ?? "";
+  return <MyLibraryContent initialKeyword={initialKeyword} key={initialKeyword} />;
+}
+
+function MyLibraryContent({ initialKeyword }: { initialKeyword: string }) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [keyword, setKeyword] = useState(initialKeyword);
+  const [visibility, setVisibility] = useState<DeckVisibility | "all">("all");
+  const [page, setPage] = useState(1);
 
-  const { data: decksData, isLoading } = useQuery({
-    queryKey: ['decks'],
-    queryFn: () => decksAPI.getAll(),
+  const decksQuery = useQuery({
+    queryKey: ["decks", { keyword, visibility, page }],
+    queryFn: () => decksAPI.search({ keyword: keyword || undefined, visibility: visibility === "all" ? undefined : visibility, page, take: 9 }),
   });
+  const decks = decksQuery.data?.data ?? [];
+  const meta = decksQuery.data?.meta;
 
-  const decks = decksData?.data || [];
+  function changeVisibility(next: DeckVisibility | "all") {
+    setVisibility(next);
+    setPage(1);
+  }
 
   return (
-    <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col bg-background">
-      {/* TopNavBar */}
-      <header className="flex justify-between items-center px-lg py-sm w-full sticky top-0 z-50 bg-surface-container-lowest border-b border-outline-variant">
-        {/* Mobile Menu & Title */}
-        <div className="flex items-center gap-md md:hidden">
-          <button className="p-sm text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors">
-            <span className="material-symbols-outlined">menu</span>
-          </button>
-          <span className="font-headline-md text-headline-md font-bold text-primary">Creator Academy</span>
-        </div>
-        {/* Desktop Search (Left aligned per JSON intent, but visually centered in remaining space) */}
-        <div className="hidden md:flex items-center bg-surface-container rounded-full px-md py-xs border border-outline-variant focus-within:border-primary focus-within:ring-1 focus-within:ring-primary w-96 transition-all">
-          <span className="material-symbols-outlined text-on-surface-variant mr-sm">search</span>
-          <input 
-            className="bg-transparent border-none focus:ring-0 outline-none w-full font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant" 
-            placeholder="Search your library..." 
-            type="text"
-          />
-        </div>
-        <div className="flex items-center gap-md">
-          <button aria-label="Streak" className="p-xs text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors active:scale-95 duration-200">
-            <span className="material-symbols-outlined text-tertiary">local_fire_department</span>
-          </button>
-          <button aria-label="Notifications" className="p-xs text-on-surface-variant hover:bg-surface-container-low rounded-full transition-colors active:scale-95 duration-200">
-            <span className="material-symbols-outlined">notifications</span>
-          </button>
-          <div className="w-8 h-8 rounded-full bg-surface-variant border border-outline-variant overflow-hidden cursor-pointer active:scale-95 duration-200">
-            <img 
-              alt="User profile avatar" 
-              className="w-full h-full object-cover" 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAp3FDyxcoB2nqmU8aufZk5bUoHwHSlxJKChfSmTKctPY5h7NkprJIkvFawTBMR0KLNwxzgpN033-URMX0UxbwqZ27H8rUx9XCRcHcjHTOHxciug3pu_JrhXdD1nG54TJaB7HUxVTNqzADqwqfzqxX2HGSGTO3nraCOMC-_vC_jyWAujVr94vlOatbpOfIwH_OCg9H5ecxZYgMf-ZBjxsghwvSPCfeq56K9lFlx7_4aQ8OM9KskAr8mJ-3U2fEYno6vwDTK7HnQtGQ"
-            />
-          </div>
-        </div>
-      </header>
-      
-      {/* Page Canvas */}
-      <div className="p-lg md:p-xl max-w-max_content_width mx-auto w-full flex-1">
-        {/* Header & Filters */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-xl gap-md">
+    <div className="h-full overflow-y-auto bg-[#fbf9f4] custom-scrollbar">
+      <div className="mx-auto w-full max-w-[1240px] px-4 py-8 sm:px-6 lg:px-8">
+        <header className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="font-display-lg text-display-lg text-on-background mb-sm">My Library</h2>
-            <p className="font-body-lg text-body-lg text-on-surface-variant">Pick up where you left off or dive into something new.</p>
+            <p className="mb-2 text-xs font-extrabold uppercase tracking-[0.15em] text-[#614db7]">Your collection</p>
+            <h1 className="[font-family:var(--font-outfit)] text-3xl font-extrabold tracking-[-0.03em] sm:text-4xl">My Library</h1>
+            <p className="mt-2 text-sm leading-6 text-[#6e6b68] sm:text-base">Search, filter and continue every deck available to your account.</p>
           </div>
-          <div className="flex flex-wrap gap-sm">
-            <button className="px-md py-xs rounded-full bg-primary/10 text-primary font-label-sm text-label-sm border border-primary transition-colors">All Materials</button>
-            <button className="px-md py-xs rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm border border-outline-variant hover:bg-surface-container-low transition-colors">In Progress</button>
-            <button className="px-md py-xs rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm border border-outline-variant hover:bg-surface-container-low transition-colors">Completed</button>
-          </div>
-        </div>
-        
-        {/* Courses Section */}
-        <section className="mb-2xl">
-          <div className="flex items-center justify-between mb-lg border-b border-surface-container-highest pb-sm">
-            <h3 className="font-headline-lg text-headline-lg text-on-background">Courses</h3>
-            <button className="text-primary font-label-md text-label-md hover:underline flex items-center gap-xs">
-              View All <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_forward</span>
-            </button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
-            <CourseProgressCard 
-              category="Video Production"
-              categoryColorClass="bg-secondary-container/20 text-on-secondary-container"
-              lessons={12}
-              title="Advanced Cinematic Editing"
-              description="Master color grading and dynamic pacing for professional YouTube essays."
-              progressPercentage={65}
-              imageSrc="https://lh3.googleusercontent.com/aida-public/AB6AXuAMOw_Do2ut--c41Gv1xefKyFmClDfy3bzKCtoAgpeO69IlYcPtwj2V88FdY9BOXpwurmQwJznx3A99q1s079vc45Aj13Xp5pJ1TJgrzp04TbeCW6LB1SlGxnij7DQdBa8iOukzUNUCtdseLOp48rfwb_hQsLB9B9BNduwoLEuHz85xjKCXaFEe8CpiyIsNjzuxFsxr7XzDfeVb-EsN2Ev3t6Sp1ZoM_Sj0qdYmeqXbHEodiZfLXg8rYScjvycqmQKGCP6IG0OScyo"
-              imageAlt="Video Production thumbnail"
-            />
-            <CourseProgressCard 
-              category="Growth"
-              categoryColorClass="bg-tertiary-container/20 text-on-tertiary-container"
-              lessons={8}
-              title="Algorithmic Reach Strategies"
-              description="Understand the underlying mechanics of content discovery on modern platforms."
-              progressPercentage={12}
-              imageSrc="https://lh3.googleusercontent.com/aida-public/AB6AXuDbkf7uBU6g2w5s_JrK7I73iaZkMM8sqTXEVXNUzAJpjigug2ATcNxOpuDJjvbulRulcuvSebTEZXzXOvE-CrG0hmxc6_Zu3kHegjwgSqFkP76e3qMYh7MiBDlX_uxzMR0wkE6Ivo7eTqyY_y5IkIQViCQTsbDsDied_1SgDHQ2oclYVV7WqiNDdN8QIT1gEFVN2VZorFkVs1VhmhTJ19djYzhe-DPvwtyNq_Bt6pmosy-vuAS3y-PikoqO7cUJydN0EJy-F9vLnAU"
-              imageAlt="Growth thumbnail"
-            />
+          <button className="inline-flex w-fit items-center gap-2 rounded-full bg-[#1b1c19] px-5 py-3 text-sm font-bold text-white" onClick={() => setIsCreateModalOpen(true)} type="button"><Plus className="h-4 w-4" />New deck</button>
+        </header>
+
+        <section className="mt-8 rounded-[28px] border border-black/5 bg-white p-4 shadow-[0_12px_36px_rgba(27,28,25,0.05)] sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="relative w-full sm:max-w-[440px]">
+              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#9a9692]" />
+              <input className="h-12 w-full rounded-2xl bg-[#f6f3ee] pl-12 pr-4 text-sm font-medium outline-none focus:ring-4 focus:ring-[#9b87f5]/10" onChange={(event) => { setKeyword(event.target.value); setPage(1); }} placeholder="Search in your library" type="search" value={keyword} />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {(["all", "private", "link", "public"] as const).map((item) => (
+                <button className={`rounded-full px-4 py-2 text-xs font-bold capitalize ${visibility === item ? "bg-[#e6deff] text-[#311485]" : "text-[#777474] hover:bg-[#f6f3ee]"}`} key={item} onClick={() => changeVisibility(item)} type="button">{item === "all" ? "All decks" : item}</button>
+              ))}
+            </div>
           </div>
         </section>
-        
-        {/* Flashcards & Saved Documents Bento Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-xl">
-          {/* Flashcard Sets */}
-          <section>
-            <div className="flex items-center justify-between mb-md border-b border-surface-container-highest pb-sm">
-              <h3 className="font-headline-lg text-headline-lg text-on-background">Flashcard Sets</h3>
-              <button 
-                onClick={() => setIsCreateModalOpen(true)}
-                className="text-primary font-label-md text-label-md hover:underline flex items-center gap-1"
-              >
-                <span className="material-symbols-outlined text-[18px]">add</span>
-                Create Deck
-              </button>
+
+        <section className="mt-8">
+          <div className="mb-4 flex items-center justify-between">
+            <div><h2 className="[font-family:var(--font-outfit)] text-2xl font-extrabold">Flashcard decks</h2><p className="mt-1 text-sm text-[#777474]">{meta?.itemCount ?? decks.length} matching decks</p></div>
+          </div>
+
+          {decksQuery.isLoading ? (
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{[0, 1, 2].map((item) => <div className="h-56 animate-pulse rounded-[24px] bg-white" key={item} />)}</div>
+          ) : decksQuery.isError ? (
+            <div className="rounded-[24px] bg-[#fff0f0] p-6 text-sm font-bold text-[#a33a3a]">{decksQuery.error.message}</div>
+          ) : decks.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {decks.map((deck, index) => (
+                <article className="group rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_12px_36px_rgba(27,28,25,0.05)] transition hover:-translate-y-1 hover:border-[#cabeff]" key={deck._id}>
+                  <div className="flex items-start justify-between"><span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${index % 3 === 0 ? "bg-[#e6deff] text-[#614db7]" : index % 3 === 1 ? "bg-[#ffd9e4] text-[#7b3451]" : "bg-[#d7f2e3] text-[#276345]"}`}><Layers3 className="h-6 w-6" /></span><span className="inline-flex items-center gap-1 rounded-full bg-[#f6f3ee] px-3 py-1.5 text-[11px] font-bold capitalize text-[#777474]">{deck.visibility === "private" && <LockKeyhole className="h-3 w-3" />}{deck.visibility}</span></div>
+                  <Link href={`/decks/${deck._id}`}><h3 className="mt-5 [font-family:var(--font-outfit)] text-xl font-extrabold hover:text-[#614db7]">{deck.title}</h3></Link>
+                  <p className="mt-2 min-h-12 line-clamp-2 text-sm leading-6 text-[#777474]">{deck.description || "No description yet."}</p>
+                  <div className="mt-5 flex min-h-6 flex-wrap gap-2">{deck.tags.slice(0, 3).map((tag) => <span className="rounded-full bg-[#f2eefe] px-3 py-1 text-[11px] font-bold text-[#614db7]" key={tag}>{tag}</span>)}</div>
+                  <div className="mt-6 flex items-center justify-between border-t border-black/5 pt-4"><span className="inline-flex items-center gap-2 text-xs font-bold text-[#777474]"><BookOpenText className="h-4 w-4" />{deck.cardCount} cards</span><Link className="inline-flex items-center gap-1 text-sm font-extrabold text-[#614db7]" href={`/decks/${deck._id}`}>Open <ChevronRight className="h-4 w-4" /></Link></div>
+                </article>
+              ))}
             </div>
-            <div className="flex flex-col gap-sm">
-              {isLoading ? (
-                <div className="text-on-surface-variant p-4 text-center">Loading decks...</div>
-              ) : decks.length > 0 ? (
-                decks.map((deck: any) => (
-                  <FlashcardSetItem 
-                    key={deck._id}
-                    iconColorClass="bg-primary/10 text-primary"
-                    title={deck.title}
-                    meta={deck.description || "No description"}
-                  />
-                ))
-              ) : (
-                <div className="text-on-surface-variant p-4 text-center border-2 border-dashed border-outline-variant rounded-xl bg-surface-container-lowest">
-                  No decks found. Create one to get started!
-                </div>
-              )}
-            </div>
-          </section>
-          
-          {/* Saved Documents */}
-          <section>
-            <div className="flex items-center justify-between mb-md border-b border-surface-container-highest pb-sm">
-              <h3 className="font-headline-lg text-headline-lg text-on-background">Saved Documents</h3>
-              <button className="text-primary font-label-md text-label-md hover:underline">View All</button>
-            </div>
-            <div className="flex flex-col gap-sm">
-              <SavedDocumentItem 
-                icon="description"
-                title="Sponsorship Outreach Template"
-                meta="Added 2 days ago"
-              />
-              <SavedDocumentItem 
-                icon="picture_as_pdf"
-                title="Lighting Setup Diagrams.pdf"
-                meta="Added 1 week ago"
-              />
-            </div>
-          </section>
-        </div>
+          ) : (
+            <div className="rounded-[28px] border border-dashed border-[#bbaef0] bg-[#f6f2ff] px-6 py-14 text-center"><span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#e6deff] text-[#614db7]"><Sparkles className="h-7 w-7" /></span><h3 className="mt-5 [font-family:var(--font-outfit)] text-xl font-extrabold">No decks found</h3><p className="mt-2 text-sm text-[#777474]">Change the filters or create a new deck.</p></div>
+          )}
+
+          {meta && meta.pageCount > 1 && (
+            <div className="mt-8 flex items-center justify-center gap-3"><button className="rounded-full border border-black/10 p-3 disabled:opacity-40" disabled={!meta.hasPreviousPage} onClick={() => setPage((value) => value - 1)} type="button"><ChevronLeft className="h-4 w-4" /></button><span className="text-sm font-bold text-[#777474]">Page {meta.page} of {meta.pageCount}</span><button className="rounded-full border border-black/10 p-3 disabled:opacity-40" disabled={!meta.hasNextPage} onClick={() => setPage((value) => value + 1)} type="button"><ChevronRight className="h-4 w-4" /></button></div>
+          )}
+        </section>
       </div>
-      
-      {/* Footer */}
-      <footer className="w-full py-md px-lg flex flex-col md:flex-row justify-between items-center max-w-max_content_width mx-auto bg-surface-container-low border-t border-outline-variant mt-auto">
-        <div className="font-headline-md text-headline-md text-primary mb-sm md:mb-0">
-          Creator Academy
-        </div>
-        <div className="font-label-sm text-label-sm text-on-surface-variant mb-sm md:mb-0">
-          © 2024 Creator Academy. All rights reserved.
-        </div>
-        <div className="flex gap-md font-label-sm text-label-sm">
-          <a className="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Support</a>
-          <a className="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Privacy Policy</a>
-          <a className="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Terms of Service</a>
-        </div>
-      </footer>
       <CreateDeckModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
     </div>
   );
