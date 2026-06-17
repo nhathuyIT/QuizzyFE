@@ -1,175 +1,109 @@
-// ─── Axios Configuration ─────────────────────────────────────────────────────
-// Chịu trách nhiệm:
-// 1. Tự động convert camelCase (FE) ↔ snake_case (BE) qua interceptors.
-// 2. Tự động Refresh Token khi nhận lỗi 401 Unauthorized có mã hết hạn token.
-// 3. Gửi Cookie HttpOnly qua withCredentials: true.
+import axios, { type AxiosError } from "axios";
+import { HttpError, type ApiErrorItem } from "./http.type";
 
-import axios from "axios";
-import { HttpError } from "./http.type";
-import { isPlainObject, mapKeys, mapValues, snakeCase, camelCase } from "lodash";
+const DEFAULT_API_URL = "http://localhost:3001";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
-const ACCESS_TOKEN_EXPIRED = "ACCESS_TOKEN_EXPIRED";
+export const API_VERSION_PREFIX = "/v1";
 
-// ── Helpers: case conversion ─────────────────────────────────────────────────
-
-const shouldTransform = (obj: unknown): boolean => {
-  if (obj === null || typeof obj !== "object") return false;
-  if (!isPlainObject(obj)) return false;
-  return !(
-    obj instanceof Date ||
-    obj instanceof File ||
-    obj instanceof Blob ||
-    obj instanceof FormData ||
-    obj instanceof URLSearchParams
-  );
+type NestErrorResponse = {
+  message?: string | string[];
+  error?: string;
+  errorCode?: string;
+  statusCode?: number;
+  errors?: ApiErrorItem[];
 };
 
-const toCamel = <T>(obj: T): T => {
-  if (Array.isArray(obj))
-    return obj.map((item) => toCamel(item)) as unknown as T;
-  if (shouldTransform(obj)) {
-    return mapKeys(
-      mapValues(obj as Record<string, unknown>, (v) => toCamel(v)),
-      (_, k) => camelCase(k)
-    ) as unknown as T;
+export const normalizeApiBaseUrl = (url: string) =>
+  url.trim().replace(/\/+$/, "").replace(/\/v1$/, "");
+
+export const API_BASE_URL = normalizeApiBaseUrl(
+  process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL,
+);
+
+export const withApiVersion = (path: string) => {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+
+  if (
+    normalizedPath === API_VERSION_PREFIX ||
+    normalizedPath.startsWith(`${API_VERSION_PREFIX}/`)
+  ) {
+    return normalizedPath;
   }
-  return obj;
+
+  return `${API_VERSION_PREFIX}${normalizedPath}`;
 };
 
-const toSnake = <T>(obj: T): T => {
-  if (Array.isArray(obj))
-    return obj.map((item) => toSnake(item)) as unknown as T;
-  if (shouldTransform(obj)) {
-    return mapKeys(
-      mapValues(obj as Record<string, unknown>, (v) => toSnake(v)),
-      (_, k) => snakeCase(k)
-    ) as unknown as T;
+const getBrowserAccessToken = () => {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem("accessToken");
+};
+
+const handleUnauthorized = () => {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem("accessToken");
+  window.dispatchEvent(new Event("quizzy:unauthorized"));
+};
+
+const extractMessage = (payload: NestErrorResponse | undefined, fallback: string) => {
+  const message = payload?.message;
+
+  if (Array.isArray(message)) {
+    const joinedMessage = message.filter(Boolean).join(". ");
+    return joinedMessage || fallback;
   }
-  return obj;
+
+  return typeof message === "string" && message.trim() ? message : fallback;
 };
 
-// ── Axios Instance ───────────────────────────────────────────────────────────
+const extractErrors = (payload: NestErrorResponse | undefined) => {
+  if (Array.isArray(payload?.errors)) return payload.errors;
+  if (!Array.isArray(payload?.message)) return undefined;
+
+  return payload.message.map((message) => ({ message }));
+};
 
 export const axiosClient = axios.create({
-  baseURL: API_URL,
-  withCredentials: true, // Bắt buộc để gửi/nhận Cookie HttpOnly
+  baseURL: API_BASE_URL,
   timeout: 30000,
+  headers: {
+    Accept: "application/json",
+  },
 });
 
-// ── Token Refresh Queue ──────────────────────────────────────────────────────
-
-let isRefreshing = false;
-let refreshQueue: { resolve: () => void; reject: (err: unknown) => void }[] =
-  [];
-
-const flushQueue = (error: unknown = null) => {
-  refreshQueue.forEach(({ resolve, reject }) =>
-    error ? reject(error) : resolve()
-  );
-  refreshQueue = [];
-};
-
-// ── Request Interceptor (FE → BE: camelCase → snake_case) ────────────────────
-
 axiosClient.interceptors.request.use((config) => {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+  const token = getBrowserAccessToken();
 
   if (token && !config.headers.Authorization) {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
-  if (config.data && !(config.data instanceof FormData)) {
-    config.data = toSnake(config.data);
-  }
-  if (config.params) {
-    config.params = toSnake(config.params);
-  }
   return config;
 });
 
-// ── Response Interceptor (BE → FE: snake_case → camelCase & Auto Refresh) ────
-
 axiosClient.interceptors.response.use(
-  (response) => {
-    if (response.data) response.data = toCamel(response.data);
-    return response;
-  },
-  async (error) => {
-    const originalRequest = error.config;
-    if (!originalRequest || axios.isCancel(error)) return Promise.reject(error);
+  (response) => response,
+  (error: AxiosError<NestErrorResponse>) => {
+    if (axios.isCancel(error)) return Promise.reject(error);
 
-    // Lỗi mạng
     if (!error.response) {
       throw new HttpError({
         status: 0,
-        message:
-          "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng.",
+        message: "Khong the ket noi den may chu. Vui long kiem tra ket noi mang.",
         code: "ERR_NETWORK",
       });
     }
 
-    // Convert response data sang camelCase
-    if (error.response.data) {
-      error.response.data = toCamel(error.response.data);
+    const { data, status, statusText } = error.response;
+
+    if (status === 401) {
+      handleUnauthorized();
     }
 
-    const status = error.response.status;
-    const responseData = error.response.data;
-    const errorCode =
-      responseData?.errorCode ?? responseData?.message ?? null;
-
-    const isTokenExpired =
-      typeof errorCode === "string" &&
-      errorCode.endsWith(ACCESS_TOKEN_EXPIRED);
-
-    // Xử lý 401 Unauthorized & Token Expired
-    if (status === 401 && isTokenExpired && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      if (isRefreshing) {
-        return new Promise<void>((resolve, reject) => {
-          refreshQueue.push({ resolve, reject });
-        }).then(() => axiosClient(originalRequest));
-      }
-
-      isRefreshing = true;
-
-      try {
-        // Dùng fetch native để tránh bị lặp vô hạn trong axios interceptor
-        const refreshRes = await fetch(`${API_URL}/v1/auth/refresh-token`, {
-          method: "GET",
-          credentials: "include",
-          cache: "no-store",
-        });
-
-        if (!refreshRes.ok) throw new Error("Refresh token failed");
-
-        flushQueue();
-        return axiosClient(originalRequest);
-      } catch (refreshErr) {
-        flushQueue(refreshErr);
-        // Logout user và đẩy về trang login
-        if (typeof window !== "undefined") {
-          window.location.replace("/login");
-        }
-        throw new HttpError({
-          status: 401,
-          message: "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.",
-          code: "REFRESH_TOKEN_FAILED",
-        });
-      } finally {
-        isRefreshing = false;
-      }
-    }
-
-    // Lỗi khác
     throw new HttpError({
       status,
-      message: responseData?.message ?? "Đã xảy ra lỗi.",
-      code: errorCode,
-      errors: responseData?.errors,
+      message: extractMessage(data, statusText || "Request failed"),
+      code: data?.errorCode ?? data?.error ?? String(data?.statusCode ?? status),
+      errors: extractErrors(data),
     });
-  }
+  },
 );

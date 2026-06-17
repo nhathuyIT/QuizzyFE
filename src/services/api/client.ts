@@ -1,5 +1,4 @@
-const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
-const API_BASE_URL = `${configuredApiUrl.replace(/\/$/, "").replace(/\/v1$/, "")}/v1`;
+import { axiosClient, withApiVersion } from "@/api/axios.config";
 
 export interface PageMeta {
   page: number;
@@ -27,49 +26,48 @@ export class ApiError extends Error {
   }
 }
 
-export type QueryParams = Record<string, string | number | boolean | undefined>;
+export type QueryParams = Record<
+  string,
+  string | number | boolean | undefined | null
+>;
 
-function buildUrl(endpoint: string, params?: QueryParams) {
-  const url = new URL(`${API_BASE_URL}${endpoint}`);
-  Object.entries(params ?? {}).forEach(([key, value]) => {
-    if (value !== undefined && value !== "") url.searchParams.set(key, String(value));
-  });
-  return url.toString();
-}
+type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
-function extractErrorMessage(payload: unknown, fallback: string) {
-  if (!payload || typeof payload !== "object" || !("message" in payload)) return fallback;
-  const message = (payload as { message?: unknown }).message;
-  return Array.isArray(message) ? message.join(". ") : typeof message === "string" ? message : fallback;
-}
+const cleanParams = (params?: QueryParams) => {
+  if (!params) return undefined;
 
-async function request<T>(method: string, endpoint: string, body?: unknown, params?: QueryParams): Promise<T> {
-  const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
-  const headers = new Headers();
-  if (body !== undefined) headers.set("Content-Type", "application/json");
-  if (token) headers.set("Authorization", `Bearer ${token}`);
+  return Object.fromEntries(
+    Object.entries(params).filter(([, value]) => {
+      return value !== "" && value !== undefined && value !== null;
+    }),
+  );
+};
 
-  const response = await fetch(buildUrl(endpoint, params), {
+async function request<T>(
+  method: HttpMethod,
+  endpoint: string,
+  body?: unknown,
+  params?: QueryParams,
+): Promise<T> {
+  const response = await axiosClient.request<T>({
     method,
-    headers,
-    body: body === undefined ? undefined : JSON.stringify(body),
+    url: withApiVersion(endpoint),
+    data: body,
+    params: cleanParams(params),
   });
-  const payload = await response.json().catch(() => null);
 
-  if (!response.ok) {
-    if (response.status === 401 && typeof window !== "undefined") {
-      localStorage.removeItem("accessToken");
-      window.dispatchEvent(new Event("quizzy:unauthorized"));
-    }
-    throw new ApiError(extractErrorMessage(payload, response.statusText || "Request failed"), response.status, payload);
-  }
-
-  return payload as T;
+  return response.data;
 }
 
 export const apiClient = {
-  get: <T>(endpoint: string, params?: QueryParams) => request<T>("GET", endpoint, undefined, params),
-  post: <T>(endpoint: string, body: unknown) => request<T>("POST", endpoint, body),
-  put: <T>(endpoint: string, body: unknown) => request<T>("PUT", endpoint, body),
-  patch: <T>(endpoint: string, body?: unknown) => request<T>("PATCH", endpoint, body),
+  get: <T>(endpoint: string, params?: QueryParams) =>
+    request<T>("GET", endpoint, undefined, params),
+  post: <T>(endpoint: string, body: unknown) =>
+    request<T>("POST", endpoint, body),
+  put: <T>(endpoint: string, body: unknown) =>
+    request<T>("PUT", endpoint, body),
+  patch: <T>(endpoint: string, body?: unknown) =>
+    request<T>("PATCH", endpoint, body),
+  delete: <T>(endpoint: string, params?: QueryParams) =>
+    request<T>("DELETE", endpoint, undefined, params),
 };

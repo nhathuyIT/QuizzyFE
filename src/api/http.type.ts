@@ -1,6 +1,3 @@
-// ─── Core HTTP Types ─────────────────────────────────────────────────────────
-// Chuẩn hóa interface cho Request, Response và lớp quản lý lỗi HttpError.
-
 export interface HttpRequestConfig<
   TData = unknown,
   TParams extends Record<string, unknown> = Record<string, unknown>,
@@ -11,20 +8,25 @@ export interface HttpRequestConfig<
   headers?: Record<string, string>;
 }
 
+export interface PageMeta {
+  page: number;
+  take: number;
+  itemCount: number;
+  pageCount: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+}
+
 export interface ApiSuccessResponse<T> {
   success: true;
   data: T | null;
+  meta?: PageMeta;
 }
 
 export interface ApiPaginatedResponse<T> {
   success: true;
   data: T[];
-  pageInfo: {
-    pageNum: number;
-    pageSize: number;
-    totalItems: number;
-    totalPages: number;
-  };
+  meta: PageMeta;
 }
 
 export interface ApiErrorItem {
