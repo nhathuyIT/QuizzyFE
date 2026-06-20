@@ -1,27 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   BookOpenText,
   BrainCircuit,
-  CircleHelp,
   History,
   FolderPlus,
   Home,
   Library,
-  LogOut,
-  Settings,
   Sparkles,
   UsersRound,
-  Rows3,
   X,
 } from "lucide-react";
 
 const mainLinks = [
   { href: "/home", icon: Home, label: "Home" },
-  { href: "/my-library", icon: Library, label: "My Library" },
-  { href: "/cards", icon: Rows3, label: "All cards" },
+  { href: "/my-library", icon: Library, label: "My decks" },
   { href: "/flashcards", icon: BookOpenText, label: "Create cards" },
   { href: "/study-history", icon: History, label: "Study history" },
   { href: "/ai-tutor", icon: Sparkles, label: "AI Tutor" },
@@ -35,12 +30,6 @@ interface SideNavBarProps {
 
 export function SideNavBar({ isOpen = false, onClose }: SideNavBarProps) {
   const pathname = usePathname();
-  const router = useRouter();
-
-  function logout() {
-    localStorage.removeItem("accessToken");
-    router.push("/login");
-  }
 
   return (
     <>
@@ -118,30 +107,6 @@ export function SideNavBar({ isOpen = false, onClose }: SideNavBarProps) {
           Create a new deck
         </Link>
 
-        <div className="mt-auto space-y-1.5 pt-6">
-          <Link
-            className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#777474] hover:bg-[#f6f3ee] hover:text-[#1b1c19]"
-            href="#"
-          >
-            <Settings className="h-5 w-5" />
-            Settings
-          </Link>
-          <Link
-            className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#777474] hover:bg-[#f6f3ee] hover:text-[#1b1c19]"
-            href="#"
-          >
-            <CircleHelp className="h-5 w-5" />
-            Help center
-          </Link>
-          <button
-            className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-[#777474] hover:bg-[#fff0f0] hover:text-[#a33a3a]"
-            onClick={logout}
-            type="button"
-          >
-            <LogOut className="h-5 w-5" />
-            Log out
-          </button>
-        </div>
       </aside>
     </>
   );

@@ -9,7 +9,7 @@ interface DecksResponse { data?: DeckOption[] }
 interface SettingsPanelProps { selectedDeckId: string; onDeckChange: (id: string) => void }
 
 export function SettingsPanel({ selectedDeckId, onDeckChange }: SettingsPanelProps) {
-  const decksQuery = useQuery({ queryKey: ["decks"], queryFn: () => decksAPI.getAll() });
+  const decksQuery = useQuery({ queryKey: ["decks", "my", "card-settings"], queryFn: () => decksAPI.getMy({ take: 100 }) });
   const decks = (decksQuery.data as DecksResponse | undefined)?.data ?? [];
 
   return (

@@ -29,4 +29,6 @@ export const authAPI = {
   login: (credentials: LoginInput) => apiClient.post<ApiResponse<AuthSession>>("/auth/login", credentials),
   register: (data: RegisterInput) => apiClient.post<ApiResponse<AuthUser>>("/auth/register", data),
   getMe: () => apiClient.get<ApiResponse<AuthUser>>("/auth/me"),
+  logout: () =>
+    apiClient.post<ApiResponse<{ loggedOut: boolean }>>("/auth/logout", {}),
 };

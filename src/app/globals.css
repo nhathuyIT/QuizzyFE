@@ -1,7 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
+  --font-quizlet: "Be Vietnam Pro", Arial, Helvetica, sans-serif;
+  --font-inter: var(--font-quizlet);
+  --font-space-grotesk: var(--font-quizlet);
+  --font-space-mono: var(--font-quizlet);
+  --font-hanken-grotesk: var(--font-quizlet);
+  --font-jetbrains-mono: var(--font-quizlet);
+  --font-outfit: var(--font-quizlet);
+
   --color-on-secondary-fixed: #1b1735;
   --color-tertiary-container: #006d9c;
   --color-on-secondary-container: #605b7d;
@@ -139,6 +148,16 @@
 }
 
 @layer base {
+  :root {
+    --font-quizlet: "Be Vietnam Pro", Arial, Helvetica, sans-serif;
+    --font-inter: var(--font-quizlet);
+    --font-space-grotesk: var(--font-quizlet);
+    --font-space-mono: var(--font-quizlet);
+    --font-hanken-grotesk: var(--font-quizlet);
+    --font-jetbrains-mono: var(--font-quizlet);
+    --font-outfit: var(--font-quizlet);
+  }
+
   *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -149,6 +168,67 @@
     background-color: var(--color-background);
     background-image: radial-gradient(#c8c2e9 1.5px, transparent 1.5px);
     background-size: 24px 24px;
+    font-family: var(--font-quizlet);
+  }
+
+  body,
+  button,
+  input,
+  textarea,
+  select {
+    font-family: var(--font-quizlet);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body :where(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p,
+    span,
+    a,
+    button,
+    label,
+    input,
+    textarea,
+    select,
+    option,
+    li,
+    dt,
+    dd,
+    th,
+    td,
+    summary
+  ) {
+    font-family: var(--font-quizlet) !important;
+  }
+
+  body :where(code, pre, kbd, samp, .font-mono) {
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace !important;
+  }
+
+  body .material-symbols-outlined {
+    font-family: "Material Symbols Outlined" !important;
+  }
+}
+
+@layer utilities {
+  .quizlet-font {
+    font-family: var(--font-quizlet);
+    letter-spacing: 0;
+  }
+
+  .quizlet-card-title {
+    font-family: var(--font-quizlet);
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 2.15;
   }
 }
 

@@ -18,7 +18,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
 
         <div className="min-h-screen md:pl-[272px]">
           <TopNavBar onMenuClick={() => setIsMenuOpen(true)} />
-          <main className="h-[calc(100vh-76px)] overflow-hidden">{children}</main>
+          <main className="h-screen overflow-hidden pt-[76px]">{children}</main>
         </div>
       </div>
     </AuthGuard>

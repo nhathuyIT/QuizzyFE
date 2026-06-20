@@ -16,6 +16,7 @@ import {
   UsersRound,
   Zap,
 } from "lucide-react";
+import { GlobalHeader } from "@/components/navigation/GlobalHeader";
 
 type Feature = {
   description: string;
@@ -155,44 +156,7 @@ function SectionHeading({
 export default function HomePage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#fbf9f4] text-[#1b1c19]">
-      <nav className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-[#fbf9f4]/90 px-4 py-4 backdrop-blur-xl sm:px-6">
-        <div className="mx-auto flex max-w-[1180px] items-center justify-between gap-4">
-          <Link className="flex items-center gap-3" href="/">
-            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#1b1c19] text-white">
-              <BrainCircuit aria-hidden="true" className="h-6 w-6" />
-            </span>
-            <span className="[font-family:var(--font-outfit)] text-xl font-extrabold tracking-normal text-[#1b1c19]">
-              Quizzy AI
-            </span>
-          </Link>
-
-          <div className="hidden items-center gap-7 text-sm font-semibold text-[#5f5e5e] lg:flex">
-            <a className="transition hover:text-[#614db7]" href="#features">
-              Features
-            </a>
-            <a className="transition hover:text-[#614db7]" href="#how-it-works">
-              How it works
-            </a>
-            <a className="transition hover:text-[#614db7]" href="#why-quizzy">
-              Why Quizzy
-            </a>
-            <a className="transition hover:text-[#614db7]" href="#reviews">
-              Reviews
-            </a>
-            <a className="transition hover:text-[#614db7]" href="#faq">
-              FAQs
-            </a>
-          </div>
-
-          <Link
-            className="inline-flex items-center gap-2 rounded-full bg-[#1b1c19] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#30312e]"
-            href="/login"
-          >
-            Start learning
-            <ArrowRight aria-hidden="true" className="h-4 w-4" />
-          </Link>
-        </div>
-      </nav>
+      <GlobalHeader />
 
       <section className="relative px-4 pb-20 pt-32 sm:px-6 sm:pb-24 sm:pt-40">
         <div className="pointer-events-none absolute left-[5%] top-44 h-24 w-40 rotate-[-8deg] rounded-2xl bg-[#e6deff]/70" />

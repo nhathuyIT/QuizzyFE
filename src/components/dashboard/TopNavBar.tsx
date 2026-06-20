@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Bell, Menu, Plus, Search } from "lucide-react";
+import { UserMenu } from "@/components/auth/UserMenu";
 import { authAPI } from "@/services/api";
 
 interface TopNavBarProps {
@@ -13,17 +14,11 @@ interface TopNavBarProps {
 
 export function TopNavBar({
   onMenuClick,
-  searchPlaceholder = "Search your decks and cards",
+  searchPlaceholder = "Search your decks",
 }: TopNavBarProps) {
   const router = useRouter();
   const userQuery = useQuery({ queryKey: ["auth", "me"], queryFn: () => authAPI.getMe(), retry: false });
   const user = userQuery.data?.data;
-  const initials = user?.name
-    ?.split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("") || "Q";
 
   function handleSearch(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -33,7 +28,7 @@ export function TopNavBar({
   }
 
   return (
-    <header className="sticky top-0 z-30 flex h-[76px] items-center gap-3 border-b border-black/5 bg-[#fbf9f4]/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+    <header className="fixed inset-x-0 top-0 z-30 flex h-[76px] items-center gap-3 border-b border-black/5 bg-[#fbf9f4]/90 px-4 backdrop-blur-xl md:left-[272px] sm:px-6 lg:px-8">
       <button
         aria-label="Open navigation"
         className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-black/5 bg-white text-[#1b1c19] shadow-sm md:hidden"
@@ -72,13 +67,11 @@ export function TopNavBar({
         >
           <Bell className="h-5 w-5" />
         </button>
-        <button
-          aria-label="Open profile"
-          className="flex h-11 w-11 items-center justify-center rounded-full bg-[#f5d547] text-sm font-extrabold text-[#493600] ring-4 ring-white"
-          type="button"
-        >
-          {initials}
-        </button>
+        {user ? (
+          <UserMenu compact user={user} />
+        ) : (
+          <span className="h-11 w-14 animate-pulse rounded-full bg-[#e8e3dc]" />
+        )}
       </div>
     </header>
   );

@@ -85,6 +85,7 @@ export function AuthPage({ initialMode = "login" }: { initialMode?: AuthMode }) 
     onSuccess: (response) => {
       if (response?.data?.accessToken) {
         localStorage.setItem("accessToken", response.data.accessToken);
+        window.dispatchEvent(new Event("quizzy:auth-changed"));
         setSuccessMode("login");
       } else {
         setErrorMsg("Invalid response from server.");

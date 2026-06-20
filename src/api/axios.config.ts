@@ -41,6 +41,7 @@ const getBrowserAccessToken = () => {
 const handleUnauthorized = () => {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem("accessToken");
+  window.dispatchEvent(new Event("quizzy:auth-changed"));
   window.dispatchEvent(new Event("quizzy:unauthorized"));
 };
 

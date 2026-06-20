@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Layers3, Loader2, X } from "lucide-react";
 import { decksAPI } from "@/services/api";
@@ -11,6 +12,7 @@ interface CreateDeckModalProps {
 }
 
 export function CreateDeckModal({ isOpen, onClose }: CreateDeckModalProps) {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -18,12 +20,13 @@ export function CreateDeckModal({ isOpen, onClose }: CreateDeckModalProps) {
 
   const createMutation = useMutation({
     mutationFn: () => decksAPI.create({ title: title.trim(), description: description.trim(), visibility: "private", tags: [] }),
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["decks"] });
       setTitle("");
       setDescription("");
       setErrorMsg("");
       onClose();
+      router.push(`/decks/${response.data._id}`);
     },
     onError: (error: unknown) => setErrorMsg(error instanceof Error ? error.message : "Failed to create deck."),
   });
