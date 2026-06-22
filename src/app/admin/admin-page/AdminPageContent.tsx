@@ -15,8 +15,8 @@ import {
   UsersRound,
 } from "lucide-react";
 import type { AuthUser } from "@/services/api";
-import { MonitoringPanel } from "./dashboard/MonitoringPanel";
-import { UsersPanel } from "./user/UsersPanel";
+import { MonitoringPanel } from "./dashboard/components/MonitoringPanel";
+import { UsersPanel } from "./user/user-crud";
 
 const sidebarItems = [
   { id: "dashboard", title: "Home", icon: Home },

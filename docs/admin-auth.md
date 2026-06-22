@@ -30,8 +30,15 @@
 - Admin page UI shell lives in `src/app/admin/admin-page/AdminPageContent.tsx`.
   - `AdminSidebar` is kept inside `AdminPageContent.tsx`.
   - `AdminPageHeader` is kept inside `AdminPageContent.tsx`.
-  - Sidebar `Users` switches to `src/app/admin/admin-page/user/UsersPanel.tsx`.
-- Dashboard monitoring components live under `src/app/admin/admin-page/dashboard`.
+- Sidebar `Users` switches to `src/app/admin/admin-page/user/user-crud/index.tsx`.
+- Users module follows the CRUD template shape inside `src/app/admin/admin-page/user/user-crud`:
+  - `index.tsx` owns queries, mutations, and selected-user state.
+  - `columns/user.columns.tsx` defines table columns and row cell renderers.
+  - `components/UserTable.tsx` renders the users table from the column config.
+  - `components/UserDetailModal.tsx` renders the detail popup and action controls.
+  - `user-form.config.ts` holds role options, confirm action config, and local user helpers.
+- Suspend user action requires an admin-entered reason in the confirmation box before calling `adminAPI.suspendUser(userId, reason)`.
+- Dashboard monitoring components live under `src/app/admin/admin-page/dashboard/components`.
   - `MonitoringPanel.tsx` handles the Summary/Activity toggle and API queries.
   - `SummaryPanel.tsx` renders `adminAPI.getDashboardSummary()` data with total bars and progress rings.
   - `ActivityPanel.tsx` renders `adminAPI.getActivityAnalytics("day")` data with readable daily cards, a selected-day line chart that appears only after choosing a period, and a detail table. Do not add bar charts in Activity cards while the selected-day line chart is present.
