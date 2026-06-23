@@ -1,19 +1,13 @@
 import { Eye } from "lucide-react";
 import type { AdminUser } from "@/services/api";
+import type { CrudColumn } from "../../../crud/components";
 import { readUserStatus } from "../user-form.config";
 
 type UserColumnContext = {
   onOpenUser: (user: AdminUser) => void;
-  selectedUserId: string | null;
 };
 
-type UserColumn = {
-  header: string;
-  key: string;
-  render: (user: AdminUser, context: UserColumnContext) => React.ReactNode;
-};
-
-export const userTableColumns: UserColumn[] = [
+export const userTableColumns: CrudColumn<AdminUser, UserColumnContext>[] = [
   {
     header: "Name",
     key: "name",

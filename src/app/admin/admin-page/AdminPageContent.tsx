@@ -4,13 +4,13 @@ import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   BarChart3,
+  BookOpen,
   FileText,
   Headphones,
   HelpCircle,
   Home,
   LogOut,
   Search,
-  Settings,
   ShieldCheck,
   UsersRound,
 } from "lucide-react";
@@ -21,9 +21,9 @@ import { UsersPanel } from "./user/user-crud";
 const sidebarItems = [
   { id: "dashboard", title: "Home", icon: Home },
   { id: "users", title: "Users", icon: UsersRound },
-  { id: "content", title: "Content", icon: FileText },
-  { id: "reports", title: "Reports", icon: BarChart3 },
-  { id: "settings", title: "Settings", icon: Settings },
+  { id: "deck", title: "Deck", icon: BookOpen },
+  { id: "study-monitoring", title: "Study Monitoring", icon: BarChart3 },
+  { id: "audit-log", title: "Audit Log", icon: FileText },
 ] as const;
 
 type AdminSection = (typeof sidebarItems)[number]["id"];
@@ -177,7 +177,7 @@ function AdminPageHeader() {
           Welcome back.
         </h1>
         <p className="mt-3 max-w-[680px] text-sm leading-6 text-[#5f5e5e] sm:text-base">
-          Manage users, content, reports, and operational settings from the Admin
+          Manage users, decks, study monitoring, and audit logs from the Admin
           Portal.
         </p>
       </header>

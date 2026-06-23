@@ -3,12 +3,15 @@ import type { AdminUser, AdminUserRole } from "@/services/api";
 export type ConfirmAction = {
   description: string;
   label: string;
+  reasonLabel?: string;
+  reasonPlaceholder?: string;
+  requiresReason?: boolean;
   title: string;
   tone: "default" | "danger";
   type: "activate" | "delete" | "restore" | "revoke" | "suspend";
 };
 
-export const userRoleOptions: AdminUserRole[] = ["student", "teacher", "admin"];
+export const userRoleOptions: AdminUserRole[] = ["student", "admin"];
 
 export const userConfirmActions = {
   activate: {
@@ -42,6 +45,9 @@ export const userConfirmActions = {
   suspend: {
     description: "This blocks the user from continuing to use the app.",
     label: "Suspend user",
+    reasonLabel: "Suspend reason",
+    reasonPlaceholder: "Enter the reason for suspending this user",
+    requiresReason: true,
     title: "Suspend this user?",
     tone: "danger",
     type: "suspend",

@@ -37,6 +37,10 @@
   - `components/UserTable.tsx` renders the users table from the column config.
   - `components/UserDetailModal.tsx` renders the detail popup and action controls.
   - `user-form.config.ts` holds role options, confirm action config, and local user helpers.
+- Admin CRUD is grouped in `src/app/admin/admin-page/crud`; shared components live in `crud/components`, and the copyable starter module lives in `crud/template`.
+- CRUD usage notes live in `docs/admin-crud-template.md`.
+- Dashboard template usage notes live in `docs/admin-dashboard-template.md`.
+- Admin login/logout template usage notes live in `docs/admin-login-logout-template.md`.
 - Suspend user action requires an admin-entered reason in the confirmation box before calling `adminAPI.suspendUser(userId, reason)`.
 - Dashboard monitoring components live under `src/app/admin/admin-page/dashboard/components`.
   - `MonitoringPanel.tsx` handles the Summary/Activity toggle and API queries.
@@ -72,6 +76,9 @@
 - Admin sidebar state is stored in the URL query:
   - `/admin` opens the dashboard/home section.
   - `/admin?section=users` opens the users section.
+  - `/admin?section=deck` opens the deck section placeholder.
+  - `/admin?section=study-monitoring` opens the study monitoring section placeholder.
+  - `/admin?section=audit-log` opens the audit log section placeholder.
   - Refreshing a section must keep that section active instead of returning to the dashboard.
 - Only the active admin section should mount and call its APIs. For example, refreshing `/admin?section=users` must call user APIs only, not dashboard summary/activity APIs.
 - The admin page currently connects these two admin monitoring APIs from `@/services/api`:

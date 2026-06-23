@@ -2,12 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2, RefreshCw } from "lucide-react";
 import {
   adminAPI,
   type AdminUser,
   type AdminUserRole,
 } from "@/services/api";
+import { CrudPanel } from "../../crud/components";
 import { UserTable } from "./components/UserTable";
 import { UserDetailModal } from "./components/UserDetailModal";
 import {
@@ -172,42 +172,20 @@ export function UsersPanel() {
   }
 
   return (
-    <section className="mt-10 rounded-[32px] border border-black/5 bg-white p-5 shadow-[0_18px_60px_rgba(49,20,133,0.08)] sm:p-6">
-      <div className="flex flex-col gap-4 border-b border-black/5 pb-5 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <h2 className="[font-family:var(--font-outfit)] text-2xl font-extrabold text-[#1b1c19]">
-            Users
-          </h2>
-          <p className="mt-1 text-sm leading-6 text-[#5f5e5e]">
-            List, inspect, and manage admin user actions.
-          </p>
-        </div>
-
-        <button
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#f6f3ee] px-5 text-sm font-extrabold text-[#5f5e5e] transition hover:text-[#1b1c19] disabled:opacity-60"
-          disabled={usersQuery.isFetching}
-          onClick={() => usersQuery.refetch()}
-          type="button"
-        >
-          {usersQuery.isFetching ? (
-            <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
-          ) : (
-            <RefreshCw aria-hidden="true" className="h-4 w-4" />
-          )}
-          Refresh
-        </button>
-      </div>
-
-      <div className="pt-6">
-        <UserTable
-          error={usersQuery.error}
-          isError={usersQuery.isError}
-          isLoading={usersQuery.isPending}
-          onOpenUser={handleOpenUser}
-          selectedUserId={selectedUserId}
-          users={users}
-        />
-      </div>
+    <CrudPanel
+      description="List, inspect, and manage admin user actions."
+      isRefreshing={usersQuery.isFetching}
+      onRefresh={() => usersQuery.refetch()}
+      title="Users"
+    >
+      <UserTable
+        error={usersQuery.error}
+        isError={usersQuery.isError}
+        isLoading={usersQuery.isPending}
+        onOpenUser={handleOpenUser}
+        selectedUserId={selectedUserId}
+        users={users}
+      />
 
       {selectedUserId ? (
         <UserDetailModal
@@ -239,6 +217,6 @@ export function UsersPanel() {
           user={selectedUserDetail}
         />
       ) : null}
-    </section>
+    </CrudPanel>
   );
 }
