@@ -17,6 +17,7 @@ import {
 import type { AuthUser } from "@/services/api";
 import { MonitoringPanel } from "./dashboard/components/MonitoringPanel";
 import { UsersPanel } from "./user/user-crud";
+import { ReportsPanel } from "./reports";
 
 const sidebarItems = [
   { id: "dashboard", title: "Home", icon: Home },
@@ -65,7 +66,10 @@ export function AdminPageContent({
             <AdminPageHeader />
             {activeSection === "dashboard" ? <MonitoringPanel /> : null}
             {activeSection === "users" ? <UsersPanel /> : null}
-            {activeSection !== "dashboard" && activeSection !== "users" ? (
+            {activeSection === "reports" ? <ReportsPanel /> : null}
+            {activeSection !== "dashboard" &&
+            activeSection !== "users" &&
+            activeSection !== "reports" ? (
               <AdminComingSoonPanel section={activeSection} />
             ) : null}
           </div>

@@ -79,6 +79,78 @@ export interface AdminUpdateUserStatusInput {
   reason?: string;
 }
 
+export interface AdminStudySummary {
+  from: string;
+  to: string;
+  mode: string;
+  sessions: number;
+  activeUsers: number;
+  reviews: number;
+  accuracy: number;
+  completionRate: number;
+  averageStudyTimeSeconds: number;
+}
+
+export interface AdminStudySession {
+  _id?: string;
+  id?: string;
+  userId: string;
+  deckId: string;
+  mode: string;
+  startedAt: string;
+  finishedAt: string | null;
+  user?: {
+    _id?: string;
+    email: string;
+    name: string;
+  };
+  deck?: {
+    _id?: string;
+    title: string;
+  };
+  reviewCount?: number;
+  correctReviewCount?: number;
+}
+
+export interface AdminStudySessionSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
+  userId?: string;
+  deckId?: string;
+  mode?: string;
+  status?: "finished" | "unfinished";
+  from?: string;
+  to?: string;
+}
+
+export interface AdminStudySummarySearchParams extends QueryParams {
+  from?: string;
+  to?: string;
+  mode?: string;
+}
+
+export interface AdminCardReview {
+  _id?: string;
+  id?: string;
+  cardId: string;
+  isCorrect: boolean;
+  rating: string;
+  responseTimeMs: number;
+  answer?: string;
+  createdAt: string;
+  card?: {
+    _id?: string;
+    front: string;
+    back: string;
+    type?: string;
+  };
+}
+
+export interface AdminStudySessionReviewSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
+}
+
 export const adminAPI = {
   getDashboardSummary: () =>
     apiClient.get<ApiResponse<AdminDashboardSummary>>("/admin/dashboard/summary"),
@@ -113,4 +185,12 @@ export const adminAPI = {
     apiClient.delete<ApiResponse<AdminUser>>(`/admin/users/${userId}`),
   restoreUser: (userId: string) =>
     apiClient.post<ApiResponse<AdminUser>>(`/admin/users/${userId}/restore`, {}),
+  getStudySummary: (params: AdminStudySummarySearchParams = {}) =>
+    apiClient.get<ApiResponse<AdminStudySummary>>("/admin/study/summary", { ...params }),
+  getStudySessions: (params: AdminStudySessionSearchParams = {}) =>
+    apiClient.get<ApiResponse<AdminStudySession[]>>("/admin/study-sessions", { ...params }),
+  getStudySession: (sessionId: string) =>
+    apiClient.get<ApiResponse<AdminStudySession>>(`/admin/study-sessions/${sessionId}`),
+  getStudySessionReviews: (sessionId: string, params: AdminStudySessionReviewSearchParams = {}) =>
+    apiClient.get<ApiResponse<AdminCardReview[]>>(`/admin/study-sessions/${sessionId}/reviews`, { ...params }),
 };
