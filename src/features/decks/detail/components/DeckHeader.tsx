@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Edit3, Plus, Star } from "lucide-react";
+import { Edit3, MessageSquareText, Plus, Star } from "lucide-react";
 
 export function DeckHeader({
   deckId,
@@ -48,6 +48,13 @@ export function DeckHeader({
         </div>
 
         <div className="flex flex-wrap gap-3">
+          <Link
+            className="inline-flex items-center gap-2 rounded-full bg-[#e6deff] px-5 py-3 text-sm font-bold text-[#311485]"
+            href={`/ai-tutor?deckId=${encodeURIComponent(deckId)}&deckTitle=${encodeURIComponent(title)}`}
+          >
+            <MessageSquareText className="h-4 w-4" />
+            Ask AI
+          </Link>
           <button
             className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-bold disabled:opacity-60 ${
               star ? "bg-[#fff1b3] text-[#493600]" : "bg-[#f6f3ee] text-[#311485]"
