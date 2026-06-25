@@ -464,7 +464,12 @@ export default function AITutorPage() {
       return;
     }
 
-    if (cardCount === undefined || !Number.isInteger(cardCount) || cardCount < 5 || cardCount > 30) {
+    if (
+      cardCount === undefined ||
+      !Number.isInteger(cardCount) ||
+      cardCount < 5 ||
+      cardCount > 30
+    ) {
       setFormError("Card count must be between 5 and 30.");
       return;
     }
@@ -516,31 +521,13 @@ export default function AITutorPage() {
     currentJob?.status === "queued" ||
     currentJob?.status === "running";
 
-  const displayFormError = formError || (cardCount === undefined ? "Card count is required." : "");
+  const displayFormError =
+    formError || (cardCount === undefined ? "Card count is required." : "");
 
   return (
     <div className="h-full overflow-y-auto bg-[#fbf9f4] custom-scrollbar">
       <div className="mx-auto flex min-h-full w-full max-w-[1440px] flex-col px-4 py-8 sm:px-6 lg:px-8">
-        <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-normal sm:text-4xl">
-              AI Tutor
-            </h1>
-          </div>
-          <button
-            className="inline-flex w-fit items-center gap-2 rounded-full bg-[#1b1c19] px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#30312e]"
-            disabled={createConversationMutation.isPending}
-            onClick={() => createConversationMutation.mutate(undefined)}
-            type="button"
-          >
-            {createConversationMutation.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <MessageSquareText className="h-4 w-4" />
-            )}
-            {deckContextId ? "New deck chat" : "New chat"}
-          </button>
-        </header>
+        <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"></header>
 
         <div className="grid flex-1 gap-5 xl:grid-cols-[300px_minmax(0,1fr)_330px]">
           <ChatSidebar
@@ -596,9 +583,6 @@ export default function AITutorPage() {
                   </p>
                 </div>
               </div>
-              <span className="hidden rounded-full bg-[#f2eefe] px-3 py-1.5 text-xs font-bold text-[#614db7] sm:inline-flex">
-                Request/response
-              </span>
             </div>
 
             <div className="flex-1 space-y-5 overflow-y-auto bg-[#fbf9f4] p-5 custom-scrollbar sm:p-6">
