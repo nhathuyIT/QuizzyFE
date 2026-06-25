@@ -151,6 +151,31 @@ export interface AdminStudySessionReviewSearchParams extends QueryParams {
   take?: number;
 }
 
+export interface AdminAuditLog {
+  _id?: string;
+  id?: string;
+  adminId: string;
+  action: string;
+  targetType: "user" | "deck";
+  targetId: string;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  admin?: {
+    _id?: string;
+    email: string;
+    name: string;
+  };
+}
+
+export interface AdminAuditLogSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
+  adminId?: string;
+  action?: string;
+  from?: string;
+  to?: string;
+}
+
 export const adminAPI = {
   getDashboardSummary: () =>
     apiClient.get<ApiResponse<AdminDashboardSummary>>("/admin/dashboard/summary"),
@@ -193,4 +218,6 @@ export const adminAPI = {
     apiClient.get<ApiResponse<AdminStudySession>>(`/admin/study-sessions/${sessionId}`),
   getStudySessionReviews: (sessionId: string, params: AdminStudySessionReviewSearchParams = {}) =>
     apiClient.get<ApiResponse<AdminCardReview[]>>(`/admin/study-sessions/${sessionId}/reviews`, { ...params }),
+  getAuditLogs: (params: AdminAuditLogSearchParams = {}) =>
+    apiClient.get<ApiResponse<AdminAuditLog[]>>("/admin/audit-logs", { ...params }),
 };

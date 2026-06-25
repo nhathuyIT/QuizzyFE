@@ -1,46 +1,44 @@
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
-import type { AdminStudySession } from "@/services/api";
+import type { AdminAuditLog } from "@/services/api";
 import type { PageMeta } from "@/services/api/client";
-import { studySessionColumns } from "../columns/study-session.columns";
+import { auditLogColumns } from "../columns/audit-log.columns";
 
-export function StudySessionTable({
+export function AuditLogsTable({
   error,
   isError,
   isLoading,
-  sessions,
+  logs,
   meta,
   onPageChange,
-  onOpenSession,
 }: {
   error: unknown;
   isError: boolean;
   isLoading: boolean;
-  sessions: AdminStudySession[];
+  logs: AdminAuditLog[];
   meta?: PageMeta;
   onPageChange: (page: number) => void;
-  onOpenSession: (session: AdminStudySession) => void;
 }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="overflow-hidden rounded-[26px] border border-black/5 bg-white shadow-sm">
-        <div className="grid min-w-[780px] grid-cols-[1.5fr_1.5fr_100px_100px_90px] bg-[#f6f2ff] px-4 py-3 text-xs font-extrabold uppercase tracking-normal text-[#614db7]">
-          {studySessionColumns.map((column) => (
+        <div className="grid min-w-[900px] grid-cols-[140px_1.5fr_130px_1.2fr_2fr] bg-[#f6f2ff] px-4 py-3 text-xs font-extrabold uppercase tracking-normal text-[#614db7]">
+          {auditLogColumns.map((column) => (
             <span key={column.key}>{column.header}</span>
           ))}
         </div>
 
         <div className="overflow-x-auto">
-          {isLoading ? <SessionsLoading /> : null}
-          {isError ? <SessionsError error={error} /> : null}
-          {!isLoading && !isError && !sessions.length ? <SessionsEmpty /> : null}
+          {isLoading ? <LogsLoading /> : null}
+          {isError ? <LogsError error={error} /> : null}
+          {!isLoading && !isError && !logs.length ? <LogsEmpty /> : null}
 
-          {sessions.map((session) => (
+          {logs.map((log) => (
             <div
-              className="grid min-w-[780px] grid-cols-[1.5fr_1.5fr_100px_100px_90px] items-center border-t border-black/5 px-4 py-4 text-sm text-[#1b1c19]"
-              key={session._id || session.id}
+              className="grid min-w-[900px] grid-cols-[140px_1.5fr_130px_1.2fr_2fr] items-start border-t border-black/5 px-4 py-4 text-sm text-[#1b1c19]"
+              key={log._id || log.id}
             >
-              {studySessionColumns.map((column) => (
-                <div key={column.key}>{column.render(session, { onOpenSession })}</div>
+              {auditLogColumns.map((column) => (
+                <div key={column.key}>{column.render(log)}</div>
               ))}
             </div>
           ))}
@@ -76,27 +74,27 @@ export function StudySessionTable({
   );
 }
 
-function SessionsLoading() {
+function LogsLoading() {
   return (
-    <div className="flex min-h-[220px] min-w-[780px] items-center justify-center gap-2 text-sm font-bold text-[#614db7]">
+    <div className="flex min-h-[220px] min-w-[900px] items-center justify-center gap-2 text-sm font-bold text-[#614db7]">
       <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
-      Loading sessions...
+      Loading audit logs...
     </div>
   );
 }
 
-function SessionsError({ error }: { error: unknown }) {
+function LogsError({ error }: { error: unknown }) {
   return (
-    <div className="min-w-[780px] bg-[#fff0f0] p-5 text-sm font-bold text-[#a33a3a]">
-      {error instanceof Error ? error.message : "Unable to load sessions."}
+    <div className="min-w-[900px] bg-[#fff0f0] p-5 text-sm font-bold text-[#a33a3a]">
+      {error instanceof Error ? error.message : "Unable to load audit logs."}
     </div>
   );
 }
 
-function SessionsEmpty() {
+function LogsEmpty() {
   return (
-    <div className="min-w-[780px] p-8 text-center text-sm font-bold text-[#614db7]">
-      No study sessions found.
+    <div className="min-w-[900px] p-8 text-center text-sm font-bold text-[#614db7]">
+      No audit logs found.
     </div>
   );
 }

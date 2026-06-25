@@ -21,14 +21,7 @@ function formatDuration(start: string, end: string | null) {
   return `${m}m ${s}s`;
 }
 
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-  hour12: false,
-});
+
 
 export const studySessionColumns: StudySessionColumn[] = [
   {
@@ -53,15 +46,7 @@ export const studySessionColumns: StudySessionColumn[] = [
     key: "mode",
     render: (session) => <ModeBadge mode={session.mode} />,
   },
-  {
-    header: "Started At",
-    key: "startedAt",
-    render: (session) => (
-      <span className="text-[#5f5e5e]">
-        {dateFormatter.format(new Date(session.startedAt))}
-      </span>
-    ),
-  },
+
   {
     header: "Duration",
     key: "duration",
