@@ -17,7 +17,7 @@ export const normalizeApiBaseUrl = (url: string) =>
   url.trim().replace(/\/+$/, "").replace(/\/v1$/, "");
 
 export const API_BASE_URL = normalizeApiBaseUrl(
-  process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API_URL,
+  process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL,
 );
 
 export const withApiVersion = (path: string) => {
@@ -45,7 +45,10 @@ const handleUnauthorized = () => {
   window.dispatchEvent(new Event("quizzy:unauthorized"));
 };
 
-const extractMessage = (payload: NestErrorResponse | undefined, fallback: string) => {
+const extractMessage = (
+  payload: NestErrorResponse | undefined,
+  fallback: string,
+) => {
   const message = payload?.message;
 
   if (Array.isArray(message)) {
@@ -89,7 +92,8 @@ axiosClient.interceptors.response.use(
     if (!error.response) {
       throw new HttpError({
         status: 0,
-        message: "Khong the ket noi den may chu. Vui long kiem tra ket noi mang.",
+        message:
+          "Khong the ket noi den may chu. Vui long kiem tra ket noi mang.",
         code: "ERR_NETWORK",
       });
     }
@@ -103,7 +107,8 @@ axiosClient.interceptors.response.use(
     throw new HttpError({
       status,
       message: extractMessage(data, statusText || "Request failed"),
-      code: data?.errorCode ?? data?.error ?? String(data?.statusCode ?? status),
+      code:
+        data?.errorCode ?? data?.error ?? String(data?.statusCode ?? status),
       errors: extractErrors(data),
     });
   },
