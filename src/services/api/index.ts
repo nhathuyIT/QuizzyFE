@@ -6,3 +6,4 @@ export * from "./card-progress.api";
 export * from "./study.api";
 export * from "./chatbot.api";
 export * from "./admin.api";
+export * from "./academic.api";

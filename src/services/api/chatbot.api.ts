@@ -62,6 +62,15 @@ export interface GenerateFromPdfInput {
   conversationId?: string;
 }
 
+export interface GenerateFromAcademicDocumentInput {
+  documentId: string;
+  title?: string;
+  cardCount?: number;
+  difficulty?: FlashcardDifficulty;
+  language?: string;
+  conversationId?: string;
+}
+
 export interface GenerateQueuedJob {
   jobId: string;
   sourceId: string;
@@ -159,6 +168,11 @@ export const chatbotAPI = {
       formData,
     );
   },
+  generateFromAcademicDocument: (data: GenerateFromAcademicDocumentInput) =>
+    apiClient.post<ApiResponse<GenerateQueuedJob>>(
+      "/chatbot/generate/academic-document",
+      data,
+    ),
   getGenerateJob: (jobId: string) =>
     apiClient.get<ApiResponse<GenerateJob>>(`/chatbot/generate/jobs/${jobId}`),
 };

@@ -1,4 +1,6 @@
 import { apiClient, type ApiResponse, type QueryParams } from "./client";
+import type { Deck } from "./decks.api";
+import type { StudySession, ReviewResult } from "./study.api";
 
 export type AdminActivityInterval = "day" | "week" | "month";
 export type AdminUserRole = "student" | "teacher" | "admin";
@@ -79,6 +81,56 @@ export interface AdminUpdateUserStatusInput {
   reason?: string;
 }
 
+export interface AdminDeckQueryDto extends QueryParams {
+  page?: number;
+  take?: number;
+  keyword?: string;
+  visibility?: "private" | "link" | "public";
+  moderationStatus?: "active" | "hidden" | "deleted";
+  ownerId?: string;
+}
+
+export interface AdminModerateDeckInput {
+  status: "active" | "hidden";
+  reason?: string;
+}
+
+export interface AdminStudySessionQueryDto extends QueryParams {
+  page?: number;
+  take?: number;
+  userId?: string;
+  deckId?: string;
+  mode?: "flashcard" | "learn" | "test" | "match";
+  status?: "finished" | "unfinished";
+  from?: string;
+  to?: string;
+}
+
+export interface AdminStudySummaryQueryDto extends QueryParams {
+  from?: string;
+  to?: string;
+  mode?: "flashcard" | "learn" | "test" | "match";
+}
+
+export interface AdminAuditLog {
+  _id: string;
+  adminId: string;
+  action: string;
+  targetId?: string;
+  targetType?: string;
+  details?: any;
+  createdAt: string;
+}
+
+export interface AdminAuditLogQueryDto extends QueryParams {
+  page?: number;
+  take?: number;
+  adminId?: string;
+  action?: string;
+  from?: string;
+  to?: string;
+}
+
 export const adminAPI = {
   getDashboardSummary: () =>
     apiClient.get<ApiResponse<AdminDashboardSummary>>("/admin/dashboard/summary"),
@@ -113,4 +165,30 @@ export const adminAPI = {
     apiClient.delete<ApiResponse<AdminUser>>(`/admin/users/${userId}`),
   restoreUser: (userId: string) =>
     apiClient.post<ApiResponse<AdminUser>>(`/admin/users/${userId}/restore`, {}),
+
+  // Decks
+  getDecks: (params: AdminDeckQueryDto = {}) =>
+    apiClient.get<ApiResponse<{ data: Deck[]; meta: any }>>("/admin/decks", params),
+  getDeck: (deckId: string) =>
+    apiClient.get<ApiResponse<Deck>>(`/admin/decks/${deckId}`),
+  moderateDeck: (deckId: string, data: AdminModerateDeckInput) =>
+    apiClient.patch<ApiResponse<Deck>>(`/admin/decks/${deckId}/moderation`, data),
+  deleteDeck: (deckId: string) =>
+    apiClient.delete<ApiResponse<{ deleted: boolean }>>(`/admin/decks/${deckId}`),
+  restoreDeck: (deckId: string) =>
+    apiClient.post<ApiResponse<Deck>>(`/admin/decks/${deckId}/restore`, {}),
+
+  // Study
+  getStudySummary: (params: AdminStudySummaryQueryDto = {}) =>
+    apiClient.get<ApiResponse<any>>("/admin/study/summary", params),
+  getStudySessions: (params: AdminStudySessionQueryDto = {}) =>
+    apiClient.get<ApiResponse<{ data: StudySession[]; meta: any }>>("/admin/study-sessions", params),
+  getStudySession: (sessionId: string) =>
+    apiClient.get<ApiResponse<StudySession>>(`/admin/study-sessions/${sessionId}`),
+  getStudySessionReviews: (sessionId: string, params: QueryParams = {}) =>
+    apiClient.get<ApiResponse<{ data: ReviewResult[]; meta: any }>>(`/admin/study-sessions/${sessionId}/reviews`, params),
+
+  // Audit Logs
+  getAuditLogs: (params: AdminAuditLogQueryDto = {}) =>
+    apiClient.get<ApiResponse<{ data: AdminAuditLog[]; meta: any }>>("/admin/audit-logs", params),
 };
