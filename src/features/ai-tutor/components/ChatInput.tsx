@@ -1,99 +1,34 @@
-"use client";
+import React from 'react';
 
-import { FormEvent, KeyboardEvent } from "react";
-import { Loader2, Send, Sparkles } from "lucide-react";
-
-interface ChatInputProps {
-  value: string;
-  disabled?: boolean;
-  error?: string;
-  isSending?: boolean;
-  maxLength?: number;
-  onChange: (value: string) => void;
-  onSubmit: () => void;
-}
-
-const suggestions = [
-  "Explain this concept simply",
-  "Quiz me on my weak spots",
-  "Turn this into examples",
-];
-
-export function ChatInput({
-  value,
-  disabled = false,
-  error,
-  isSending = false,
-  maxLength,
-  onChange,
-  onSubmit,
-}: ChatInputProps) {
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    onSubmit();
-  }
-
-  function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      onSubmit();
-    }
-  }
-
+export function ChatInput() {
   return (
-    <form
-      className="border-t border-black/5 bg-white p-4 sm:p-5"
-      onSubmit={handleSubmit}
-    >
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-3 flex flex-wrap gap-2">
-          {suggestions.map((suggestion) => (
-            <button
-              className="inline-flex items-center gap-2 rounded-full border border-black/5 bg-[#f6f3ee] px-3 py-2 text-xs font-bold text-[#777474] transition hover:border-[#cabeff] hover:text-[#614db7]"
-              disabled={disabled || isSending}
-              key={suggestion}
-              onClick={() => onChange(suggestion)}
-              type="button"
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              {suggestion}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-end gap-3 rounded-[24px] border border-black/10 bg-[#fbf9f4] p-2 shadow-inner transition focus-within:border-[#9b87f5] focus-within:ring-4 focus-within:ring-[#9b87f5]/10">
-          <textarea
-            className="max-h-36 min-h-[52px] flex-1 resize-none bg-transparent px-3 py-3 text-sm font-medium leading-6 text-[#1b1c19] outline-none placeholder:text-[#9a9692] custom-scrollbar"
-            disabled={disabled || isSending}
-            maxLength={maxLength}
-            onChange={(event) => onChange(event.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask a study question..."
-            rows={1}
-            value={value}
-          />
-          <button
-            aria-label="Send message"
-            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#614db7] text-white shadow-lg shadow-[#614db7]/20 transition hover:-translate-y-0.5 hover:bg-[#49339d] disabled:cursor-not-allowed disabled:opacity-60"
-            disabled={disabled || isSending || !value.trim()}
-            type="submit"
-          >
-            {isSending ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <Send className="h-5 w-5" />
-            )}
+    <div className="p-md md:p-lg bg-surface-bright border-t border-outline-variant shrink-0 relative z-20">
+      <div className="max-w-4xl mx-auto flex flex-col gap-sm relative">
+        <div className="absolute -top-12 left-0 flex gap-sm">
+          <button className="bg-surface-container-lowest border border-outline-variant rounded-full px-md py-sm font-label-sm text-label-sm text-on-surface-variant hover:border-primary hover:text-primary transition-all shadow-sm">
+            Explain further
+          </button>
+          <button className="bg-surface-container-lowest border border-outline-variant rounded-full px-md py-sm font-label-sm text-label-sm text-on-surface-variant hover:border-primary hover:text-primary transition-all shadow-sm">
+            Provide math formulas
           </button>
         </div>
-        {error && (
-          <p className="mt-3 rounded-2xl bg-[#fff0f0] px-4 py-3 text-sm font-bold text-[#a33a3a]">
-            {error}
-          </p>
-        )}
-        <p className="mt-3 text-center text-xs font-semibold text-[#9a9692]">
-          AI can make mistakes. Keep important facts checked against your notes.
-        </p>
+        <div className="flex items-end gap-sm bg-surface-container-lowest border-2 border-outline-variant rounded-xl p-sm focus-within:border-primary focus-within:ring-4 focus-within:ring-primary/10 transition-all shadow-sm relative">
+          <button className="p-sm text-outline hover:text-primary hover:bg-primary/5 rounded-lg transition-colors shrink-0 flex items-center justify-center">
+            <span className="material-symbols-outlined">add_circle</span>
+          </button>
+          <textarea 
+            className="flex-1 bg-transparent border-none focus:ring-0 resize-none max-h-32 min-h-[44px] py-sm font-body-md text-body-md text-on-surface placeholder:text-outline-variant custom-scrollbar" 
+            placeholder="Ask follow-up questions..." 
+            rows={1}
+          />
+          <button className="h-11 w-11 bg-primary text-on-primary rounded-lg hover:bg-on-primary-fixed-variant transition-colors shrink-0 flex items-center justify-center shadow-sm self-end">
+            <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>send</span>
+          </button>
+        </div>
+        <div className="text-center font-label-sm text-label-sm text-outline px-lg">
+          AI Tutor is an educational tool. Always verify complex physical concepts with academic sources.
+        </div>
       </div>
-    </form>
+    </div>
   );
 }

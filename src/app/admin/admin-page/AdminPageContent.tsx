@@ -13,16 +13,20 @@ import {
   Settings,
   ShieldCheck,
   UsersRound,
+  Activity,
 } from "lucide-react";
 import type { AuthUser } from "@/services/api";
 import { MonitoringPanel } from "./dashboard/components/MonitoringPanel";
 import { UsersPanel } from "./user/user-crud";
+import { ReportsPanel } from "./reports";
+import { AuditLogsPanel } from "./audit-logs";
 
 const sidebarItems = [
   { id: "dashboard", title: "Home", icon: Home },
   { id: "users", title: "Users", icon: UsersRound },
   { id: "content", title: "Content", icon: FileText },
   { id: "reports", title: "Reports", icon: BarChart3 },
+  { id: "audit-logs", title: "Audit Logs", icon: Activity },
   { id: "settings", title: "Settings", icon: Settings },
 ] as const;
 
@@ -65,7 +69,12 @@ export function AdminPageContent({
             <AdminPageHeader />
             {activeSection === "dashboard" ? <MonitoringPanel /> : null}
             {activeSection === "users" ? <UsersPanel /> : null}
-            {activeSection !== "dashboard" && activeSection !== "users" ? (
+            {activeSection === "reports" ? <ReportsPanel /> : null}
+            {activeSection === "audit-logs" ? <AuditLogsPanel /> : null}
+            {activeSection !== "dashboard" &&
+            activeSection !== "users" &&
+            activeSection !== "reports" &&
+            activeSection !== "audit-logs" ? (
               <AdminComingSoonPanel section={activeSection} />
             ) : null}
           </div>

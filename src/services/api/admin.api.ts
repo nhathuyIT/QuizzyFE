@@ -95,34 +95,95 @@ export interface AdminModerateDeckInput {
   reason?: string;
 }
 
-export interface AdminStudySessionQueryDto extends QueryParams {
+export interface AdminStudySummary {
+  from: string;
+  to: string;
+  mode: string;
+  sessions: number;
+  activeUsers: number;
+  reviews: number;
+  accuracy: number;
+  completionRate: number;
+  averageStudyTimeSeconds: number;
+}
+
+export interface AdminStudySession {
+  _id?: string;
+  id?: string;
+  userId: string;
+  deckId: string;
+  mode: string;
+  startedAt: string;
+  finishedAt: string | null;
+  user?: {
+    _id?: string;
+    email: string;
+    name: string;
+  };
+  deck?: {
+    _id?: string;
+    title: string;
+  };
+  reviewCount?: number;
+  correctReviewCount?: number;
+}
+
+export interface AdminStudySessionSearchParams extends QueryParams {
   page?: number;
   take?: number;
   userId?: string;
   deckId?: string;
-  mode?: "flashcard" | "learn" | "test" | "match";
+  mode?: string;
   status?: "finished" | "unfinished";
   from?: string;
   to?: string;
 }
 
-export interface AdminStudySummaryQueryDto extends QueryParams {
+export interface AdminStudySummarySearchParams extends QueryParams {
   from?: string;
   to?: string;
-  mode?: "flashcard" | "learn" | "test" | "match";
+  mode?: string;
+}
+
+export interface AdminCardReview {
+  _id?: string;
+  id?: string;
+  cardId: string;
+  isCorrect: boolean;
+  rating: string;
+  responseTimeMs: number;
+  answer?: string;
+  createdAt: string;
+  card?: {
+    _id?: string;
+    front: string;
+    back: string;
+    type?: string;
+  };
+}
+
+export interface AdminStudySessionReviewSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
 }
 
 export interface AdminAuditLog {
-  _id: string;
+  _id?: string;
+  id?: string;
   adminId: string;
   action: string;
-  targetId?: string;
-  targetType?: string;
-  details?: any;
+  targetType: "user" | "deck";
+  targetId: string;
+  metadata: Record<string, unknown>;
   createdAt: string;
+  admin?: {
+    _id?: string;
+    email: string;
+    name: string;
+  };
 }
 
-export interface AdminAuditLogQueryDto extends QueryParams {
+export interface AdminAuditLogSearchParams extends QueryParams {
   page?: number;
   take?: number;
   adminId?: string;
@@ -179,16 +240,16 @@ export const adminAPI = {
     apiClient.post<ApiResponse<Deck>>(`/admin/decks/${deckId}/restore`, {}),
 
   // Study
-  getStudySummary: (params: AdminStudySummaryQueryDto = {}) =>
-    apiClient.get<ApiResponse<any>>("/admin/study/summary", params),
-  getStudySessions: (params: AdminStudySessionQueryDto = {}) =>
-    apiClient.get<ApiResponse<{ data: StudySession[]; meta: any }>>("/admin/study-sessions", params),
+  getStudySummary: (params: AdminStudySummarySearchParams = {}) =>
+    apiClient.get<ApiResponse<AdminStudySummary>>("/admin/study/summary", { ...params }),
+  getStudySessions: (params: AdminStudySessionSearchParams = {}) =>
+    apiClient.get<ApiResponse<AdminStudySession[]>>("/admin/study-sessions", { ...params }),
   getStudySession: (sessionId: string) =>
-    apiClient.get<ApiResponse<StudySession>>(`/admin/study-sessions/${sessionId}`),
-  getStudySessionReviews: (sessionId: string, params: QueryParams = {}) =>
-    apiClient.get<ApiResponse<{ data: ReviewResult[]; meta: any }>>(`/admin/study-sessions/${sessionId}/reviews`, params),
+    apiClient.get<ApiResponse<AdminStudySession>>(`/admin/study-sessions/${sessionId}`),
+  getStudySessionReviews: (sessionId: string, params: AdminStudySessionReviewSearchParams = {}) =>
+    apiClient.get<ApiResponse<AdminCardReview[]>>(`/admin/study-sessions/${sessionId}/reviews`, { ...params }),
 
   // Audit Logs
-  getAuditLogs: (params: AdminAuditLogQueryDto = {}) =>
-    apiClient.get<ApiResponse<{ data: AdminAuditLog[]; meta: any }>>("/admin/audit-logs", params),
+  getAuditLogs: (params: AdminAuditLogSearchParams = {}) =>
+    apiClient.get<ApiResponse<AdminAuditLog[]>>("/admin/audit-logs", { ...params }),
 };
