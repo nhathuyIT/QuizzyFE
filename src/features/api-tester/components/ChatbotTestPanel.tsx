@@ -3,7 +3,7 @@ import { EndpointGroup, InputField, ActionButton } from "./EndpointGroup";
 import { chatbotAPI } from "@/services/api/chatbot.api";
 
 interface Props {
-  onExecute: (title: string, func: () => Promise<any>) => void;
+  onExecute: (title: string, func: () => Promise<unknown>) => void;
 }
 
 export const ChatbotTestPanel: React.FC<Props> = ({ onExecute }) => {

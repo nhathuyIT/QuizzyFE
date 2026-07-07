@@ -1,6 +1,5 @@
 import { apiClient, type ApiResponse, type QueryParams } from "./client";
 import type { Deck } from "./decks.api";
-import type { StudySession, ReviewResult } from "./study.api";
 
 export type AdminActivityInterval = "day" | "week" | "month";
 export type AdminUserRole = "student" | "teacher" | "admin";
@@ -229,7 +228,7 @@ export const adminAPI = {
 
   // Decks
   getDecks: (params: AdminDeckQueryDto = {}) =>
-    apiClient.get<ApiResponse<{ data: Deck[]; meta: any }>>("/admin/decks", params),
+    apiClient.get<ApiResponse<{ data: Deck[]; meta: Record<string, unknown> }>>("/admin/decks", params),
   getDeck: (deckId: string) =>
     apiClient.get<ApiResponse<Deck>>(`/admin/decks/${deckId}`),
   moderateDeck: (deckId: string, data: AdminModerateDeckInput) =>

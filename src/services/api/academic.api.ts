@@ -87,7 +87,7 @@ export const academicAPI = {
     apiClient.get<
       ApiResponse<{
         data: AcademicDocument[];
-        meta: any;
+        meta: Record<string, unknown>;
       }>
     >(`/academic/subjects/${subjectId}/documents`, params),
 
@@ -95,7 +95,7 @@ export const academicAPI = {
     apiClient.get<
       ApiResponse<{
         data: AcademicDocument[];
-        meta: any;
+        meta: Record<string, unknown>;
       }>
     >("/academic/documents/my", params),
 

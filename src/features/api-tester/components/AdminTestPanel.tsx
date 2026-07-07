@@ -3,7 +3,7 @@ import { EndpointGroup, InputField, ActionButton } from "./EndpointGroup";
 import { adminAPI } from "@/services/api/admin.api";
 
 interface Props {
-  onExecute: (title: string, func: () => Promise<any>) => void;
+  onExecute: (title: string, func: () => Promise<unknown>) => void;
 }
 
 export const AdminTestPanel: React.FC<Props> = ({ onExecute }) => {

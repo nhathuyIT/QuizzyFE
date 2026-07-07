@@ -3,7 +3,7 @@ import { EndpointGroup, InputField, ActionButton } from "./EndpointGroup";
 import { academicAPI } from "@/services/api/academic.api";
 
 interface Props {
-  onExecute: (title: string, func: () => Promise<any>) => void;
+  onExecute: (title: string, func: () => Promise<unknown>) => void;
 }
 
 export const AcademicTestPanel: React.FC<Props> = ({ onExecute }) => {
