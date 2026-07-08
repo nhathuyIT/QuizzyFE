@@ -1,4 +1,5 @@
 import { apiClient, type ApiResponse, type QueryParams } from "./client";
+import type { Deck } from "./decks.api";
 
 export type AdminActivityInterval = "day" | "week" | "month";
 export type AdminUserRole = "student" | "teacher" | "admin";
@@ -76,6 +77,20 @@ export interface AdminUpdateUserRoleInput {
 
 export interface AdminUpdateUserStatusInput {
   status: Exclude<AdminUserStatus, "deleted">;
+  reason?: string;
+}
+
+export interface AdminDeckQueryDto extends QueryParams {
+  page?: number;
+  take?: number;
+  keyword?: string;
+  visibility?: "private" | "link" | "public";
+  moderationStatus?: "active" | "hidden" | "deleted";
+  ownerId?: string;
+}
+
+export interface AdminModerateDeckInput {
+  status: "active" | "hidden";
   reason?: string;
 }
 
@@ -210,6 +225,20 @@ export const adminAPI = {
     apiClient.delete<ApiResponse<AdminUser>>(`/admin/users/${userId}`),
   restoreUser: (userId: string) =>
     apiClient.post<ApiResponse<AdminUser>>(`/admin/users/${userId}/restore`, {}),
+
+  // Decks
+  getDecks: (params: AdminDeckQueryDto = {}) =>
+    apiClient.get<ApiResponse<{ data: Deck[]; meta: Record<string, unknown> }>>("/admin/decks", params),
+  getDeck: (deckId: string) =>
+    apiClient.get<ApiResponse<Deck>>(`/admin/decks/${deckId}`),
+  moderateDeck: (deckId: string, data: AdminModerateDeckInput) =>
+    apiClient.patch<ApiResponse<Deck>>(`/admin/decks/${deckId}/moderation`, data),
+  deleteDeck: (deckId: string) =>
+    apiClient.delete<ApiResponse<{ deleted: boolean }>>(`/admin/decks/${deckId}`),
+  restoreDeck: (deckId: string) =>
+    apiClient.post<ApiResponse<Deck>>(`/admin/decks/${deckId}/restore`, {}),
+
+  // Study
   getStudySummary: (params: AdminStudySummarySearchParams = {}) =>
     apiClient.get<ApiResponse<AdminStudySummary>>("/admin/study/summary", { ...params }),
   getStudySessions: (params: AdminStudySessionSearchParams = {}) =>
@@ -218,6 +247,8 @@ export const adminAPI = {
     apiClient.get<ApiResponse<AdminStudySession>>(`/admin/study-sessions/${sessionId}`),
   getStudySessionReviews: (sessionId: string, params: AdminStudySessionReviewSearchParams = {}) =>
     apiClient.get<ApiResponse<AdminCardReview[]>>(`/admin/study-sessions/${sessionId}/reviews`, { ...params }),
+
+  // Audit Logs
   getAuditLogs: (params: AdminAuditLogSearchParams = {}) =>
     apiClient.get<ApiResponse<AdminAuditLog[]>>("/admin/audit-logs", { ...params }),
 };
