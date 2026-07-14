@@ -16,12 +16,13 @@ import {
 } from "lucide-react";
 import type { AuthUser } from "@/services/api";
 import { MonitoringPanel } from "./dashboard/components/MonitoringPanel";
+import { DecksPanel } from "./deck/deck-crud";
 import { UsersPanel } from "./user/user-crud";
 
 const sidebarItems = [
   { id: "dashboard", title: "Home", icon: Home },
   { id: "users", title: "Users", icon: UsersRound },
-  { id: "content", title: "Content", icon: FileText },
+  { id: "content", title: "Decks", icon: FileText },
   { id: "reports", title: "Reports", icon: BarChart3 },
   { id: "settings", title: "Settings", icon: Settings },
 ] as const;
@@ -60,12 +61,15 @@ export function AdminPageContent({
           user={user}
         />
 
-        <section className="relative min-h-[calc(100vh-112px)] px-5 py-8 sm:px-8 lg:min-h-screen lg:px-12 lg:py-12 xl:px-16">
-          <div className="mx-auto w-full max-w-[1180px]">
+        <section className="relative min-h-[calc(100vh-112px)] px-4 py-8 sm:px-6 lg:min-h-screen lg:px-8 lg:py-12 xl:px-10">
+          <div className="mx-auto w-full max-w-[1480px]">
             <AdminPageHeader />
             {activeSection === "dashboard" ? <MonitoringPanel /> : null}
             {activeSection === "users" ? <UsersPanel /> : null}
-            {activeSection !== "dashboard" && activeSection !== "users" ? (
+            {activeSection === "content" ? <DecksPanel /> : null}
+            {activeSection !== "dashboard" &&
+            activeSection !== "users" &&
+            activeSection !== "content" ? (
               <AdminComingSoonPanel section={activeSection} />
             ) : null}
           </div>
