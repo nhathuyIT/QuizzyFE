@@ -32,6 +32,9 @@
   - `AdminSidebar` stays fixed on the left while the admin content renders and scrolls on the right.
   - `AdminPageHeader` is kept inside `AdminPageContent.tsx`.
 - Sidebar `Users` switches to `src/app/admin/admin-page/user/user-crud/index.tsx`.
+- Sidebar `Academic` switches to the AI/SE department and semester catalog in `src/app/admin/admin-page/academic`.
+- Sidebar `Document Review` switches to the academic upload moderation queue in `src/app/admin/admin-page/document-review`.
+- All admin Academic Management types, DTOs, response normalization, and endpoint methods live in `src/services/api/admin.api.ts`.
 - Users module follows the CRUD template shape inside `src/app/admin/admin-page/user/user-crud`:
   - `index.tsx` owns queries, mutations, and selected-user state.
   - `columns/user.columns.tsx` defines table columns and row cell renderers.
@@ -91,6 +94,8 @@
 - Destructive user actions must stay behind an in-modal confirmation step.
 - Only one monitoring view is shown at a time. The two buttons switch the visible panel on the same `/admin` page.
 - Placeholder module navigation must not pretend to perform real actions until their APIs/routes are implemented.
+- Academic Management only mounts while `section=academic`; it resolves the fixed AI and SE tabs by department code, supports missing/inactive departments, and edits semesters through the Subject API.
+- Document Review only mounts while `section=document-review`; it defaults to pending uploads and supports metadata updates, approve/reject/pending review transitions, archive, and restore-to-pending.
 - Keep the admin page in the same user-theme color system:
   - `#fbf9f4` page background.
   - White cards.
