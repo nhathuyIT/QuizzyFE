@@ -1,7 +1,10 @@
 import { apiClient, type ApiResponse, type QueryParams } from "./client";
 
 export type ChatRole = "user" | "assistant";
-export type ConversationType = "general" | "deck_chat";
+export type ConversationType =
+  | "general"
+  | "deck_chat"
+  | "academic_document_chat";
 export type FlashcardDifficulty = "easy" | "medium" | "hard";
 export type GenerateJobStatus = "queued" | "running" | "done" | "failed";
 
@@ -10,6 +13,7 @@ export interface ChatConversation {
   userId: string;
   title: string;
   deckId?: string;
+  academicDocumentId?: string;
   type: ConversationType;
   isArchived: boolean;
   messageCount: number;
@@ -32,6 +36,7 @@ export interface ChatMessage {
 export interface CreateConversationInput {
   title?: string;
   deckId?: string;
+  academicDocumentId?: string;
 }
 
 export interface UpdateConversationInput {
@@ -81,6 +86,8 @@ export interface GenerateQueuedJob {
 export interface GenerateJob {
   _id: string;
   sourceId: string;
+  sourceType?: "text" | "pdf" | "academic_document";
+  academicDocumentId?: string;
   targetDeckId?: string;
   status: GenerateJobStatus;
   options?: {

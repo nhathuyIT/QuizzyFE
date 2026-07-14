@@ -1,19 +1,27 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import {
   ArrowRight,
+  BookOpenCheck,
   BrainCircuit,
-  ChevronRight,
+  CheckCircle2,
   CirclePlay,
+  Clock3,
+  FileText,
   Flame,
+  GraduationCap,
   Layers3,
+  LineChart,
+  MessageCircleQuestion,
+  PenLine,
   ShieldCheck,
   Sparkles,
   Star,
   Target,
   Trophy,
   UploadCloud,
-  UsersRound,
+  WandSparkles,
   Zap,
 } from "lucide-react";
 import { GlobalHeader } from "@/components/navigation/GlobalHeader";
@@ -24,80 +32,89 @@ type Feature = {
   title: string;
 };
 
-const featureCards: Feature[] = [
-  {
-    icon: Layers3,
-    title: "Flashcards in seconds",
-    description:
-      "Turn lecture notes, documents, and messy study material into focused cards that are ready to review.",
-  },
-  {
-    icon: Target,
-    title: "Quizzes that adapt",
-    description:
-      "Practice the topics that need attention and spend less time repeating answers you already know.",
-  },
+const heroStats = [
+  { label: "Decks generated", value: "42k+" },
+  { label: "Practice questions", value: "1.8m" },
+  { label: "Avg. setup time", value: "3 min" },
 ];
 
 const steps: Feature[] = [
   {
     icon: UploadCloud,
-    title: "Drop in your material",
-    description: "Upload notes, paste text, or start with a topic you want to master.",
+    title: "Bring the material",
+    description:
+      "Drop in notes, a document, or a rough topic list. Quizzy keeps the useful ideas and clears away the noise.",
   },
   {
-    icon: BrainCircuit,
-    title: "Let AI shape the lesson",
-    description: "Quizzy builds flashcards and questions around the key ideas in seconds.",
-  },
-  {
-    icon: Trophy,
-    title: "Study, score, improve",
-    description: "Review your results, revisit weak spots, and keep your learning streak alive.",
-  },
-];
-
-const benefits: Feature[] = [
-  {
-    icon: Zap,
-    title: "Fast by default",
-    description: "Go from document to practice session before your motivation disappears.",
+    icon: WandSparkles,
+    title: "Shape a study deck",
+    description:
+      "AI turns the source into flashcards, quiz prompts, and a first review path you can adjust before studying.",
   },
   {
     icon: Target,
-    title: "Focused practice",
-    description: "Every session helps you spend more time on the ideas that matter most.",
+    title: "Practice with focus",
+    description:
+      "Short sessions, progress signals, and weak-spot review help you keep moving without rereading everything.",
+  },
+];
+
+const features: Feature[] = [
+  {
+    icon: Layers3,
+    title: "Flashcards that start clean",
+    description:
+      "Generate concise cards from messy class material, then edit the deck before it becomes part of your library.",
   },
   {
-    icon: UsersRound,
-    title: "Built for momentum",
-    description: "Simple streaks and visible progress turn a study plan into a daily habit.",
+    icon: MessageCircleQuestion,
+    title: "Quizzes with instant context",
+    description:
+      "Practice active recall with direct questions, answer choices, and quick feedback on the ideas that need work.",
+  },
+  {
+    icon: LineChart,
+    title: "Progress that feels useful",
+    description:
+      "See what is mastered, what is due, and where to spend the next ten minutes of focused review.",
   },
   {
     icon: ShieldCheck,
-    title: "Calm, clear workflow",
-    description: "A distraction-free workspace keeps your material organized and easy to revisit.",
+    title: "A calmer study workflow",
+    description:
+      "Everything stays organized around decks, sessions, and documents so you can return without rebuilding the plan.",
   },
+];
+
+const subjects = [
+  "Biology",
+  "History",
+  "Programming",
+  "Medicine",
+  "Languages",
+  "Business",
+  "Law",
+  "Certification prep",
 ];
 
 const testimonials = [
   {
     quote:
-      "Quizzy helped me turn a pile of biology notes into a study plan I could actually finish before finals.",
+      "Quizzy turns my notes into something I can actually practice with. I spend less time setting up and more time recalling.",
     name: "An Nguyen",
     role: "Medical student",
     initials: "AN",
   },
   {
     quote:
-      "The generated quizzes are direct and useful. I can see my weak areas instead of rereading the same chapter.",
+      "The quiz flow is direct. It quickly shows which topics are weak instead of making me reread a whole chapter.",
     name: "Minh Khoa",
     role: "Computer science student",
     initials: "MK",
   },
   {
     quote:
-      "It takes minutes to prepare a revision session now. The progress view makes it much easier to stay consistent.",
+      "I use it for short review sessions after class. The deck and progress views make it easier to stay consistent.",
     name: "Linh Tran",
     role: "High school senior",
     initials: "LT",
@@ -108,32 +125,30 @@ const faqs = [
   {
     question: "What can I turn into a study deck?",
     answer:
-      "You can begin with pasted notes, lecture summaries, documents, or a topic prompt. Quizzy organizes the important ideas into a review-ready deck.",
+      "You can start from pasted notes, lecture summaries, documents, or a topic prompt. Quizzy organizes the important ideas into a review-ready deck.",
   },
   {
-    question: "Do I need to prepare my notes first?",
+    question: "Do I need polished notes first?",
     answer:
-      "No. Rough notes are welcome. Quizzy is designed to help you transform unstructured material into a focused place to begin studying.",
+      "No. Rough notes are fine. The workflow is designed to give you a clean first draft that you can study or edit right away.",
   },
   {
-    question: "Can I use Quizzy for different subjects?",
+    question: "Can Quizzy work across subjects?",
     answer:
-      "Yes. The workflow works well for sciences, languages, history, professional training, and any subject that benefits from active recall.",
+      "Yes. It works well for sciences, languages, history, professional training, and any subject that benefits from active recall.",
   },
   {
-    question: "Is Quizzy suitable for daily review?",
+    question: "Is this for daily review?",
     answer:
-      "Yes. Short quizzes, visible progress, and streaks are designed to make repeat study sessions easier to maintain.",
+      "Yes. Short quizzes, visible progress, and streak-friendly sessions are designed for repeat study instead of last-minute cramming.",
   },
 ];
 
-const partnerNames = ["StudyLab", "Nova Academy", "BrightPath", "Campus+", "Focus Club"];
-
 function SectionHeading({
+  align = "center",
+  description,
   eyebrow,
   title,
-  description,
-  align = "center",
 }: {
   align?: "center" | "left";
   description: string;
@@ -141,323 +156,493 @@ function SectionHeading({
   title: string;
 }) {
   return (
-    <div className={align === "center" ? "mx-auto max-w-[680px] text-center" : "max-w-[620px]"}>
-      <p className="mb-3 text-[12px] font-bold uppercase tracking-[0.16em] text-[#614db7]">
+    <div
+      className={
+        align === "center"
+          ? "mx-auto max-w-[720px] text-center"
+          : "max-w-[660px]"
+      }
+    >
+      <p className="text-xs font-extrabold uppercase tracking-normal text-[#6b4df6]">
         {eyebrow}
       </p>
-      <h2 className="[font-family:var(--font-outfit)] text-4xl font-extrabold tracking-[-0.03em] text-[#1b1c19] sm:text-5xl">
+      <h2 className="mt-3 text-3xl font-extrabold leading-tight tracking-normal text-[#101828] sm:text-4xl lg:text-5xl">
         {title}
       </h2>
-      <p className="mt-4 text-base leading-7 text-[#5f5e5e] sm:text-lg">{description}</p>
+      <p className="mt-4 text-base leading-7 text-[#667085] sm:text-lg">
+        {description}
+      </p>
+    </div>
+  );
+}
+
+function HeroCanvas() {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-y-0 right-[-150px] top-8 hidden w-[720px] lg:block xl:right-[-80px]"
+    >
+      <div className="absolute left-12 top-12 h-[560px] w-[560px] rotate-3 border border-[#d0d5dd] bg-white/72 shadow-[0_30px_90px_rgba(16,24,40,0.16)] backdrop-blur-md" />
+      <div className="absolute left-24 top-24 h-[500px] w-[500px] -rotate-2 border border-[#101828] bg-[#101828] p-4 shadow-[12px_12px_0_rgba(107,77,246,0.18)]">
+        <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="flex gap-2">
+            <span className="h-3 w-3 rounded-full bg-[#ff6b6b]" />
+            <span className="h-3 w-3 rounded-full bg-[#ffd166]" />
+            <span className="h-3 w-3 rounded-full bg-[#35d0ba]" />
+          </div>
+          <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-bold text-white/70">
+            Live deck
+          </span>
+        </div>
+
+        <div className="grid gap-3 pt-4">
+          <div className="border border-white/10 bg-white p-4">
+            <div className="flex items-start justify-between gap-5">
+              <div>
+                <p className="text-[11px] font-extrabold uppercase tracking-normal text-[#6b4df6]">
+                  Generated from PDF
+                </p>
+                <p className="mt-2 text-xl font-extrabold text-[#101828]">
+                  Cellular respiration
+                </p>
+              </div>
+              <span className="flex h-10 w-10 items-center justify-center rounded-md bg-[#ffec99] text-[#855d00]">
+                <FileText className="h-5 w-5" />
+              </span>
+            </div>
+            <div className="mt-5 grid grid-cols-3 gap-2">
+              {[
+                ["48", "cards"],
+                ["16", "quiz"],
+                ["76%", "ready"],
+              ].map(([value, label]) => (
+                <div className="border border-[#eaecf0] bg-[#f8fafc] p-3" key={label}>
+                  <p className="text-lg font-extrabold text-[#101828]">{value}</p>
+                  <p className="text-xs font-semibold text-[#667085]">{label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-[1fr_130px] gap-3">
+            <div className="border border-white/10 bg-[#6b4df6] p-4 text-white">
+              <p className="text-[11px] font-extrabold uppercase tracking-normal text-white/65">
+                Current prompt
+              </p>
+              <p className="mt-3 text-lg font-bold leading-6">
+                What does the mitochondrion produce during respiration?
+              </p>
+              <div className="mt-4 space-y-2 text-xs font-bold">
+                <span className="block bg-white/15 px-3 py-2">Glucose</span>
+                <span className="block bg-[#35d0ba] px-3 py-2 text-[#063b35]">
+                  ATP
+                </span>
+              </div>
+            </div>
+            <div className="grid gap-3">
+              <div className="border border-white/10 bg-[#35d0ba] p-4 text-[#063b35]">
+                <Flame className="h-5 w-5" />
+                <p className="mt-4 text-2xl font-extrabold">12</p>
+                <p className="text-xs font-bold">day streak</p>
+              </div>
+              <div className="border border-white/10 bg-[#ffec99] p-4 text-[#5d4300]">
+                <Clock3 className="h-5 w-5" />
+                <p className="mt-4 text-2xl font-extrabold">9m</p>
+                <p className="text-xs font-bold">session</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border border-white/10 bg-white/10 p-4">
+            <div className="mb-2 flex items-center justify-between text-xs font-bold text-white/70">
+              <span>Mastery</span>
+              <span>76%</span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-white/15">
+              <div className="h-full w-[76%] rounded-full bg-[#35d0ba]" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Image
+        alt=""
+        className="absolute left-0 top-0 h-32 w-32 object-contain drop-shadow-[0_20px_30px_rgba(16,24,40,0.2)]"
+        height={160}
+        priority
+        src="/icon-1.png"
+        width={160}
+      />
+      <Image
+        alt=""
+        className="absolute bottom-2 left-10 h-40 w-40 object-contain drop-shadow-[0_20px_30px_rgba(16,24,40,0.18)]"
+        height={180}
+        priority
+        src="/icon-3.png"
+        width={180}
+      />
+      <Image
+        alt=""
+        className="absolute right-4 top-[390px] h-36 w-36 object-contain drop-shadow-[0_20px_30px_rgba(16,24,40,0.2)]"
+        height={170}
+        priority
+        src="/icon-2.png"
+        width={170}
+      />
+    </div>
+  );
+}
+
+function MobileHeroPreview() {
+  return (
+    <div className="mt-10 border border-[#d0d5dd] bg-white p-4 shadow-[8px_8px_0_rgba(16,24,40,0.08)] lg:hidden">
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <p className="text-xs font-extrabold uppercase tracking-normal text-[#6b4df6]">
+            Live deck preview
+          </p>
+          <p className="mt-1 text-xl font-extrabold text-[#101828]">
+            Biology foundations
+          </p>
+        </div>
+        <Image alt="" height={74} src="/icon-1.png" width={74} />
+      </div>
+      <div className="mt-5 grid grid-cols-3 gap-2">
+        {heroStats.map((stat) => (
+          <div className="border border-[#eaecf0] bg-[#f8fafc] p-3" key={stat.label}>
+            <p className="text-lg font-extrabold text-[#101828]">{stat.value}</p>
+            <p className="text-[11px] font-semibold leading-4 text-[#667085]">
+              {stat.label}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProductPreview() {
+  return (
+    <div className="grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
+      <div className="border border-[#d0d5dd] bg-[#101828] p-5 text-white shadow-[10px_10px_0_rgba(107,77,246,0.18)]">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-5">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-normal text-[#a89bff]">
+              Study session
+            </p>
+            <h3 className="mt-2 text-2xl font-extrabold">Respiration quiz</h3>
+          </div>
+          <span className="rounded-full bg-[#35d0ba] px-3 py-1 text-xs font-extrabold text-[#063b35]">
+            Active recall
+          </span>
+        </div>
+
+        <div className="mt-6">
+          <p className="text-lg font-bold leading-7">
+            Which molecule stores usable energy for the cell?
+          </p>
+          <div className="mt-5 grid gap-3">
+            {["Oxygen", "ATP", "Carbon dioxide"].map((answer, index) => (
+              <div
+                className={`flex items-center justify-between border px-4 py-3 text-sm font-bold ${
+                  index === 1
+                    ? "border-[#35d0ba] bg-[#35d0ba] text-[#063b35]"
+                    : "border-white/10 bg-white/5 text-white/75"
+                }`}
+                key={answer}
+              >
+                {answer}
+                {index === 1 ? <CheckCircle2 className="h-5 w-5" /> : null}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-7 border border-white/10 bg-white/5 p-4">
+          <div className="mb-3 flex items-center justify-between text-xs font-bold text-white/65">
+            <span>Confidence after review</span>
+            <span>High</span>
+          </div>
+          <div className="h-2 rounded-full bg-white/10">
+            <div className="h-full w-[82%] rounded-full bg-[#ffec99]" />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="border border-[#eaecf0] bg-white p-5">
+          <span className="flex h-11 w-11 items-center justify-center rounded-md bg-[#edfdfb] text-[#087b70]">
+            <BookOpenCheck className="h-5 w-5" />
+          </span>
+          <h3 className="mt-8 text-xl font-extrabold text-[#101828]">
+            Review due cards first
+          </h3>
+          <p className="mt-3 text-sm leading-6 text-[#667085]">
+            The dashboard keeps the next useful action easy to spot.
+          </p>
+        </div>
+        <div className="border border-[#eaecf0] bg-white p-5">
+          <span className="flex h-11 w-11 items-center justify-center rounded-md bg-[#fff7d6] text-[#8f6700]">
+            <PenLine className="h-5 w-5" />
+          </span>
+          <h3 className="mt-8 text-xl font-extrabold text-[#101828]">
+            Edit before studying
+          </h3>
+          <p className="mt-3 text-sm leading-6 text-[#667085]">
+            Generated cards are a starting point, not a locked box.
+          </p>
+        </div>
+        <div className="border border-[#eaecf0] bg-white p-5 sm:col-span-2">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-extrabold uppercase tracking-normal text-[#6b4df6]">
+                Weekly momentum
+              </p>
+              <h3 className="mt-2 text-2xl font-extrabold text-[#101828]">
+                5 sessions completed
+              </h3>
+            </div>
+            <div className="flex gap-2">
+              {["M", "T", "W", "T", "F", "S", "S"].map((day, index) => (
+                <span
+                  className={`flex h-9 w-9 items-center justify-center rounded-full text-xs font-extrabold ${
+                    index < 5
+                      ? "bg-[#6b4df6] text-white"
+                      : "bg-[#f2f4f7] text-[#98a2b3]"
+                  }`}
+                  key={`${day}-${index}`}
+                >
+                  {day}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default function HomePage() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#fbf9f4] text-[#1b1c19]">
+    <main className="relative min-h-screen overflow-hidden bg-[#f7f8fb] text-[#101828]">
       <GlobalHeader />
 
-      <section className="relative px-4 pb-20 pt-32 sm:px-6 sm:pb-24 sm:pt-40">
-        <div className="pointer-events-none absolute left-[5%] top-44 h-24 w-40 rotate-[-8deg] rounded-2xl bg-[#e6deff]/70" />
-        <div className="pointer-events-none absolute right-[7%] top-24 hidden h-20 w-28 rotate-[14deg] rounded-2xl bg-[#f5d547]/70 md:block" />
-        <div className="mx-auto grid max-w-[1180px] items-center gap-14 lg:grid-cols-[1.04fr_0.96fr]">
-          <div className="relative z-10">
-            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-black/10 bg-[#e6deff]/70 px-4 py-2 text-xs font-bold uppercase tracking-normal text-[#311485]">
+      <section className="relative overflow-hidden border-b border-[#eaecf0] bg-[#f7f8fb] px-4 pb-14 pt-28 sm:px-6 sm:pb-16 sm:pt-32">
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(107,77,246,0.07)_1px,transparent_1px),linear-gradient(180deg,rgba(107,77,246,0.07)_1px,transparent_1px)] bg-[size:44px_44px]" />
+        <HeroCanvas />
+
+        <div className="relative z-10 mx-auto max-w-[1180px]">
+          <div className="max-w-[720px]">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#d0d5dd] bg-white px-4 py-2 text-xs font-extrabold uppercase tracking-normal text-[#6b4df6] shadow-sm">
               <Sparkles aria-hidden="true" className="h-4 w-4" />
-              AI-powered study companion
+              AI-powered active recall
             </div>
 
-            <h1 className="max-w-[740px] [font-family:var(--font-outfit)] text-5xl font-extrabold leading-[0.98] tracking-[-0.035em] text-[#1b1c19] sm:text-6xl lg:text-[76px]">
-              Turn any notes into{" "}
-              <span className="text-[#614db7]">study wins.</span>
+            <h1 className="max-w-[680px] text-5xl font-extrabold leading-[1.02] tracking-normal text-[#101828] sm:text-6xl lg:text-7xl">
+              Quizzy AI
             </h1>
-
-            <p className="mt-7 max-w-[630px] text-lg leading-8 text-[#5f5e5e] sm:text-xl">
-              Build flashcards, generate quizzes, and focus your revision with a study flow
-              that helps you start quickly and remember more.
+            <p className="mt-6 max-w-[620px] text-lg leading-8 text-[#475467] sm:text-xl">
+              Turn notes, PDFs, and rough class material into clean flashcards,
+              adaptive quizzes, and short review sessions that are easy to start.
             </p>
 
-            <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#1b1c19] px-7 py-4 text-base font-bold text-white shadow-xl shadow-black/10 transition hover:-translate-y-1 hover:bg-[#30312e]"
-                href="/login"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#101828] px-6 py-4 text-base font-extrabold text-white shadow-[0_16px_32px_rgba(16,24,40,0.18)] transition hover:-translate-y-0.5 hover:bg-[#252f3f]"
+                href="/register"
               >
-                Create your first deck
+                Start studying
                 <ArrowRight aria-hidden="true" className="h-5 w-5" />
               </Link>
               <a
-                className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-black/10 bg-white/80 px-7 py-4 text-base font-bold text-[#614db7] transition hover:border-[#9b87f5] hover:bg-white"
-                href="#features"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-[#d0d5dd] bg-white px-6 py-4 text-base font-extrabold text-[#101828] transition hover:-translate-y-0.5 hover:border-[#6b4df6] hover:text-[#6b4df6]"
+                href="#demo"
               >
                 <CirclePlay aria-hidden="true" className="h-5 w-5" />
-                See how it works
+                See the flow
               </a>
             </div>
 
-            <div className="mt-10 flex flex-wrap items-center gap-4 text-sm text-[#5f5e5e]">
-              <div className="flex -space-x-2">
-                {["AN", "MK", "LT"].map((initials, index) => (
-                  <span
-                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#fbf9f4] text-[10px] font-extrabold ${
-                      index === 0
-                        ? "bg-[#ffd9e4] text-[#531c34]"
-                        : index === 1
-                          ? "bg-[#cabeff] text-[#1d0061]"
-                          : "bg-[#d7f2e3] text-[#16492f]"
-                    }`}
-                    key={initials}
-                  >
-                    {initials}
-                  </span>
-                ))}
-              </div>
-              <div>
-                <p className="font-bold text-[#1b1c19]">12,000+ active learners</p>
-                <p>Building a smarter study habit today</p>
-              </div>
+            <div className="mt-9 hidden max-w-[620px] gap-3 sm:grid sm:grid-cols-3">
+              {heroStats.map((stat) => (
+                <div
+                  className="border border-[#d0d5dd] bg-white/82 p-4 shadow-sm backdrop-blur"
+                  key={stat.label}
+                >
+                  <p className="text-2xl font-extrabold text-[#101828]">
+                    {stat.value}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-[#667085]">
+                    {stat.label}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-[560px]">
-            <div className="absolute -left-6 -top-8 h-24 w-24 rotate-[-8deg] rounded-2xl bg-[#e6deff]" />
-            <div className="absolute -bottom-7 -right-5 h-28 w-28 rounded-full bg-[#ffd9e4]" />
-            <div className="absolute -right-4 top-20 h-16 w-16 rotate-12 rounded-2xl bg-[#f5d547]/80" />
+          <MobileHeroPreview />
+        </div>
+      </section>
 
-            <div className="relative overflow-hidden rounded-[32px] border border-black/5 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.1)]">
-              <div className="grid gap-4 p-5 sm:p-7">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-normal text-[#614db7]">
-                      Today&apos;s study plan
-                    </p>
-                    <h2 className="mt-1 [font-family:var(--font-outfit)] text-2xl font-extrabold tracking-normal">
-                      Biology foundations
-                    </h2>
-                  </div>
-                  <span className="rounded-full bg-[#e6deff] px-3 py-2 text-xs font-bold text-[#311485]">
-                    76% mastered
-                  </span>
-                </div>
-
-                <div className="overflow-hidden rounded-full bg-[#ece9f5]">
-                  <div className="h-3 w-[76%] rounded-full bg-[#614db7]" />
-                </div>
-
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[18px] border-2 border-black/5 bg-[#fbf9f4] p-4">
-                    <div className="flex items-center gap-2 text-[#614db7]">
-                      <Layers3 aria-hidden="true" className="h-5 w-5" />
-                      <span className="text-xs font-bold uppercase tracking-[0.12em]">Deck</span>
-                    </div>
-                    <p className="mt-4 [font-family:var(--font-outfit)] text-3xl font-extrabold tracking-normal">
-                      48
-                    </p>
-                    <p className="mt-1 text-sm text-[#5f5e5e]">flashcards ready</p>
-                  </div>
-                  <div className="rounded-[18px] border-2 border-black/5 bg-[#fbf9f4] p-4">
-                    <div className="flex items-center gap-2 text-[#b46b00]">
-                      <Flame aria-hidden="true" className="h-5 w-5" />
-                      <span className="text-xs font-bold uppercase tracking-[0.12em]">Streak</span>
-                    </div>
-                    <p className="mt-4 [font-family:var(--font-outfit)] text-3xl font-extrabold tracking-normal">
-                      12
-                    </p>
-                    <p className="mt-1 text-sm text-[#5f5e5e]">days of progress</p>
-                  </div>
-                </div>
-
-                <div className="rounded-[20px] bg-[#311485] p-5 text-white">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#cabeff]">
-                        Quick quiz
-                      </p>
-                      <p className="mt-2 max-w-[320px] [font-family:var(--font-outfit)] text-xl font-bold leading-6">
-                        Which organelle is known as the powerhouse of the cell?
-                      </p>
-                    </div>
-                    <BrainCircuit aria-hidden="true" className="h-7 w-7 shrink-0 text-[#f5d547]" />
-                  </div>
-                  <div className="mt-5 grid gap-2 text-sm">
-                    <span className="rounded-xl bg-white/10 px-3 py-2">A. Ribosome</span>
-                    <span className="rounded-xl bg-[#9b87f5] px-3 py-2 font-bold">
-                      B. Mitochondria
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <section className="border-b border-[#eaecf0] bg-white px-4 py-5 sm:px-6">
+        <div className="mx-auto grid max-w-[1180px] gap-4 text-sm font-bold text-[#475467] sm:grid-cols-3">
+          <div className="flex items-center gap-3">
+            <GraduationCap className="h-5 w-5 text-[#6b4df6]" />
+            Designed for students and self-learners
+          </div>
+          <div className="flex items-center gap-3">
+            <Zap className="h-5 w-5 text-[#087b70]" />
+            Built around fast review loops
+          </div>
+          <div className="flex items-center gap-3">
+            <Trophy className="h-5 w-5 text-[#b57900]" />
+            Progress you can return to tomorrow
           </div>
         </div>
       </section>
 
-      <section className="relative border-y border-black/5 bg-white/70 px-4 py-7 backdrop-blur-sm sm:px-6">
-        <div className="mx-auto flex max-w-[1180px] flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <p className="max-w-[230px] text-xs font-bold uppercase tracking-normal text-[#5f5e5e]">
-            Trusted by learners across ambitious study communities
-          </p>
-          <div className="grid flex-1 grid-cols-2 gap-4 text-center sm:grid-cols-5">
-            {partnerNames.map((partner) => (
-              <span className="[font-family:var(--font-outfit)] text-sm font-extrabold text-[#614db7]/70" key={partner}>
-                {partner}
-              </span>
+      <section className="scroll-mt-28 px-4 py-20 sm:px-6 lg:py-24" id="process">
+        <div className="mx-auto max-w-[1180px]">
+          <SectionHeading
+            description="The homepage should make the product feel quick, useful, and calm. This flow shows the core loop from source material to review."
+            eyebrow="Process"
+            title="From raw notes to active recall in one focused path."
+          />
+
+          <div className="mt-12 grid gap-4 md:grid-cols-3">
+            {steps.map(({ description, icon: Icon, title }, index) => (
+              <article
+                className="relative border border-[#eaecf0] bg-white p-6 shadow-[0_14px_34px_rgba(16,24,40,0.06)]"
+                key={title}
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-md bg-[#eef2ff] text-[#6b4df6]">
+                    <Icon aria-hidden="true" className="h-6 w-6" />
+                  </span>
+                  <span className="text-sm font-extrabold text-[#98a2b3]">
+                    0{index + 1}
+                  </span>
+                </div>
+                <h3 className="mt-8 text-2xl font-extrabold tracking-normal text-[#101828]">
+                  {title}
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-[#667085]">
+                  {description}
+                </p>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="relative scroll-mt-28 px-4 py-24 sm:px-6" id="features">
+      <section
+        className="scroll-mt-28 border-y border-[#eaecf0] bg-white px-4 py-20 sm:px-6 lg:py-24"
+        id="features"
+      >
         <div className="mx-auto max-w-[1180px]">
-          <SectionHeading
-            description="Start with the material you already have. Quizzy turns it into a structured, active study session without adding more preparation work."
-            eyebrow="Features"
-            title="A clearer path from notes to knowledge."
-          />
-
-          <div className="mt-14 grid gap-5 lg:grid-cols-2">
-            <div className="relative overflow-hidden rounded-[28px] border border-black/5 bg-[#e6deff] p-6 shadow-[0_16px_42px_rgba(49,20,133,0.08)] sm:p-8 lg:row-span-2">
-              <div className="relative z-10 max-w-[420px]">
-                <span className="flex h-12 w-12 items-center justify-center rounded-[16px] bg-[#311485] text-[#f5d547]">
-                  <BrainCircuit aria-hidden="true" className="h-6 w-6" />
-                </span>
-                <h3 className="mt-8 [font-family:var(--font-outfit)] text-3xl font-extrabold tracking-[-0.02em] text-[#311485] sm:text-4xl">
-                  AI deck generation that gives you a useful first draft.
-                </h3>
-                <p className="mt-4 text-base leading-7 text-[#311485]/75">
-                  Quizzy picks out key ideas, creates review prompts, and gives you a focused
-                  place to begin. You can study immediately and refine the deck as you go.
-                </p>
-              </div>
-
-              <div className="relative mt-10 min-h-[250px] overflow-hidden rounded-[22px] border border-white/50 bg-white/45 p-4 backdrop-blur-sm">
-                <div className="absolute -right-10 -top-12 h-40 w-40 rounded-full bg-[#ffd9e4]" />
-                <div className="absolute -bottom-12 right-5 h-40 w-52 rotate-[8deg] rounded-[24px] border border-white/40 bg-[#9b87f5]/50" />
-                <div className="absolute -bottom-3 right-10 h-40 w-52 rotate-[-4deg] rounded-[24px] border border-white/60 bg-white/60" />
-                <div className="relative z-10 max-w-[250px] space-y-3">
-                  {["Paste your material", "Generate a smart deck", "Start reviewing"].map(
-                    (item, index) => (
-                      <div
-                        className="flex items-center gap-3 rounded-[14px] bg-white/85 px-3 py-3 text-sm font-bold text-[#311485] shadow-sm"
-                        key={item}
-                      >
-                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#311485] text-xs text-white">
-                          {index + 1}
-                        </span>
-                        {item}
-                      </div>
-                    ),
-                  )}
-                </div>
-              </div>
+          <div className="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-end">
+            <SectionHeading
+              align="left"
+              description="Less decoration, more clarity: every block now explains a real part of the product and gives the page more rhythm."
+              eyebrow="Features"
+              title="Everything a study session needs, without the clutter."
+            />
+            <div className="hidden justify-end lg:flex">
+              <Image
+                alt=""
+                className="h-36 w-36 object-contain drop-shadow-[0_18px_28px_rgba(16,24,40,0.14)]"
+                height={150}
+                src="/icon-3.png"
+                width={150}
+              />
             </div>
+          </div>
 
-            {featureCards.map(({ description, icon: Icon, title }, index) => (
+          <div className="mt-12 grid gap-4 md:grid-cols-2">
+            {features.map(({ description, icon: Icon, title }, index) => (
               <article
-                className={`relative min-h-[290px] overflow-hidden rounded-[28px] border border-black/5 p-6 shadow-[0_16px_42px_rgba(0,0,0,0.05)] sm:p-8 ${
-                  index === 0 ? "bg-[#ffd9e4]" : "bg-[#d7f2e3]"
+                className={`border p-6 shadow-[0_14px_34px_rgba(16,24,40,0.05)] ${
+                  index === 0
+                    ? "border-[#c7d7fe] bg-[#eef2ff]"
+                    : index === 1
+                      ? "border-[#b9ebe3] bg-[#edfdfb]"
+                      : index === 2
+                        ? "border-[#ffe59d] bg-[#fff9e8]"
+                        : "border-[#eaecf0] bg-[#f8fafc]"
                 }`}
                 key={title}
               >
-                <Icon aria-hidden="true" className="h-8 w-8 text-[#311485]" />
-                <h3 className="mt-12 max-w-[440px] [font-family:var(--font-outfit)] text-3xl font-extrabold tracking-[-0.02em] text-[#1b1c19]">
-                  {title}
-                </h3>
-                <p className="mt-3 max-w-[470px] text-base leading-7 text-[#5f5e5e]">
-                  {description}
-                </p>
-                <span className="absolute -bottom-8 -right-5 flex h-28 w-28 items-center justify-center rounded-full bg-white/45">
-                  <ChevronRight aria-hidden="true" className="h-9 w-9 text-[#614db7]" />
-                </span>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="relative scroll-mt-28 bg-white/75 px-4 py-24 sm:px-6" id="how-it-works">
-        <div className="mx-auto max-w-[1180px]">
-          <SectionHeading
-            description="No complicated setup. Build a useful study session while the topic is still fresh in your mind."
-            eyebrow="How it works"
-            title="From upload to active recall in three steps."
-          />
-
-          <div className="mt-14 grid gap-5 md:grid-cols-3">
-            {steps.map(({ description, icon: Icon, title }, index) => (
-              <article
-                className="relative rounded-[24px] border border-black/5 bg-[#fbf9f4] p-6 shadow-[0_12px_30px_rgba(0,0,0,0.04)]"
-                key={title}
-              >
-                <span className="absolute right-5 top-4 [font-family:var(--font-outfit)] text-5xl font-extrabold text-[#614db7]/10">
-                  0{index + 1}
-                </span>
-                <span className="flex h-12 w-12 items-center justify-center rounded-[16px] bg-[#e6deff] text-[#311485]">
+                <span className="flex h-12 w-12 items-center justify-center rounded-md bg-white text-[#101828] shadow-sm">
                   <Icon aria-hidden="true" className="h-6 w-6" />
                 </span>
-                <h3 className="mt-12 [font-family:var(--font-outfit)] text-2xl font-extrabold tracking-[-0.02em]">
+                <h3 className="mt-8 text-2xl font-extrabold tracking-normal text-[#101828]">
                   {title}
                 </h3>
-                <p className="mt-3 text-base leading-7 text-[#5f5e5e]">{description}</p>
+                <p className="mt-3 max-w-[520px] text-sm leading-6 text-[#475467]">
+                  {description}
+                </p>
               </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="relative scroll-mt-28 px-4 py-24 sm:px-6" id="why-quizzy">
+      <section className="scroll-mt-28 px-4 py-20 sm:px-6 lg:py-24" id="demo">
         <div className="mx-auto max-w-[1180px]">
-          <SectionHeading
-            description="Quizzy keeps the experience light enough to begin quickly and structured enough to keep improving."
-            eyebrow="Why Quizzy"
-            title="Make every study session count."
-          />
-
-          <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {benefits.map(({ description, icon: Icon, title }) => (
-              <article key={title}>
-                <span className="flex h-12 w-12 items-center justify-center rounded-full border border-black/5 bg-white text-[#614db7] shadow-sm">
-                  <Icon aria-hidden="true" className="h-5 w-5" />
-                </span>
-                <h3 className="mt-5 [font-family:var(--font-outfit)] text-xl font-extrabold tracking-[-0.01em]">
-                  {title}
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-[#5f5e5e]">{description}</p>
-              </article>
-            ))}
+          <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+            <div>
+              <SectionHeading
+                align="left"
+                description="The page now shows a concrete learning state: generated cards, an active quiz, and the next review signal."
+                eyebrow="Product preview"
+                title="Make the study loop visible before users sign up."
+              />
+              <div className="mt-8 flex flex-wrap gap-3">
+                {subjects.map((subject) => (
+                  <span
+                    className="rounded-full border border-[#d0d5dd] bg-white px-4 py-2 text-sm font-bold text-[#475467]"
+                    key={subject}
+                  >
+                    {subject}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <ProductPreview />
           </div>
         </div>
       </section>
 
-      <section className="relative scroll-mt-28 bg-[#e6deff] px-4 py-24 sm:px-6" id="reviews">
+      <section
+        className="scroll-mt-28 border-y border-[#eaecf0] bg-[#101828] px-4 py-20 text-white sm:px-6 lg:py-24"
+        id="reviews"
+      >
         <div className="mx-auto max-w-[1180px]">
           <SectionHeading
-            description="A simpler study flow makes it easier to show up, practice, and build confidence one session at a time."
+            description="A sharper presentation still keeps the promise simple: start faster, practice better, and come back tomorrow."
             eyebrow="Reviews"
-            title="Learners feel the difference."
+            title="Learners come for speed and stay for momentum."
           />
 
-          <div className="mt-14 grid gap-5 lg:grid-cols-3">
+          <div className="mt-12 grid gap-4 lg:grid-cols-3">
             {testimonials.map(({ initials, name, quote, role }) => (
-              <article
-                className="rounded-[24px] border border-white/60 bg-white/75 p-6 shadow-[0_12px_30px_rgba(49,20,133,0.06)] backdrop-blur-sm"
-                key={name}
-              >
-                <div className="flex gap-1 text-[#e9a400]">
+              <article className="border border-white/10 bg-white/6 p-6" key={name}>
+                <div className="flex gap-1 text-[#ffcf4a]">
                   {Array.from({ length: 5 }).map((_, index) => (
                     <Star aria-hidden="true" className="h-4 w-4 fill-current" key={index} />
                   ))}
                 </div>
-                <p className="mt-6 min-h-[120px] text-base leading-7 text-[#5f5e5e]">
+                <p className="mt-6 min-h-[144px] text-base leading-7 text-white/72">
                   &ldquo;{quote}&rdquo;
                 </p>
-                <div className="mt-7 flex items-center gap-3 border-t border-black/5 pt-5">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#311485] text-xs font-extrabold text-white">
+                <div className="mt-7 flex items-center gap-3 border-t border-white/10 pt-5">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#35d0ba] text-xs font-extrabold text-[#063b35]">
                     {initials}
                   </span>
                   <div>
-                    <p className="font-bold text-[#1b1c19]">{name}</p>
-                    <p className="text-sm text-[#5f5e5e]">{role}</p>
+                    <p className="font-extrabold text-white">{name}</p>
+                    <p className="text-sm text-white/55">{role}</p>
                   </div>
                 </div>
               </article>
@@ -466,11 +651,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="relative scroll-mt-28 bg-white px-4 py-24 sm:px-6" id="faq">
-        <div className="mx-auto grid max-w-[1180px] gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+      <section className="scroll-mt-28 bg-white px-4 py-20 sm:px-6 lg:py-24" id="faq">
+        <div className="mx-auto grid max-w-[1180px] gap-10 lg:grid-cols-[0.85fr_1.15fr]">
           <SectionHeading
             align="left"
-            description="A few quick answers before you build your first deck."
+            description="A few quick answers before the first deck."
             eyebrow="FAQ"
             title="Questions, answered."
           />
@@ -478,16 +663,16 @@ export default function HomePage() {
           <div className="space-y-3">
             {faqs.map(({ answer, question }) => (
               <details
-                className="group rounded-[18px] border border-black/5 bg-[#fbf9f4] px-5 py-4 open:bg-[#e6deff]"
+                className="group border border-[#eaecf0] bg-[#f8fafc] px-5 py-4 open:border-[#c7d7fe] open:bg-[#eef2ff]"
                 key={question}
               >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-5 font-bold text-[#1b1c19]">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-5 font-extrabold text-[#101828]">
                   {question}
-                  <span className="text-2xl leading-none text-[#614db7] transition group-open:rotate-45">
+                  <span className="text-2xl leading-none text-[#6b4df6] transition group-open:rotate-45">
                     +
                   </span>
                 </summary>
-                <p className="mt-3 max-w-[740px] pr-8 text-sm leading-6 text-[#5f5e5e]">
+                <p className="mt-3 max-w-[760px] pr-8 text-sm leading-6 text-[#667085]">
                   {answer}
                 </p>
               </details>
@@ -496,87 +681,57 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="relative px-4 py-10 sm:px-6 sm:py-16">
-        <div className="relative mx-auto grid max-w-[1180px] overflow-hidden rounded-[32px] border border-black/5 bg-[#9b87f5] p-7 text-[#311485] shadow-[0_20px_60px_rgba(0,0,0,0.1)] sm:p-10 lg:grid-cols-[1fr_340px] lg:items-center lg:gap-8">
-          <div className="absolute -bottom-12 -left-8 h-36 w-52 rotate-[-8deg] rounded-2xl border border-black/10 bg-[#e6deff]/50" />
-          <div className="absolute right-12 top-8 hidden h-20 w-28 rotate-[12deg] rounded-2xl border border-black/10 bg-[#f5d547]/70 lg:block" />
-          <div className="relative z-10">
-            <p className="text-xs font-bold uppercase tracking-normal text-[#311485]/75">
-              Your next study session
+      <section className="px-4 py-16 sm:px-6">
+        <div className="mx-auto grid max-w-[1180px] gap-8 border border-[#101828] bg-[#ffec99] p-6 shadow-[10px_10px_0_rgba(16,24,40,0.16)] sm:p-8 lg:grid-cols-[1fr_300px] lg:items-center">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-normal text-[#6b4df6]">
+              Ready for the next session
             </p>
-            <h2 className="mt-4 max-w-[720px] [font-family:var(--font-outfit)] text-4xl font-extrabold tracking-[-0.03em] sm:text-5xl">
-              Spend less time preparing. Start learning now.
+            <h2 className="mt-3 max-w-[760px] text-3xl font-extrabold leading-tight tracking-normal text-[#101828] sm:text-4xl">
+              Turn the notes waiting on your desk into a study plan you can use today.
             </h2>
-            <p className="mt-4 max-w-[660px] text-base leading-7 text-[#311485]/80">
-              Turn the notes waiting on your desk into a focused deck and a clear next step.
-            </p>
-            <Link
-              className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#1b1c19] px-6 py-4 font-bold text-white shadow-xl shadow-black/10 transition hover:-translate-y-1 hover:bg-[#30312e]"
-              href="/login"
-            >
-              Start with Quizzy
-              <ArrowRight aria-hidden="true" className="h-5 w-5" />
-            </Link>
           </div>
-
-          <div className="relative mt-8 hidden min-h-[230px] lg:block">
-            <div className="absolute bottom-0 right-0 w-full max-w-[320px] rounded-[28px] border border-white/30 bg-white/30 p-6 shadow-[4px_4px_0_rgba(0,0,0,0.08)] backdrop-blur-xl">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex -space-x-2">
-                  {["AN", "MK"].map((initials, index) => (
-                    <span
-                      className={`flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#9b87f5] text-[10px] font-extrabold ${
-                        index === 0
-                          ? "bg-[#ffd9e4] text-[#531c34]"
-                          : "bg-[#cabeff] text-[#1d0061]"
-                      }`}
-                      key={initials}
-                    >
-                      {initials}
-                    </span>
-                  ))}
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#9b87f5] bg-[#311485] text-[10px] font-extrabold text-white">
-                    +12k
-                  </span>
-                </div>
-                <Sparkles aria-hidden="true" className="h-5 w-5 text-[#311485]" />
-              </div>
-              <p className="mt-5 text-base leading-7 text-[#311485]">
-                A focused deck is only a few minutes away.
-              </p>
-            </div>
-          </div>
+          <Link
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#101828] px-6 py-4 text-base font-extrabold text-white transition hover:-translate-y-0.5 hover:bg-[#252f3f]"
+            href="/register"
+          >
+            Create your deck
+            <ArrowRight aria-hidden="true" className="h-5 w-5" />
+          </Link>
         </div>
       </section>
 
-      <footer className="relative px-4 pb-8 pt-12 sm:px-6">
-        <div className="mx-auto max-w-[1180px] border-t border-black/5 pt-8">
+      <footer className="border-t border-[#eaecf0] bg-white px-4 pb-8 pt-10 sm:px-6">
+        <div className="mx-auto max-w-[1180px]">
           <div className="flex flex-col gap-8 sm:flex-row sm:items-center sm:justify-between">
             <Link className="flex items-center gap-3" href="/">
-              <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#1b1c19] text-white">
+              <span className="flex h-10 w-10 items-center justify-center rounded-md bg-[#101828] text-white">
                 <BrainCircuit aria-hidden="true" className="h-5 w-5" />
               </span>
-              <span className="[font-family:var(--font-outfit)] text-lg font-extrabold tracking-normal text-[#1b1c19]">
+              <span className="text-lg font-extrabold tracking-normal text-[#101828]">
                 Quizzy AI
               </span>
             </Link>
-            <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm font-semibold text-[#5f5e5e]">
-              <a className="transition hover:text-[#614db7]" href="#features">
+            <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm font-bold text-[#667085]">
+              <a className="transition hover:text-[#6b4df6]" href="#features">
                 Features
               </a>
-              <a className="transition hover:text-[#614db7]" href="#how-it-works">
-                How it works
+              <a className="transition hover:text-[#6b4df6]" href="#process">
+                Process
               </a>
-              <a className="transition hover:text-[#614db7]" href="#reviews">
+              <a className="transition hover:text-[#6b4df6]" href="#demo">
+                Demo
+              </a>
+              <a className="transition hover:text-[#6b4df6]" href="#reviews">
                 Reviews
               </a>
-              <a className="transition hover:text-[#614db7]" href="#faq">
+              <a className="transition hover:text-[#6b4df6]" href="#faq">
                 FAQs
               </a>
             </div>
           </div>
-          <div className="mt-8 flex flex-col gap-2 border-t border-black/5 pt-5 text-xs text-[#5f5e5e] sm:flex-row sm:justify-between">
-            <p>© 2026 Quizzy. Study smarter, remember more.</p>
+          <div className="mt-8 flex flex-col gap-2 border-t border-[#eaecf0] pt-5 text-xs font-semibold text-[#98a2b3] sm:flex-row sm:justify-between">
+            <p>(c) 2026 Quizzy. Study smarter, remember more.</p>
             <p>AI-powered learning for ambitious students.</p>
           </div>
         </div>

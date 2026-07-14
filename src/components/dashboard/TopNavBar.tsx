@@ -17,14 +17,22 @@ export function TopNavBar({
   searchPlaceholder = "Search your decks",
 }: TopNavBarProps) {
   const router = useRouter();
-  const userQuery = useQuery({ queryKey: ["auth", "me"], queryFn: () => authAPI.getMe(), retry: false });
+  const userQuery = useQuery({
+    queryKey: ["auth", "me"],
+    queryFn: () => authAPI.getMe(),
+    retry: false,
+  });
   const user = userQuery.data?.data;
 
   function handleSearch(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const keyword = String(form.get("keyword") ?? "").trim();
-    router.push(keyword ? `/my-library?keyword=${encodeURIComponent(keyword)}` : "/my-library");
+    router.push(
+      keyword
+        ? `/my-library?tab=all&keyword=${encodeURIComponent(keyword)}`
+        : "/my-library",
+    );
   }
 
   return (
@@ -38,7 +46,10 @@ export function TopNavBar({
         <Menu className="h-5 w-5" />
       </button>
 
-      <form className="relative mx-auto w-full max-w-[720px]" onSubmit={handleSearch}>
+      <form
+        className="relative mx-auto w-full max-w-[720px]"
+        onSubmit={handleSearch}
+      >
         <Search
           aria-hidden="true"
           className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8a8784]"

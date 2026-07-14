@@ -1,4 +1,5 @@
 import { CheckCircle2, ChevronLeft, XCircle } from "lucide-react";
+import { AutoFitText } from "@/components/ui/auto-fit-text";
 import {
   type FlashcardStudyItem,
   type ReviewRating,
@@ -32,32 +33,42 @@ export function FlashcardPanel({
         type="button"
       >
         <span
-          className={`relative block min-h-[340px] rounded-[30px] transition-transform duration-500 [transform-style:preserve-3d] ${
+          className={`relative block min-h-[420px] rounded-[30px] transition-transform duration-500 [transform-style:preserve-3d] sm:min-h-[460px] ${
             isBackVisible ? "[transform:rotateY(180deg)]" : ""
           }`}
         >
-          <span className="absolute inset-0 flex flex-col items-center justify-center rounded-[30px] border border-black/5 bg-[#e2dff7] p-8 text-center shadow-inner [backface-visibility:hidden]">
-            <span className="quizlet-font text-xs font-bold uppercase text-[#b0aaa2]">
+          <span className="absolute inset-0 flex flex-col items-center rounded-[30px] border border-black/5 bg-[#e2dff7] p-6 text-center shadow-inner [backface-visibility:hidden] sm:p-8">
+            <span className="quizlet-font shrink-0 text-xs font-bold uppercase text-[#b0aaa2]">
               Term
             </span>
-            <span className="quizlet-card-title mt-5 max-w-[720px] text-3xl text-[#1b1c19] sm:text-5xl">
+            <AutoFitText
+              className="quizlet-card-title max-w-[820px] text-[#1b1c19]"
+              containerClassName="my-4"
+              maxFontSize={50}
+              minFontSize={17}
+            >
               {item.front}
-            </span>
+            </AutoFitText>
             {item.hint && (
-              <span className="mt-6 rounded-full bg-white px-4 py-2 text-xs font-bold text-[#614db7]">
+              <span className="shrink-0 rounded-full bg-white px-4 py-2 text-xs font-bold text-[#614db7]">
                 Hint: {item.hint}
               </span>
             )}
           </span>
-          <span className="absolute inset-0 flex flex-col items-center justify-center rounded-[30px] border border-black/5 bg-[#e2dff7] p-8 text-center shadow-inner [backface-visibility:hidden] [transform:rotateY(180deg)]">
-            <span className="quizlet-font text-xs font-bold uppercase text-[#b0aaa2]">
+          <span className="absolute inset-0 flex flex-col items-center rounded-[30px] border border-black/5 bg-[#e2dff7] p-6 text-center shadow-inner [backface-visibility:hidden] [transform:rotateY(180deg)] sm:p-8">
+            <span className="quizlet-font shrink-0 text-xs font-bold uppercase text-[#b0aaa2]">
               Definition
             </span>
-            <span className="quizlet-card-title mt-5 max-w-[720px] text-3xl text-[#311485] sm:text-5xl">
+            <AutoFitText
+              className="quizlet-card-title max-w-[820px] text-[#311485]"
+              containerClassName="my-4"
+              maxFontSize={50}
+              minFontSize={17}
+            >
               {item.back}
-            </span>
+            </AutoFitText>
             {item.explanation && (
-              <span className="quizlet-font mt-6 max-w-[680px] text-sm leading-6 text-[#777474]">
+              <span className="quizlet-font max-h-20 max-w-[680px] shrink-0 overflow-hidden text-sm leading-6 text-[#777474]">
                 {item.explanation}
               </span>
             )}

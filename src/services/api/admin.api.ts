@@ -4,11 +4,12 @@ import {
   type PageMeta,
   type QueryParams,
 } from "./client";
-import type { Deck } from "./decks.api";
 
 export type AdminActivityInterval = "day" | "week" | "month";
 export type AdminUserRole = "student" | "teacher" | "admin";
 export type AdminUserStatus = "active" | "suspended" | "deleted" | string;
+export type AdminDeckVisibility = "private" | "link" | "public";
+export type AdminDeckModerationStatus = "active" | "hidden" | "deleted";
 
 export interface AdminDashboardTotals {
   users: number;
@@ -76,26 +77,91 @@ export interface AdminUserSearchParams extends QueryParams {
   status?: AdminUserStatus;
 }
 
+export interface AdminDeckOwner {
+  _id?: string;
+  id?: string;
+  email?: string;
+  name?: string;
+  role?: AdminUserRole;
+}
+
+export interface AdminDeckCard {
+  _id?: string;
+  id?: string;
+  front?: string;
+  back?: string;
+  createdAt?: string;
+}
+
+export interface AdminDeckMetrics {
+  sessionCount: number;
+  learnerCount: number;
+  completionRate: number;
+  reviewCount: number;
+  accuracy: number;
+}
+
+export interface AdminDeck {
+  _id?: string;
+  id?: string;
+  title: string;
+  description?: string;
+  visibility: AdminDeckVisibility;
+  createdBy?: string;
+  owner?: AdminDeckOwner;
+  sourceType?: "manual" | "ai";
+  tags?: string[];
+  cardCount?: number;
+  lastStudiedAt?: string;
+  moderationStatus?: Exclude<AdminDeckModerationStatus, "deleted">;
+  moderationReason?: string;
+  moderatedAt?: string;
+  deletedAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  metrics?: AdminDeckMetrics;
+  cards?: {
+    data: AdminDeckCard[];
+    meta?: PageMeta;
+  };
+}
+
+export interface AdminDeckSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
+  keyword?: string;
+  visibility?: AdminDeckVisibility;
+  moderationStatus?: AdminDeckModerationStatus;
+  ownerId?: string;
+}
+
+export interface AdminCreateDeckInput {
+  title: string;
+  description?: string;
+  visibility?: AdminDeckVisibility;
+  tags?: string[];
+  ownerId: string;
+}
+
+export interface AdminUpdateDeckInput {
+  title?: string;
+  description?: string;
+  visibility?: AdminDeckVisibility;
+  tags?: string[];
+  ownerId?: string;
+}
+
+export interface AdminModerateDeckInput {
+  status: Exclude<AdminDeckModerationStatus, "deleted">;
+  reason?: string;
+}
+
 export interface AdminUpdateUserRoleInput {
   role: AdminUserRole;
 }
 
 export interface AdminUpdateUserStatusInput {
   status: Exclude<AdminUserStatus, "deleted">;
-  reason?: string;
-}
-
-export interface AdminDeckQueryDto extends QueryParams {
-  page?: number;
-  take?: number;
-  keyword?: string;
-  visibility?: "private" | "link" | "public";
-  moderationStatus?: "active" | "hidden" | "deleted";
-  ownerId?: string;
-}
-
-export interface AdminModerateDeckInput {
-  status: "active" | "hidden";
   reason?: string;
 }
 
@@ -336,22 +402,24 @@ export interface AdminReviewAcademicDocumentInput {
   note?: string;
 }
 
-type AdminAcademicListPayload<T> =
+type AdminListPayload<T> =
   | T[]
   | {
       data: T[];
       meta?: PageMeta;
     };
 
-async function getAdminAcademicList<T>(
+async function getAdminList<T>(
   endpoint: string,
   params: QueryParams,
 ): Promise<ApiResponse<T[]>> {
-  const response = await apiClient.get<ApiResponse<AdminAcademicListPayload<T>>>(
+  const response = await apiClient.get<ApiResponse<AdminListPayload<T>>>(
     endpoint,
     params,
   );
-  const nestedPayload = Array.isArray(response.data) ? undefined : response.data;
+  const nestedPayload = Array.isArray(response.data)
+    ? undefined
+    : response.data;
 
   return {
     ...response,
@@ -362,7 +430,9 @@ async function getAdminAcademicList<T>(
 
 export const adminAPI = {
   getDashboardSummary: () =>
-    apiClient.get<ApiResponse<AdminDashboardSummary>>("/admin/dashboard/summary"),
+    apiClient.get<ApiResponse<AdminDashboardSummary>>(
+      "/admin/dashboard/summary",
+    ),
   getActivityAnalytics: (interval: AdminActivityInterval = "day") =>
     apiClient.get<ApiResponse<AdminActivityAnalytics>>(
       "/admin/analytics/activity",
@@ -373,9 +443,15 @@ export const adminAPI = {
   getUser: (userId: string) =>
     apiClient.get<ApiResponse<AdminUser>>(`/admin/users/${userId}`),
   updateUserRole: (userId: string, data: AdminUpdateUserRoleInput) =>
-    apiClient.patch<ApiResponse<AdminUser>>(`/admin/users/${userId}/role`, data),
+    apiClient.patch<ApiResponse<AdminUser>>(
+      `/admin/users/${userId}/role`,
+      data,
+    ),
   updateUserStatus: (userId: string, data: AdminUpdateUserStatusInput) =>
-    apiClient.patch<ApiResponse<AdminUser>>(`/admin/users/${userId}/status`, data),
+    apiClient.patch<ApiResponse<AdminUser>>(
+      `/admin/users/${userId}/status`,
+      data,
+    ),
   suspendUser: (userId: string, reason?: string) =>
     apiClient.patch<ApiResponse<AdminUser>>(`/admin/users/${userId}/status`, {
       status: "suspended",
@@ -393,41 +469,66 @@ export const adminAPI = {
   deleteUser: (userId: string) =>
     apiClient.delete<ApiResponse<AdminUser>>(`/admin/users/${userId}`),
   restoreUser: (userId: string) =>
-    apiClient.post<ApiResponse<AdminUser>>(`/admin/users/${userId}/restore`, {}),
+    apiClient.post<ApiResponse<AdminUser>>(
+      `/admin/users/${userId}/restore`,
+      {},
+    ),
 
   // Decks
-  getDecks: (params: AdminDeckQueryDto = {}) =>
-    apiClient.get<ApiResponse<{ data: Deck[]; meta: Record<string, unknown> }>>("/admin/decks", params),
-  getDeck: (deckId: string) =>
-    apiClient.get<ApiResponse<Deck>>(`/admin/decks/${deckId}`),
+  getDecks: (params: AdminDeckSearchParams = {}) =>
+    getAdminList<AdminDeck>("/admin/decks", params),
+  getDeck: (deckId: string, params: QueryParams = {}) =>
+    apiClient.get<ApiResponse<AdminDeck>>(`/admin/decks/${deckId}`, {
+      ...params,
+    }),
+  createDeck: (data: AdminCreateDeckInput) =>
+    apiClient.post<ApiResponse<AdminDeck>>("/admin/decks", data),
+  updateDeck: (deckId: string, data: AdminUpdateDeckInput) =>
+    apiClient.patch<ApiResponse<AdminDeck>>(`/admin/decks/${deckId}`, data),
   moderateDeck: (deckId: string, data: AdminModerateDeckInput) =>
-    apiClient.patch<ApiResponse<Deck>>(`/admin/decks/${deckId}/moderation`, data),
+    apiClient.patch<ApiResponse<AdminDeck>>(
+      `/admin/decks/${deckId}/moderation`,
+      data,
+    ),
   deleteDeck: (deckId: string) =>
-    apiClient.delete<ApiResponse<{ deleted: boolean }>>(`/admin/decks/${deckId}`),
+    apiClient.delete<ApiResponse<AdminDeck>>(`/admin/decks/${deckId}`),
   restoreDeck: (deckId: string) =>
-    apiClient.post<ApiResponse<Deck>>(`/admin/decks/${deckId}/restore`, {}),
+    apiClient.post<ApiResponse<AdminDeck>>(`/admin/decks/${deckId}/restore`, {}),
 
   // Study
   getStudySummary: (params: AdminStudySummarySearchParams = {}) =>
-    apiClient.get<ApiResponse<AdminStudySummary>>("/admin/study/summary", { ...params }),
+    apiClient.get<ApiResponse<AdminStudySummary>>("/admin/study/summary", {
+      ...params,
+    }),
   getStudySessions: (params: AdminStudySessionSearchParams = {}) =>
-    apiClient.get<ApiResponse<AdminStudySession[]>>("/admin/study-sessions", { ...params }),
+    apiClient.get<ApiResponse<AdminStudySession[]>>("/admin/study-sessions", {
+      ...params,
+    }),
   getStudySession: (sessionId: string) =>
-    apiClient.get<ApiResponse<AdminStudySession>>(`/admin/study-sessions/${sessionId}`),
-  getStudySessionReviews: (sessionId: string, params: AdminStudySessionReviewSearchParams = {}) =>
-    apiClient.get<ApiResponse<AdminCardReview[]>>(`/admin/study-sessions/${sessionId}/reviews`, { ...params }),
+    apiClient.get<ApiResponse<AdminStudySession>>(
+      `/admin/study-sessions/${sessionId}`,
+    ),
+  getStudySessionReviews: (
+    sessionId: string,
+    params: AdminStudySessionReviewSearchParams = {},
+  ) =>
+    apiClient.get<ApiResponse<AdminCardReview[]>>(
+      `/admin/study-sessions/${sessionId}/reviews`,
+      { ...params },
+    ),
 
   // Audit Logs
   getAuditLogs: (params: AdminAuditLogSearchParams = {}) =>
-    apiClient.get<ApiResponse<AdminAuditLog[]>>("/admin/audit-logs", { ...params }),
+    apiClient.get<ApiResponse<AdminAuditLog[]>>("/admin/audit-logs", {
+      ...params,
+    }),
 
   // Academic Management - Departments
-  getAcademicDepartments: (
-    params: AdminAcademicDepartmentSearchParams = {},
-  ) => getAdminAcademicList<AdminAcademicDepartment>(
-    "/admin/academic/departments",
-    params,
-  ),
+  getAcademicDepartments: (params: AdminAcademicDepartmentSearchParams = {}) =>
+    getAdminList<AdminAcademicDepartment>(
+      "/admin/academic/departments",
+      params,
+    ),
   createAcademicDepartment: (data: AdminCreateAcademicDepartmentInput) =>
     apiClient.post<ApiResponse<AdminAcademicDepartment>>(
       "/admin/academic/departments",
@@ -436,10 +537,11 @@ export const adminAPI = {
   updateAcademicDepartment: (
     departmentId: string,
     data: AdminUpdateAcademicDepartmentInput,
-  ) => apiClient.patch<ApiResponse<AdminAcademicDepartment>>(
-    `/admin/academic/departments/${departmentId}`,
-    data,
-  ),
+  ) =>
+    apiClient.patch<ApiResponse<AdminAcademicDepartment>>(
+      `/admin/academic/departments/${departmentId}`,
+      data,
+    ),
   deactivateAcademicDepartment: (departmentId: string) =>
     apiClient.delete<ApiResponse<AdminAcademicDepartment>>(
       `/admin/academic/departments/${departmentId}`,
@@ -452,7 +554,7 @@ export const adminAPI = {
 
   // Academic Management - Subjects
   getAcademicSubjects: (params: AdminAcademicSubjectSearchParams = {}) =>
-    getAdminAcademicList<AdminAcademicSubject>(
+    getAdminList<AdminAcademicSubject>(
       "/admin/academic/subjects",
       params,
     ),
@@ -464,10 +566,11 @@ export const adminAPI = {
   updateAcademicSubject: (
     subjectId: string,
     data: AdminUpdateAcademicSubjectInput,
-  ) => apiClient.patch<ApiResponse<AdminAcademicSubject>>(
-    `/admin/academic/subjects/${subjectId}`,
-    data,
-  ),
+  ) =>
+    apiClient.patch<ApiResponse<AdminAcademicSubject>>(
+      `/admin/academic/subjects/${subjectId}`,
+      data,
+    ),
   deactivateAcademicSubject: (subjectId: string) =>
     apiClient.delete<ApiResponse<AdminAcademicSubject>>(
       `/admin/academic/subjects/${subjectId}`,
@@ -480,7 +583,7 @@ export const adminAPI = {
 
   // Academic Management - Document Review
   getAcademicDocuments: (params: AdminAcademicDocumentSearchParams = {}) =>
-    getAdminAcademicList<AdminAcademicDocument>(
+    getAdminList<AdminAcademicDocument>(
       "/admin/academic/documents",
       params,
     ),
@@ -491,17 +594,19 @@ export const adminAPI = {
   updateAcademicDocument: (
     documentId: string,
     data: AdminUpdateAcademicDocumentInput,
-  ) => apiClient.patch<ApiResponse<AdminAcademicDocument>>(
-    `/admin/academic/documents/${documentId}`,
-    data,
-  ),
+  ) =>
+    apiClient.patch<ApiResponse<AdminAcademicDocument>>(
+      `/admin/academic/documents/${documentId}`,
+      data,
+    ),
   reviewAcademicDocument: (
     documentId: string,
     data: AdminReviewAcademicDocumentInput,
-  ) => apiClient.patch<ApiResponse<AdminAcademicDocument>>(
-    `/admin/academic/documents/${documentId}/review`,
-    data,
-  ),
+  ) =>
+    apiClient.patch<ApiResponse<AdminAcademicDocument>>(
+      `/admin/academic/documents/${documentId}/review`,
+      data,
+    ),
   archiveAcademicDocument: (documentId: string) =>
     apiClient.delete<ApiResponse<AdminAcademicDocument>>(
       `/admin/academic/documents/${documentId}`,

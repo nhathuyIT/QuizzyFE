@@ -1,57 +1,75 @@
-import React from 'react';
+import { AlertTriangle, BrainCircuit, Loader2, RefreshCw } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
 
 export interface ChatMessageProps {
-  type: 'user' | 'bot' | 'typing';
-  content?: React.ReactNode;
+  role: "user" | "assistant";
+  content: string;
+  isPending?: boolean;
+  isError?: boolean;
+  onRetry?: () => void;
 }
 
-export function ChatMessage({ type, content }: ChatMessageProps) {
-  if (type === 'user') {
-    return (
-      <div className="flex justify-end pl-12 md:pl-24">
-        <div className="bg-primary text-on-primary rounded-2xl rounded-tr-sm p-md font-body-md text-body-md shadow-sm max-w-[42rem] relative group">
-          {content}
-          <div className="absolute -left-10 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button className="text-outline hover:text-primary"><span className="material-symbols-outlined text-[20px]">content_copy</span></button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+export function ChatMessage({
+  role,
+  content,
+  isPending = false,
+  isError = false,
+  onRetry,
+}: ChatMessageProps) {
+  const isUser = role === "user";
 
-  if (type === 'typing') {
+  if (isUser) {
     return (
-      <div className="flex justify-start gap-md pr-12 md:pr-24">
-        <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-primary border border-outline-variant shrink-0 mt-1 shadow-sm">
-          <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>smart_toy</span>
-        </div>
-        <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl rounded-tl-sm p-md text-on-surface font-body-md text-body-md shadow-sm flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-outline animate-pulse"></span>
-          <span className="w-2 h-2 rounded-full bg-outline animate-pulse" style={{ animationDelay: "150ms" }}></span>
-          <span className="w-2 h-2 rounded-full bg-outline animate-pulse" style={{ animationDelay: "300ms" }}></span>
+      <div className="flex justify-end pl-10 sm:pl-20">
+        <div className="max-w-[760px] rounded-[22px] rounded-br-md bg-[#614db7] px-5 py-4 text-sm font-medium leading-6 text-white shadow-sm">
+          {content}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex justify-start gap-md pr-12 md:pr-24">
-      <div className="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-primary border border-outline-variant shrink-0 mt-1 shadow-sm">
-        <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>smart_toy</span>
-      </div>
-      <div className="bg-surface-container-lowest border border-outline-variant rounded-2xl rounded-tl-sm p-lg text-on-surface font-body-md text-body-md shadow-sm max-w-3xl flex flex-col gap-md">
-        {content}
-        <div className="flex items-center gap-sm mt-sm">
-          <button className="flex items-center gap-xs text-on-surface-variant hover:text-primary font-label-sm text-label-sm transition-colors bg-surface-bright px-sm py-xs rounded-md border border-outline-variant">
-            <span className="material-symbols-outlined text-[16px]">thumb_up</span> Helpful
+    <div className="flex justify-start gap-3 pr-10 sm:pr-20">
+      <span
+        className={cn(
+          "mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-white shadow-sm",
+          isError ? "bg-[#a33a3a]" : "bg-[#1b1c19]",
+        )}
+      >
+        {isError ? (
+          <AlertTriangle className="h-5 w-5" />
+        ) : (
+          <BrainCircuit className="h-5 w-5" />
+        )}
+      </span>
+
+      <div
+        className={cn(
+          "max-w-[760px] rounded-[22px] rounded-tl-md border px-5 py-4 text-sm font-medium leading-6 shadow-sm",
+          isError
+            ? "border-[#ffd0d0] bg-[#fff0f0] text-[#8f2f2f]"
+            : "border-black/5 bg-white text-[#4f4c49]",
+        )}
+      >
+        {isPending ? (
+          <div className="flex items-center gap-2 font-bold text-[#777474]">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Thinking...
+          </div>
+        ) : (
+          <p className="whitespace-pre-wrap">{content}</p>
+        )}
+
+        {isError && onRetry ? (
+          <button
+            className="mt-3 inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-xs font-extrabold text-[#a33a3a] transition hover:bg-[#ffe5e5]"
+            onClick={onRetry}
+            type="button"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+            Retry
           </button>
-          <button className="flex items-center gap-xs text-on-surface-variant hover:text-error font-label-sm text-label-sm transition-colors bg-surface-bright px-sm py-xs rounded-md border border-outline-variant">
-            <span className="material-symbols-outlined text-[16px]">thumb_down</span>
-          </button>
-          <button className="flex items-center gap-xs text-on-surface-variant hover:text-secondary font-label-sm text-label-sm transition-colors bg-surface-bright px-sm py-xs rounded-md border border-outline-variant ml-auto">
-            <span className="material-symbols-outlined text-[16px]">refresh</span> Retry
-          </button>
-        </div>
+        ) : null}
       </div>
     </div>
   );

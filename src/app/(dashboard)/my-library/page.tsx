@@ -11,16 +11,16 @@ import {
   Layers3,
   LockKeyhole,
   Plus,
-  Search,
   Sparkles,
   Star,
 } from "lucide-react";
 import { decksAPI, type Deck, type DeckVisibility } from "@/services/api";
 import { CreateDeckModal } from "@/features/my-library/components/CreateDeckModal";
 
-type DeckTab = "mine" | "starred";
+type DeckTab = "all" | "mine" | "starred";
 
 const tabs: Array<{ id: DeckTab; label: string }> = [
+  { id: "all", label: "All decks" },
   { id: "mine", label: "My decks" },
   { id: "starred", label: "Starred decks" },
 ];
@@ -30,16 +30,35 @@ const visibilityOptions = ["all", "private", "link", "public"] as const;
 export default function MyLibraryPage() {
   const searchParams = useSearchParams();
   const initialKeyword = searchParams.get("keyword") ?? "";
+  const tabParam = searchParams.get("tab");
+  const initialTab: DeckTab =
+    tabParam === "all" || tabParam === "mine" || tabParam === "starred"
+      ? tabParam
+      : initialKeyword
+        ? "all"
+        : "mine";
 
-  return <MyDecksContent initialKeyword={initialKeyword} key={initialKeyword} />;
+  return (
+    <MyDecksContent
+      initialKeyword={initialKeyword}
+      initialTab={initialTab}
+      key={`${initialTab}:${initialKeyword}`}
+    />
+  );
 }
 
-function MyDecksContent({ initialKeyword }: { initialKeyword: string }) {
+function MyDecksContent({
+  initialKeyword,
+  initialTab,
+}: {
+  initialKeyword: string;
+  initialTab: DeckTab;
+}) {
   const queryClient = useQueryClient();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [keyword, setKeyword] = useState(initialKeyword);
+  const keyword = initialKeyword;
   const [visibility, setVisibility] = useState<DeckVisibility | "all">("all");
-  const [activeTab, setActiveTab] = useState<DeckTab>("mine");
+  const [activeTab, setActiveTab] = useState<DeckTab>(initialTab);
   const [page, setPage] = useState(1);
 
   const deckParams = {
@@ -51,10 +70,15 @@ function MyDecksContent({ initialKeyword }: { initialKeyword: string }) {
 
   const decksQuery = useQuery({
     queryKey: ["decks", activeTab, deckParams],
-    queryFn: () =>
-      activeTab === "mine"
+    queryFn: () => {
+      if (activeTab === "all") {
+        return decksAPI.search(deckParams);
+      }
+
+      return activeTab === "mine"
         ? decksAPI.getMy(deckParams)
-        : decksAPI.getStarred(deckParams),
+        : decksAPI.getStarred(deckParams);
+    },
   });
 
   const toggleStarMutation = useMutation({
@@ -68,7 +92,11 @@ function MyDecksContent({ initialKeyword }: { initialKeyword: string }) {
   const decks = decksQuery.data?.data ?? [];
   const meta = decksQuery.data?.meta;
   const emptyTitle =
-    activeTab === "mine" ? "No decks found" : "No starred decks yet";
+    activeTab === "all"
+      ? "No decks found"
+      : activeTab === "mine"
+        ? "No decks found"
+        : "No starred decks yet";
 
   function changeVisibility(next: DeckVisibility | "all") {
     setVisibility(next);
@@ -124,36 +152,21 @@ function MyDecksContent({ initialKeyword }: { initialKeyword: string }) {
               ))}
             </div>
 
-            <div className="flex flex-1 flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-              <div className="relative w-full sm:max-w-[360px]">
-                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#9a9692]" />
-                <input
-                  className="h-12 w-full rounded-2xl bg-[#f6f3ee] pl-12 pr-4 text-sm font-medium outline-none focus:ring-4 focus:ring-[#9b87f5]/10"
-                  onChange={(event) => {
-                    setKeyword(event.target.value);
-                    setPage(1);
-                  }}
-                  placeholder="Search decks"
-                  type="search"
-                  value={keyword}
-                />
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {visibilityOptions.map((item) => (
-                  <button
-                    className={`rounded-full px-4 py-2 text-xs font-bold capitalize ${
-                      visibility === item
-                        ? "bg-[#e6deff] text-[#311485]"
-                        : "text-[#777474] hover:bg-[#f6f3ee]"
-                    }`}
-                    key={item}
-                    onClick={() => changeVisibility(item)}
-                    type="button"
-                  >
-                    {item === "all" ? "All" : item}
-                  </button>
-                ))}
-              </div>
+            <div className="flex flex-1 flex-wrap gap-2 lg:justify-end">
+              {visibilityOptions.map((item) => (
+                <button
+                  className={`rounded-full px-4 py-2 text-xs font-bold capitalize ${
+                    visibility === item
+                      ? "bg-[#e6deff] text-[#311485]"
+                      : "text-[#777474] hover:bg-[#f6f3ee]"
+                  }`}
+                  key={item}
+                  onClick={() => changeVisibility(item)}
+                  type="button"
+                >
+                  {item === "all" ? "All" : item}
+                </button>
+              ))}
             </div>
           </div>
         </section>
@@ -162,7 +175,11 @@ function MyDecksContent({ initialKeyword }: { initialKeyword: string }) {
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold tracking-normal">
-                {activeTab === "mine" ? "Decks you created" : "Decks you starred"}
+                {activeTab === "all"
+                  ? "All matching decks"
+                  : activeTab === "mine"
+                    ? "Decks you created"
+                    : "Decks you starred"}
               </h2>
               <p className="mt-1 text-sm text-[#777474]">
                 {meta?.itemCount ?? decks.length} matching decks
@@ -173,7 +190,10 @@ function MyDecksContent({ initialKeyword }: { initialKeyword: string }) {
           {decksQuery.isLoading ? (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {[0, 1, 2].map((item) => (
-                <div className="h-56 animate-pulse rounded-[24px] bg-white" key={item} />
+                <div
+                  className="h-56 animate-pulse rounded-[24px] bg-white"
+                  key={item}
+                />
               ))}
             </div>
           ) : decksQuery.isError ? (
@@ -258,14 +278,23 @@ function DeckCard({
         : "bg-[#d7f2e3] text-[#276345]";
 
   return (
-    <article className="group rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_12px_36px_rgba(27,28,25,0.05)] transition hover:-translate-y-1 hover:border-[#cabeff]">
-      <div className="flex items-start justify-between gap-3">
-        <span className={`flex h-12 w-12 items-center justify-center rounded-2xl ${accentClass}`}>
+    <article className="group relative rounded-[24px] border border-black/5 bg-white p-5 shadow-[0_12px_36px_rgba(27,28,25,0.05)] transition hover:-translate-y-1 hover:border-[#cabeff]">
+      <Link
+        aria-label={`Open ${deck.title}`}
+        className="absolute inset-0 rounded-[24px]"
+        href={`/decks/${deck._id}`}
+      />
+      <div className="relative z-10 flex items-start justify-between gap-3">
+        <span
+          className={`flex h-12 w-12 items-center justify-center rounded-2xl ${accentClass}`}
+        >
           <Layers3 className="h-6 w-6" />
         </span>
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1 rounded-full bg-[#f6f3ee] px-3 py-1.5 text-[11px] font-bold capitalize text-[#777474]">
-            {deck.visibility === "private" && <LockKeyhole className="h-3 w-3" />}
+            {deck.visibility === "private" && (
+              <LockKeyhole className="h-3 w-3" />
+            )}
             {deck.visibility}
           </span>
           <button
@@ -284,15 +313,13 @@ function DeckCard({
         </div>
       </div>
 
-      <Link href={`/decks/${deck._id}`}>
-        <h3 className="mt-5 text-xl font-semibold leading-tight tracking-normal hover:text-[#614db7]">
-          {deck.title}
-        </h3>
-      </Link>
-      <p className="mt-2 min-h-12 line-clamp-2 text-sm leading-6 text-[#777474]">
+      <h3 className="relative z-10 mt-5 text-xl font-semibold leading-tight tracking-normal group-hover:text-[#614db7]">
+        {deck.title}
+      </h3>
+      <p className="relative z-10 mt-2 min-h-12 line-clamp-2 text-sm leading-6 text-[#777474]">
         {deck.description || "No description yet."}
       </p>
-      <div className="mt-5 flex min-h-6 flex-wrap gap-2">
+      <div className="relative z-10 mt-5 flex min-h-6 flex-wrap gap-2">
         {deck.tags.slice(0, 3).map((tag) => (
           <span
             className="rounded-full bg-[#f2eefe] px-3 py-1 text-[11px] font-bold text-[#614db7]"
@@ -302,18 +329,15 @@ function DeckCard({
           </span>
         ))}
       </div>
-      <div className="mt-6 flex items-center justify-between border-t border-black/5 pt-4">
+      <div className="relative z-10 mt-6 flex items-center justify-between border-t border-black/5 pt-4">
         <span className="inline-flex items-center gap-2 text-xs font-bold text-[#777474]">
           <BookOpenText className="h-4 w-4" />
           {deck.cardCount} cards
         </span>
-        <Link
-          className="inline-flex items-center gap-1 text-sm font-extrabold text-[#614db7]"
-          href={`/decks/${deck._id}`}
-        >
+        <span className="inline-flex items-center gap-1 text-sm font-extrabold text-[#614db7]">
           Open
           <ChevronRight className="h-4 w-4" />
-        </Link>
+        </span>
       </div>
     </article>
   );
