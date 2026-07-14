@@ -330,7 +330,7 @@ export function DecksPanel() {
         <InlineMessage tone="success">{actionMessage}</InlineMessage>
       ) : null}
 
-      <div className="grid gap-5 pt-6 xl:grid-cols-[340px_minmax(0,1fr)]">
+      <div className="grid gap-5 pt-6 2xl:grid-cols-[320px_minmax(0,1fr)]">
         <CreateDeckForm
           form={createForm}
           isPending={createMutation.isPending}
@@ -559,17 +559,17 @@ function DeckTable({
 }) {
   return (
     <div className="overflow-hidden rounded-[26px] border border-black/5">
-      <div className="grid min-w-[900px] grid-cols-[1.4fr_1.1fr_110px_120px_90px_120px_90px] bg-[#f6f2ff] px-4 py-3 text-xs font-extrabold uppercase tracking-normal text-[#614db7]">
+      <div className="grid grid-cols-[minmax(0,1fr)_86px_74px] bg-[#f6f2ff] px-3 py-3 text-[11px] font-extrabold uppercase tracking-normal text-[#614db7] md:grid-cols-[minmax(0,1fr)_96px_64px_104px_74px] xl:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)_88px_92px_56px_104px_74px]">
         <span>Deck</span>
-        <span>Owner</span>
-        <span>Visibility</span>
+        <span className="hidden xl:block">Owner</span>
+        <span className="hidden xl:block">Visibility</span>
         <span>Status</span>
-        <span>Cards</span>
-        <span>Updated</span>
+        <span className="hidden md:block">Cards</span>
+        <span className="hidden md:block">Updated</span>
         <span>Action</span>
       </div>
 
-      <div className="overflow-x-auto">
+      <div>
         {isLoading ? <DecksLoading /> : null}
         {isError ? <DecksError error={error} /> : null}
         {!isLoading && !isError && !decks.length ? <DecksEmpty /> : null}
@@ -581,7 +581,7 @@ function DeckTable({
 
           return (
             <div
-              className={`grid min-w-[900px] grid-cols-[1.4fr_1.1fr_110px_120px_90px_120px_90px] items-center border-t border-black/5 px-4 py-4 text-sm font-semibold text-[#1b1c19] ${
+              className={`grid grid-cols-[minmax(0,1fr)_86px_74px] items-center border-t border-black/5 px-3 py-4 text-sm font-semibold text-[#1b1c19] md:grid-cols-[minmax(0,1fr)_96px_64px_104px_74px] xl:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)_88px_92px_56px_104px_74px] ${
                 active ? "bg-[#fbf9f4]" : "bg-white"
               }`}
               key={deckId || deck.title}
@@ -592,23 +592,27 @@ function DeckTable({
                   {deck.description || "No description"}
                 </p>
               </div>
-              <span className="truncate text-[#5f5e5e]">
+              <span className="hidden truncate text-[#5f5e5e] xl:block">
                 {formatOwnerLabel(deck)}
               </span>
-              <span className="capitalize text-[#5f5e5e]">{deck.visibility}</span>
+              <span className="hidden capitalize text-[#5f5e5e] xl:block">
+                {deck.visibility}
+              </span>
               <span
-                className={`inline-flex w-fit rounded-full px-3 py-1 text-xs font-extrabold capitalize ${getStatusClassName(
+                className={`inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-extrabold capitalize ${getStatusClassName(
                   status,
                 )}`}
               >
                 {status}
               </span>
-              <span>{formatNumber(deck.cardCount ?? 0)}</span>
-              <span className="text-[#5f5e5e]">
+              <span className="hidden md:block">
+                {formatNumber(deck.cardCount ?? 0)}
+              </span>
+              <span className="hidden text-[#5f5e5e] md:block">
                 {deck.updatedAt ? formatDate(deck.updatedAt) : "N/A"}
               </span>
               <button
-                className="inline-flex h-9 w-fit items-center gap-2 rounded-2xl bg-[#f6f3ee] px-3 text-xs font-extrabold text-[#5f5e5e] transition hover:text-[#1b1c19]"
+                className="inline-flex h-9 w-fit items-center gap-1.5 rounded-2xl bg-[#f6f3ee] px-2.5 text-xs font-extrabold text-[#5f5e5e] transition hover:text-[#1b1c19]"
                 onClick={() => onOpenDeck(deck)}
                 type="button"
               >
@@ -1098,7 +1102,7 @@ function DecksLoading({ compact = false }: { compact?: boolean }) {
   return (
     <div
       className={`flex items-center justify-center gap-2 text-sm font-bold text-[#614db7] ${
-        compact ? "min-h-[120px]" : "min-h-[220px] min-w-[900px]"
+        compact ? "min-h-[120px]" : "min-h-[220px] w-full"
       }`}
     >
       <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
@@ -1109,7 +1113,7 @@ function DecksLoading({ compact = false }: { compact?: boolean }) {
 
 function DecksError({ error }: { error: unknown }) {
   return (
-    <div className="min-w-[900px] bg-[#fff0f0] p-5 text-sm font-bold text-[#a33a3a]">
+    <div className="w-full bg-[#fff0f0] p-5 text-sm font-bold text-[#a33a3a]">
       {error instanceof Error ? error.message : "Unable to load decks."}
     </div>
   );
@@ -1117,7 +1121,7 @@ function DecksError({ error }: { error: unknown }) {
 
 function DecksEmpty() {
   return (
-    <div className="min-w-[900px] p-8 text-center text-sm font-bold text-[#614db7]">
+    <div className="w-full p-8 text-center text-sm font-bold text-[#614db7]">
       No decks found.
     </div>
   );
