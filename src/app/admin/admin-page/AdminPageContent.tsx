@@ -101,7 +101,7 @@ function AdminPageHeader({ activeSection }: { activeSection: AdminSection }) {
           Welcome back.
         </h1>
         <p className="mt-3 max-w-[680px] text-sm leading-6 text-[#5f5e5e] sm:text-base">
-          Manage users, content, reports, and operational settings from the Admin
+          Manage users, decks, reports, and operational activity from the Admin
           Portal.
         </p>
       </header>

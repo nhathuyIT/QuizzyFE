@@ -3,11 +3,10 @@
 import {
   Activity,
   BarChart3,
-  FileText,
   Home,
+  Layers3,
   LogOut,
   Search,
-  Settings,
   ShieldCheck,
   UsersRound,
 } from "lucide-react";
@@ -16,10 +15,9 @@ import type { AuthUser } from "@/services/api";
 export const adminSidebarItems = [
   { id: "dashboard", title: "Home", icon: Home },
   { id: "users", title: "Users", icon: UsersRound },
-  { id: "content", title: "Content", icon: FileText },
+  { id: "decks", title: "Decks", icon: Layers3 },
   { id: "reports", title: "Reports", icon: BarChart3 },
   { id: "audit-logs", title: "Audit Logs", icon: Activity },
-  { id: "settings", title: "Settings", icon: Settings },
 ] as const;
 
 export type AdminSection = (typeof adminSidebarItems)[number]["id"];
