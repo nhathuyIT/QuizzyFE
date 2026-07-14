@@ -5,7 +5,7 @@ import {
   type QueryParams,
 } from "./client";
 
-export type AdminActivityInterval = "day" | "week" | "month";
+export type AdminActivityInterval = "day" | "week";
 export type AdminUserRole = "student" | "teacher" | "admin";
 export type AdminUserStatus = "active" | "suspended" | "deleted" | string;
 export type AdminDeckVisibility = "private" | "link" | "public";
@@ -165,6 +165,289 @@ export interface AdminUpdateUserStatusInput {
   reason?: string;
 }
 
+export type AdminStudyMode = "flashcard" | "learn" | "test" | "match";
+
+export interface AdminStudySummary {
+  from: string;
+  to: string;
+  mode: AdminStudyMode | "all";
+  sessions: number;
+  activeUsers: number;
+  reviews: number;
+  accuracy: number;
+  completionRate: number;
+  averageStudyTimeSeconds: number;
+}
+
+export interface AdminStudySession {
+  _id?: string;
+  id?: string;
+  userId: string;
+  deckId: string;
+  mode: AdminStudyMode;
+  startedAt: string;
+  finishedAt?: string | null;
+  user?: {
+    _id?: string;
+    id?: string;
+    email: string;
+    name: string;
+  };
+  deck?: {
+    _id?: string;
+    id?: string;
+    title: string;
+  };
+  reviewCount?: number;
+  correctReviewCount?: number;
+}
+
+export interface AdminStudySessionSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
+  userId?: string;
+  deckId?: string;
+  mode?: AdminStudyMode;
+  status?: "finished" | "unfinished";
+  from?: string;
+  to?: string;
+}
+
+export interface AdminStudySummarySearchParams extends QueryParams {
+  from?: string;
+  to?: string;
+  mode?: AdminStudyMode;
+}
+
+export interface AdminCardReview {
+  _id?: string;
+  id?: string;
+  cardId: string;
+  isCorrect: boolean;
+  rating: string;
+  responseTimeMs: number;
+  answer?: string;
+  createdAt: string;
+  card?: {
+    _id?: string;
+    id?: string;
+    front: string;
+    back: string;
+    type?: string;
+  };
+}
+
+export interface AdminStudySessionReviewSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
+}
+
+export type AdminAuditTargetType =
+  | "user"
+  | "deck"
+  | "academic_department"
+  | "academic_subject"
+  | "academic_document";
+
+export interface AdminAuditLog {
+  _id?: string;
+  id?: string;
+  adminId: string;
+  action: string;
+  targetType: AdminAuditTargetType;
+  targetId: string;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+  admin?: {
+    _id?: string;
+    id?: string;
+    email: string;
+    name: string;
+  };
+}
+
+export interface AdminAuditLogSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
+  adminId?: string;
+  action?: string;
+  from?: string;
+  to?: string;
+}
+
+export type AdminAcademicEntityStatus = "active" | "inactive" | "all";
+export type AdminAcademicDocumentStatus =
+  | "pending"
+  | "active"
+  | "rejected"
+  | "archived";
+export type AdminAcademicDocumentFileType =
+  | "pdf"
+  | "docx"
+  | "pptx"
+  | "xlsx"
+  | "other";
+
+export interface AdminAcademicDepartment {
+  _id?: string;
+  id?: string;
+  code: string;
+  name: string;
+  description?: string;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
+}
+
+export interface AdminAcademicSubject {
+  _id?: string;
+  id?: string;
+  code: string;
+  name: string;
+  departmentId: string;
+  department?: AdminAcademicDepartment;
+  semester: number;
+  documentCount?: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
+}
+
+export interface AdminAcademicDocumentUser {
+  _id?: string;
+  id?: string;
+  name?: string;
+  email?: string;
+  avatarUrl?: string;
+}
+
+export type AdminAcademicDocumentUploader = AdminAcademicDocumentUser;
+
+export interface AdminAcademicDocument {
+  _id?: string;
+  id?: string;
+  title: string;
+  description?: string;
+  subjectId: string | AdminAcademicSubject;
+  subject?: AdminAcademicSubject;
+  department?: AdminAcademicDepartment;
+  uploadedBy: string | AdminAcademicDocumentUser;
+  uploader?: AdminAcademicDocumentUser;
+  reviewedBy?: string | AdminAcademicDocumentUser;
+  reviewer?: AdminAcademicDocumentUser;
+  fileUrl: string;
+  fileName: string;
+  fileType: AdminAcademicDocumentFileType;
+  fileSize: number;
+  storagePath?: string;
+  status: AdminAcademicDocumentStatus;
+  downloadCount?: number;
+  tags: string[];
+  reviewNote?: string;
+  note?: string;
+  reviewedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
+}
+
+export interface AdminAcademicDepartmentSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
+  status?: AdminAcademicEntityStatus;
+  keyword?: string;
+}
+
+export interface AdminCreateAcademicDepartmentInput {
+  code: string;
+  name: string;
+  description?: string;
+  isActive?: boolean;
+}
+
+export interface AdminUpdateAcademicDepartmentInput {
+  code?: string;
+  name?: string;
+  description?: string;
+  isActive?: boolean;
+}
+
+export interface AdminAcademicSubjectSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
+  status?: AdminAcademicEntityStatus;
+  departmentId?: string;
+  semester?: number;
+  keyword?: string;
+}
+
+export interface AdminCreateAcademicSubjectInput {
+  code: string;
+  name: string;
+  departmentId: string;
+  semester: number;
+  isActive?: boolean;
+}
+
+export interface AdminUpdateAcademicSubjectInput {
+  code?: string;
+  name?: string;
+  departmentId?: string;
+  semester?: number;
+  isActive?: boolean;
+}
+
+export interface AdminAcademicDocumentSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
+  status?: AdminAcademicDocumentStatus | "all";
+  departmentId?: string;
+  subjectId?: string;
+  uploaderId?: string;
+  fileType?: AdminAcademicDocumentFileType;
+  keyword?: string;
+}
+
+export interface AdminUpdateAcademicDocumentInput {
+  title?: string;
+  description?: string;
+  subjectId?: string;
+  tags?: string[];
+}
+
+export interface AdminReviewAcademicDocumentInput {
+  status: Exclude<AdminAcademicDocumentStatus, "archived">;
+  note?: string;
+}
+
+type AdminListPayload<T> =
+  | T[]
+  | {
+      data: T[];
+      meta?: PageMeta;
+    };
+
+async function getAdminList<T>(
+  endpoint: string,
+  params: QueryParams,
+): Promise<ApiResponse<T[]>> {
+  const response = await apiClient.get<ApiResponse<AdminListPayload<T>>>(
+    endpoint,
+    params,
+  );
+  const nestedPayload = Array.isArray(response.data)
+    ? undefined
+    : response.data;
+
+  return {
+    ...response,
+    data: Array.isArray(response.data) ? response.data : response.data.data,
+    meta: nestedPayload?.meta ?? response.meta,
+  };
+}
+
 export const adminAPI = {
   getDashboardSummary: () =>
     apiClient.get<ApiResponse<AdminDashboardSummary>>("/admin/dashboard/summary"),
@@ -218,4 +501,111 @@ export const adminAPI = {
     apiClient.delete<ApiResponse<AdminDeck>>(`/admin/decks/${deckId}`),
   restoreDeck: (deckId: string) =>
     apiClient.post<ApiResponse<AdminDeck>>(`/admin/decks/${deckId}/restore`, {}),
+
+  getStudySummary: (params: AdminStudySummarySearchParams = {}) =>
+    apiClient.get<ApiResponse<AdminStudySummary>>("/admin/study/summary", {
+      ...params,
+    }),
+  getStudySessions: (params: AdminStudySessionSearchParams = {}) =>
+    getAdminList<AdminStudySession>("/admin/study-sessions", params),
+  getStudySession: (sessionId: string) =>
+    apiClient.get<ApiResponse<AdminStudySession>>(
+      `/admin/study-sessions/${sessionId}`,
+    ),
+  getStudySessionReviews: (
+    sessionId: string,
+    params: AdminStudySessionReviewSearchParams = {},
+  ) =>
+    getAdminList<AdminCardReview>(
+      `/admin/study-sessions/${sessionId}/reviews`,
+      params,
+    ),
+
+  getAuditLogs: (params: AdminAuditLogSearchParams = {}) =>
+    getAdminList<AdminAuditLog>("/admin/audit-logs", params),
+
+  getAcademicDepartments: (params: AdminAcademicDepartmentSearchParams = {}) =>
+    getAdminList<AdminAcademicDepartment>(
+      "/admin/academic/departments",
+      params,
+    ),
+  createAcademicDepartment: (data: AdminCreateAcademicDepartmentInput) =>
+    apiClient.post<ApiResponse<AdminAcademicDepartment>>(
+      "/admin/academic/departments",
+      data,
+    ),
+  updateAcademicDepartment: (
+    departmentId: string,
+    data: AdminUpdateAcademicDepartmentInput,
+  ) =>
+    apiClient.patch<ApiResponse<AdminAcademicDepartment>>(
+      `/admin/academic/departments/${departmentId}`,
+      data,
+    ),
+  deactivateAcademicDepartment: (departmentId: string) =>
+    apiClient.delete<ApiResponse<AdminAcademicDepartment>>(
+      `/admin/academic/departments/${departmentId}`,
+    ),
+  restoreAcademicDepartment: (departmentId: string) =>
+    apiClient.post<ApiResponse<AdminAcademicDepartment>>(
+      `/admin/academic/departments/${departmentId}/restore`,
+      {},
+    ),
+
+  getAcademicSubjects: (params: AdminAcademicSubjectSearchParams = {}) =>
+    getAdminList<AdminAcademicSubject>("/admin/academic/subjects", params),
+  createAcademicSubject: (data: AdminCreateAcademicSubjectInput) =>
+    apiClient.post<ApiResponse<AdminAcademicSubject>>(
+      "/admin/academic/subjects",
+      data,
+    ),
+  updateAcademicSubject: (
+    subjectId: string,
+    data: AdminUpdateAcademicSubjectInput,
+  ) =>
+    apiClient.patch<ApiResponse<AdminAcademicSubject>>(
+      `/admin/academic/subjects/${subjectId}`,
+      data,
+    ),
+  deactivateAcademicSubject: (subjectId: string) =>
+    apiClient.delete<ApiResponse<AdminAcademicSubject>>(
+      `/admin/academic/subjects/${subjectId}`,
+    ),
+  restoreAcademicSubject: (subjectId: string) =>
+    apiClient.post<ApiResponse<AdminAcademicSubject>>(
+      `/admin/academic/subjects/${subjectId}/restore`,
+      {},
+    ),
+
+  getAcademicDocuments: (params: AdminAcademicDocumentSearchParams = {}) =>
+    getAdminList<AdminAcademicDocument>("/admin/academic/documents", params),
+  getAcademicDocument: (documentId: string) =>
+    apiClient.get<ApiResponse<AdminAcademicDocument>>(
+      `/admin/academic/documents/${documentId}`,
+    ),
+  updateAcademicDocument: (
+    documentId: string,
+    data: AdminUpdateAcademicDocumentInput,
+  ) =>
+    apiClient.patch<ApiResponse<AdminAcademicDocument>>(
+      `/admin/academic/documents/${documentId}`,
+      data,
+    ),
+  reviewAcademicDocument: (
+    documentId: string,
+    data: AdminReviewAcademicDocumentInput,
+  ) =>
+    apiClient.patch<ApiResponse<AdminAcademicDocument>>(
+      `/admin/academic/documents/${documentId}/review`,
+      data,
+    ),
+  archiveAcademicDocument: (documentId: string) =>
+    apiClient.delete<ApiResponse<AdminAcademicDocument>>(
+      `/admin/academic/documents/${documentId}`,
+    ),
+  restoreAcademicDocument: (documentId: string) =>
+    apiClient.post<ApiResponse<AdminAcademicDocument>>(
+      `/admin/academic/documents/${documentId}/restore`,
+      {},
+    ),
 };

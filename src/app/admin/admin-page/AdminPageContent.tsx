@@ -3,10 +3,13 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Activity,
   BarChart3,
+  FileCheck2,
   FileText,
+  GraduationCap,
+  Gauge,
   Headphones,
-  HelpCircle,
   Home,
   LogOut,
   Search,
@@ -18,12 +21,19 @@ import type { AuthUser } from "@/services/api";
 import { MonitoringPanel } from "./dashboard/components/MonitoringPanel";
 import { DecksPanel } from "./deck/deck-crud";
 import { UsersPanel } from "./user/user-crud";
+import { ReportsPanel } from "./reports";
+import { AuditLogsPanel } from "./audit-logs";
+import { AcademicPanel } from "./academic";
+import { DocumentReviewPanel } from "./document-review";
 
 const sidebarItems = [
   { id: "dashboard", title: "Home", icon: Home },
   { id: "users", title: "Users", icon: UsersRound },
   { id: "content", title: "Decks", icon: FileText },
+  { id: "academic", title: "Academic", icon: GraduationCap },
+  { id: "document-review", title: "Document Review", icon: FileCheck2 },
   { id: "reports", title: "Reports", icon: BarChart3 },
+  { id: "audit-logs", title: "Audit Logs", icon: Activity },
   { id: "settings", title: "Settings", icon: Settings },
 ] as const;
 
@@ -63,15 +73,8 @@ export function AdminPageContent({
 
         <section className="relative min-h-[calc(100vh-112px)] px-4 py-8 sm:px-6 lg:min-h-screen lg:px-8 lg:py-12 xl:px-10">
           <div className="mx-auto w-full max-w-[1480px]">
-            <AdminPageHeader />
-            {activeSection === "dashboard" ? <MonitoringPanel /> : null}
-            {activeSection === "users" ? <UsersPanel /> : null}
-            {activeSection === "content" ? <DecksPanel /> : null}
-            {activeSection !== "dashboard" &&
-            activeSection !== "users" &&
-            activeSection !== "content" ? (
-              <AdminComingSoonPanel section={activeSection} />
-            ) : null}
+            <AdminPageHeader activeSection={activeSection} />
+            <AdminSectionPanel section={activeSection} />
           </div>
 
           <button
@@ -85,6 +88,27 @@ export function AdminPageContent({
       </div>
     </main>
   );
+}
+
+function AdminSectionPanel({ section }: { section: AdminSection }) {
+  switch (section) {
+    case "dashboard":
+      return <MonitoringPanel />;
+    case "users":
+      return <UsersPanel />;
+    case "content":
+      return <DecksPanel />;
+    case "academic":
+      return <AcademicPanel />;
+    case "document-review":
+      return <DocumentReviewPanel />;
+    case "reports":
+      return <ReportsPanel />;
+    case "audit-logs":
+      return <AuditLogsPanel />;
+    default:
+      return <AdminComingSoonPanel section={section} />;
+  }
 }
 
 function AdminSidebar({
@@ -115,13 +139,17 @@ function AdminSidebar({
           </div>
         </div>
 
-        <nav className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible lg:pb-0">
+        <nav
+          aria-label="Admin navigation"
+          className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible lg:pb-0"
+        >
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const active = item.id === activeSection;
 
             return (
               <button
+                aria-current={active ? "page" : undefined}
                 className={`flex h-12 min-w-fit items-center gap-3 rounded-2xl px-4 text-left text-sm font-bold transition lg:w-full ${
                   active
                     ? "bg-[#e6deff] text-[#311485]"
@@ -168,24 +196,26 @@ function AdminSidebar({
   );
 }
 
-function AdminPageHeader() {
+function AdminPageHeader({ activeSection }: { activeSection: AdminSection }) {
+  if (activeSection !== "dashboard") return null;
+
   return (
-    <>
+    <header>
       <span className="inline-flex items-center gap-2 rounded-full border border-[#cabeff] bg-[#f6f2ff] px-4 py-2 text-xs font-bold text-[#614db7]">
-        <HelpCircle aria-hidden="true" className="h-4 w-4" />
-        Start here
+        <Gauge aria-hidden="true" className="h-4 w-4" />
+        Admin analytics
       </span>
 
-      <header className="mt-5">
+      <div className="mt-5">
         <h1 className="[font-family:var(--font-outfit)] text-4xl font-extrabold tracking-normal text-[#1b1c19] sm:text-5xl">
-          Welcome back.
+          Platform overview
         </h1>
-        <p className="mt-3 max-w-[680px] text-sm leading-6 text-[#5f5e5e] sm:text-base">
-          Manage users, content, reports, and operational settings from the Admin
-          Portal.
+        <p className="mt-3 max-w-[680px] text-sm font-semibold leading-6 text-[#5f5e5e] sm:text-base">
+          Track audience growth, learning quality, and study engagement across
+          Quizzy.
         </p>
-      </header>
-    </>
+      </div>
+    </header>
   );
 }
 
