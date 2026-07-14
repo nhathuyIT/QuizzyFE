@@ -28,7 +28,8 @@
 - The admin login gate is implemented in `src/app/admin/login/AdminAuthPage.tsx`.
 - The logged-in admin page content is rendered by `src/app/admin/admin-page/AdminPageContent.tsx`.
 - Admin page UI shell lives in `src/app/admin/admin-page/AdminPageContent.tsx`.
-  - `AdminSidebar` is kept inside `AdminPageContent.tsx`.
+  - `AdminSidebar` lives in `src/components/admin/AdminSidebar.tsx` and is rendered only by the authenticated admin page content.
+  - `AdminSidebar` stays fixed on the left while the admin content renders and scrolls on the right.
   - `AdminPageHeader` is kept inside `AdminPageContent.tsx`.
 - Sidebar `Users` switches to `src/app/admin/admin-page/user/user-crud/index.tsx`.
 - Users module follows the CRUD template shape inside `src/app/admin/admin-page/user/user-crud`:
@@ -39,9 +40,9 @@
   - `user-form.config.ts` holds role options, confirm action config, and local user helpers.
 - Suspend user action requires an admin-entered reason in the confirmation box before calling `adminAPI.suspendUser(userId, reason)`.
 - Dashboard monitoring components live under `src/app/admin/admin-page/dashboard/components`.
-  - `MonitoringPanel.tsx` handles the Summary/Activity toggle and API queries.
-  - `SummaryPanel.tsx` renders `adminAPI.getDashboardSummary()` data with total bars and progress rings.
-  - `ActivityPanel.tsx` renders `adminAPI.getActivityAnalytics("day")` data with readable daily cards, a selected-day line chart that appears only after choosing a period, and a detail table. Do not add bar charts in Activity cards while the selected-day line chart is present.
+  - `MonitoringPanel.tsx` handles the Overview/Activity toggle and API queries.
+  - `SummaryPanel.tsx` renders `adminAPI.getDashboardSummary()` as KPI cards, a Recharts platform-distribution donut chart, radial quality indicators, audience metrics, and the reporting window.
+  - `ActivityPanel.tsx` renders `adminAPI.getActivityAnalytics("day")` with a selectable daily timeline. Selecting a time point updates that day's KPI cards, marks both Recharts graphs, and highlights the matching detail row.
   - `PanelState.tsx` contains loading/error/empty states.
   - `formatters.ts` contains local display formatters.
 - `src/app/admin/page.tsx` imports the login gate, so `/admin` controls whether to show login or admin page content.
