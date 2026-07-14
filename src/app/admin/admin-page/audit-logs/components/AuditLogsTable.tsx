@@ -21,7 +21,7 @@ export function AuditLogsTable({
   return (
     <div className="flex flex-col gap-4">
       <div className="overflow-hidden rounded-[26px] border border-black/5 bg-white shadow-sm">
-        <div className="grid min-w-[900px] grid-cols-[140px_1.5fr_130px_1.2fr_2fr] bg-[#f6f2ff] px-4 py-3 text-xs font-extrabold uppercase tracking-normal text-[#614db7]">
+        <div className="grid min-w-[1000px] grid-cols-[170px_minmax(0,1fr)_140px_minmax(0,1.8fr)_minmax(0,2fr)] bg-[#f6f2ff] px-4 py-3 text-xs font-extrabold uppercase tracking-normal text-[#614db7]">
           {auditLogColumns.map((column) => (
             <span key={column.key}>{column.header}</span>
           ))}
@@ -34,7 +34,7 @@ export function AuditLogsTable({
 
           {logs.map((log) => (
             <div
-              className="grid min-w-[900px] grid-cols-[140px_1.5fr_130px_1.2fr_2fr] items-start border-t border-black/5 px-4 py-4 text-sm text-[#1b1c19]"
+              className="grid min-w-[1000px] grid-cols-[170px_minmax(0,1fr)_140px_minmax(0,1.8fr)_minmax(0,2fr)] items-start border-t border-black/5 px-4 py-4 text-sm text-[#1b1c19]"
               key={log._id || log.id}
             >
               {auditLogColumns.map((column) => (
