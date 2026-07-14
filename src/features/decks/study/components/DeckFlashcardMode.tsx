@@ -1,4 +1,5 @@
 import { ArrowRight, ChevronLeft } from "lucide-react";
+import { AutoFitText } from "@/components/ui/auto-fit-text";
 import type { Card } from "@/services/api";
 
 export function DeckFlashcardMode({
@@ -41,28 +42,38 @@ export function DeckFlashcardMode({
             isFlipped ? "[transform:rotateY(180deg)]" : ""
           }`}
         >
-          <span className="absolute inset-0 flex flex-col items-center justify-center rounded-[30px] border border-black/5 bg-[#fbf9f4] p-8 text-center shadow-inner [backface-visibility:hidden]">
-            <span className="quizlet-font text-s font-bold uppercase text-[#b0aaa2]">
+          <span className="absolute inset-0 flex flex-col items-center rounded-[30px] border border-black/5 bg-[#fbf9f4] p-6 text-center shadow-inner [backface-visibility:hidden] sm:p-8">
+            <span className="quizlet-font shrink-0 text-xs font-bold uppercase text-[#b0aaa2]">
               Term
             </span>
-            <span className="quizlet-card-title mt-5 max-w-[760px] text-4xl text-[#1b1c19] sm:text-5xl">
+            <AutoFitText
+              className="quizlet-card-title max-w-[860px] text-[#1b1c19]"
+              containerClassName="my-4"
+              maxFontSize={54}
+              minFontSize={18}
+            >
               {card.front}
-            </span>
+            </AutoFitText>
             {card.hint && (
-              <span className="mt-6 rounded-full bg-white px-4 py-2 text-xs font-bold text-[#614db7]">
+              <span className="shrink-0 rounded-full bg-white px-4 py-2 text-xs font-bold text-[#614db7]">
                 Hint: {card.hint}
               </span>
             )}
           </span>
-          <span className="absolute inset-0 flex flex-col items-center justify-center rounded-[30px] border border-black/5 bg-[#fbf9f4] p-8 text-center shadow-inner [backface-visibility:hidden] [transform:rotateY(180deg)]">
-            <span className="quizlet-font text-s font-bold uppercase text-[#b0aaa2]">
+          <span className="absolute inset-0 flex flex-col items-center rounded-[30px] border border-black/5 bg-[#fbf9f4] p-6 text-center shadow-inner [backface-visibility:hidden] [transform:rotateY(180deg)] sm:p-8">
+            <span className="quizlet-font shrink-0 text-xs font-bold uppercase text-[#b0aaa2]">
               Definition
             </span>
-            <span className="quizlet-card-title mt-5 max-w-[760px] text-4xl text-[#311485] sm:text-5xl">
+            <AutoFitText
+              className="quizlet-card-title max-w-[860px] text-[#311485]"
+              containerClassName="my-4"
+              maxFontSize={54}
+              minFontSize={18}
+            >
               {card.back}
-            </span>
+            </AutoFitText>
             {card.explanation && (
-              <span className="quizlet-font mt-6 max-w-[680px] text-sm leading-6 text-[#777474]">
+              <span className="quizlet-font max-h-20 max-w-[680px] shrink-0 overflow-hidden text-sm leading-6 text-[#777474]">
                 {card.explanation}
               </span>
             )}

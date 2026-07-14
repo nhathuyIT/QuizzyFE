@@ -1,6 +1,13 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -10,15 +17,16 @@ import {
   CheckCircle2,
   FileText,
   Loader2,
-  MessageSquareText,
   Sparkles,
   UploadCloud,
   Wand2,
 } from "lucide-react";
+import { AcademicDocumentBrowser } from "@/features/ai-tutor/components/AcademicDocumentBrowser";
 import { ChatInput } from "@/features/ai-tutor/components/ChatInput";
 import { ChatMessage } from "@/features/ai-tutor/components/ChatMessage";
 import { ChatSidebar } from "@/features/ai-tutor/components/ChatSidebar";
 import {
+  academicApi,
   chatbotAPI,
   type ApiResponse,
   type ChatMessage as ChatMessageRecord,
@@ -27,6 +35,7 @@ import {
   type GenerateJobStatus,
 } from "@/services/api";
 import { cn } from "@/lib/utils/cn";
+import type { AcademicDocument } from "@/types/academic.type";
 
 type LocalMessage = Pick<ChatMessageRecord, "_id" | "role" | "content"> & {
   isPending?: boolean;
@@ -49,7 +58,6 @@ const statusLabels: Record<GenerateJobStatus, string> = {
   failed: "Failed",
 };
 
-const GENERATED_CARD_COUNT = 5;
 const MIN_RAW_TEXT_LENGTH = 5;
 const MAX_CHAT_MESSAGE_LENGTH = 2000;
 const MAX_RAW_TEXT_LENGTH = 50000;
@@ -59,9 +67,16 @@ export default function AITutorPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
-  const handledDeckContextRef = useRef<string | undefined>(undefined);
+  const handledContextRef = useRef<string | undefined>(undefined);
+  const pageScrollRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const deckContextId = searchParams.get("deckId")?.trim() || undefined;
+  const academicDocumentContextId =
+    searchParams.get("academicDocumentId")?.trim() || undefined;
+  const academicDocumentTitle =
+    searchParams.get("documentTitle")?.trim() || undefined;
+  const deckContextId = academicDocumentContextId
+    ? undefined
+    : searchParams.get("deckId")?.trim() || undefined;
   const deckContextTitle = searchParams.get("deckTitle")?.trim() || undefined;
   const initialPrompt = searchParams
     .get("prompt")
@@ -70,6 +85,14 @@ export default function AITutorPage() {
   const deckConversationTitle = deckContextTitle
     ? `Ask about ${deckContextTitle}`
     : "Ask about this deck";
+  const documentConversationTitle = academicDocumentTitle
+    ? `Ask about ${academicDocumentTitle}`
+    : "Ask about this document";
+  const activeContextKey = academicDocumentContextId
+    ? `academic-document:${academicDocumentContextId}`
+    : deckContextId
+      ? `deck:${deckContextId}`
+      : undefined;
   const [activeConversationId, setActiveConversationId] = useState<string>();
   const [draft, setDraft] = useState(initialPrompt ?? "");
   const [chatError, setChatError] = useState("");
@@ -84,10 +107,47 @@ export default function AITutorPage() {
   const [language, setLanguage] = useState("vi");
   const [activeJobId, setActiveJobId] = useState<string>();
   const [formError, setFormError] = useState("");
+  const [selectedAcademicDepartmentId, setSelectedAcademicDepartmentId] =
+    useState<string>();
+  const [selectedAcademicSemester, setSelectedAcademicSemester] =
+    useState<number>();
+  const [selectedAcademicSubjectId, setSelectedAcademicSubjectId] =
+    useState<string>();
 
   const conversationsQuery = useQuery({
     queryKey: ["chatbot", "conversations"],
     queryFn: () => chatbotAPI.getConversations({ page: 1, limit: 20 }),
+    retry: false,
+  });
+  const academicDepartmentsQuery = useQuery({
+    queryKey: ["academic", "departments"],
+    queryFn: () => academicApi.getDepartments(),
+    retry: false,
+  });
+  const academicSubjectsQuery = useQuery({
+    queryKey: [
+      "academic",
+      "subjects",
+      selectedAcademicDepartmentId,
+      selectedAcademicSemester,
+    ],
+    queryFn: () =>
+      academicApi.getSubjectsByDepartment(
+        selectedAcademicDepartmentId!,
+        selectedAcademicSemester,
+      ),
+    enabled: Boolean(selectedAcademicDepartmentId && selectedAcademicSemester),
+    retry: false,
+  });
+  const academicDocumentsQuery = useQuery({
+    queryKey: ["academic", "documents", selectedAcademicSubjectId, "ai-tutor"],
+    queryFn: () =>
+      academicApi.getSubjectDocuments(selectedAcademicSubjectId!, {
+        page: 1,
+        limit: 50,
+        status: "active",
+      }),
+    enabled: Boolean(selectedAcademicSubjectId),
     retry: false,
   });
 
@@ -95,6 +155,15 @@ export default function AITutorPage() {
     () => conversationsQuery.data?.data ?? [],
     [conversationsQuery.data?.data],
   );
+  const academicDepartments = academicDepartmentsQuery.data?.data ?? [];
+  const selectedAcademicDepartment = academicDepartments.find(
+    (department) => department._id === selectedAcademicDepartmentId,
+  );
+  const academicSubjects = academicSubjectsQuery.data?.data ?? [];
+  const selectedAcademicSubject = academicSubjects.find(
+    (subject) => subject._id === selectedAcademicSubjectId,
+  );
+  const academicDocuments = academicDocumentsQuery.data?.data ?? [];
   const deckConversation = useMemo(
     () =>
       deckContextId
@@ -104,26 +173,45 @@ export default function AITutorPage() {
         : undefined,
     [conversations, deckContextId],
   );
+  const documentConversation = useMemo(
+    () =>
+      academicDocumentContextId
+        ? conversations.find(
+            (conversation) =>
+              conversation.academicDocumentId === academicDocumentContextId,
+          )
+        : undefined,
+    [academicDocumentContextId, conversations],
+  );
+  const contextConversation = documentConversation ?? deckConversation;
   const storedActiveConversation = conversations.find(
     (conversation) => conversation._id === activeConversationId,
   );
   const activeConversationMatchesContext =
-    !deckContextId || storedActiveConversation?.deckId === deckContextId;
+    !activeContextKey ||
+    (academicDocumentContextId
+      ? storedActiveConversation?.academicDocumentId === academicDocumentContextId
+      : storedActiveConversation?.deckId === deckContextId);
   const selectedConversationId =
     (activeConversationMatchesContext ? activeConversationId : undefined) ??
-    deckConversation?._id ??
-    (deckContextId ? undefined : conversations[0]?._id);
+    contextConversation?._id ??
+    (activeContextKey ? undefined : conversations[0]?._id);
   const activeConversation = conversations.find(
     (conversation) => conversation._id === selectedConversationId,
   );
   const sidebarConversations = useMemo(
     () =>
-      deckContextId
+      academicDocumentContextId
+        ? conversations.filter(
+            (conversation) =>
+              conversation.academicDocumentId === academicDocumentContextId,
+          )
+        : deckContextId
         ? conversations.filter(
             (conversation) => conversation.deckId === deckContextId,
           )
         : conversations,
-    [conversations, deckContextId],
+    [academicDocumentContextId, conversations, deckContextId],
   );
 
   const messagesQuery = useQuery({
@@ -149,6 +237,28 @@ export default function AITutorPage() {
     [messagesQuery.data?.data, pendingMessages],
   );
   const currentJob = jobQuery.data?.data;
+  const scrollPageToTop = useCallback((behavior: ScrollBehavior = "smooth") => {
+    pageScrollRef.current?.scrollTo({ top: 0, behavior });
+  }, []);
+
+  useEffect(() => {
+    scrollPageToTop("auto");
+  }, [activeContextKey, scrollPageToTop]);
+
+  useEffect(() => {
+    function handleScrollTopRequest() {
+      scrollPageToTop();
+    }
+
+    window.addEventListener("quizzy:ai-tutor-scroll-top", handleScrollTopRequest);
+
+    return () => {
+      window.removeEventListener(
+        "quizzy:ai-tutor-scroll-top",
+        handleScrollTopRequest,
+      );
+    };
+  }, [scrollPageToTop]);
 
   useEffect(() => {
     if (currentJob?.status === "done" && currentJob.targetDeckId) {
@@ -164,12 +274,21 @@ export default function AITutorPage() {
   function getNewConversationInput(
     title = "AI Assistant",
   ): CreateConversationInput {
-    return deckContextId
-      ? {
-          title: deckConversationTitle,
-          deckId: deckContextId,
-        }
-      : { title };
+    if (academicDocumentContextId) {
+      return {
+        title: documentConversationTitle,
+        academicDocumentId: academicDocumentContextId,
+      };
+    }
+
+    if (deckContextId) {
+      return {
+        title: deckConversationTitle,
+        deckId: deckContextId,
+      };
+    }
+
+    return { title };
   }
 
   const createConversationMutation = useMutation({
@@ -201,42 +320,54 @@ export default function AITutorPage() {
   }
 
   useEffect(() => {
-    if (!deckContextId) {
-      handledDeckContextRef.current = undefined;
+    if (!activeContextKey) {
+      handledContextRef.current = undefined;
       return;
     }
 
     if (conversationsQuery.isLoading || conversationsQuery.isError) return;
 
-    const activeMatchesDeck = conversations.some(
-      (conversation) =>
-        conversation._id === activeConversationId &&
-        conversation.deckId === deckContextId,
-    );
+    const activeMatchesContext = conversations.some((conversation) => {
+      if (conversation._id !== activeConversationId) return false;
 
-    if (activeMatchesDeck) {
-      handledDeckContextRef.current = deckContextId;
+      return academicDocumentContextId
+        ? conversation.academicDocumentId === academicDocumentContextId
+        : conversation.deckId === deckContextId;
+    });
+
+    if (activeMatchesContext) {
+      handledContextRef.current = activeContextKey;
       return;
     }
 
-    if (handledDeckContextRef.current === deckContextId) return;
+    if (handledContextRef.current === activeContextKey) return;
 
-    handledDeckContextRef.current = deckContextId;
-    if (deckConversation) return;
+    handledContextRef.current = activeContextKey;
+    if (contextConversation) return;
 
-    createConversationMutation.mutate({
-      title: deckConversationTitle,
-      deckId: deckContextId,
-    });
+    createConversationMutation.mutate(
+      academicDocumentContextId
+        ? {
+            title: documentConversationTitle,
+            academicDocumentId: academicDocumentContextId,
+          }
+        : {
+            title: deckConversationTitle,
+            deckId: deckContextId,
+          },
+    );
   }, [
     activeConversationId,
+    activeContextKey,
+    academicDocumentContextId,
     conversations,
     conversationsQuery.isError,
     conversationsQuery.isLoading,
+    contextConversation,
     createConversationMutation,
     deckContextId,
-    deckConversation,
     deckConversationTitle,
+    documentConversationTitle,
   ]);
 
   const sendMessageMutation = useMutation({
@@ -448,6 +579,39 @@ export default function AITutorPage() {
     setFormError("");
   }
 
+  function handleAcademicBrowserBack() {
+    if (selectedAcademicSubjectId) {
+      setSelectedAcademicSubjectId(undefined);
+      return;
+    }
+
+    if (selectedAcademicSemester) {
+      setSelectedAcademicSemester(undefined);
+      return;
+    }
+
+    if (selectedAcademicDepartmentId) {
+      setSelectedAcademicDepartmentId(undefined);
+    }
+  }
+
+  function handleSelectAcademicDocument(document: AcademicDocument) {
+    if (document.fileType !== "pdf") return;
+
+    scrollPageToTop();
+    setActiveConversationId(undefined);
+    setChatError("");
+    setLastFailedPrompt("");
+    setPendingMessages([]);
+
+    const params = new URLSearchParams({
+      academicDocumentId: document._id,
+      documentTitle: document.title,
+    });
+
+    router.push(`/ai-tutor?${params.toString()}`);
+  }
+
   function handleGenerate(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormError("");
@@ -523,9 +687,17 @@ export default function AITutorPage() {
 
   const displayFormError =
     formError || (cardCount === undefined ? "Card count is required." : "");
+  const activeContextTitle = academicDocumentContextId
+    ? (academicDocumentTitle ?? "this document")
+    : deckContextId
+      ? (deckContextTitle ?? "this deck")
+      : undefined;
 
   return (
-    <div className="h-full overflow-y-auto bg-[#fbf9f4] custom-scrollbar">
+    <div
+      className="h-full overflow-y-auto bg-[#fbf9f4] custom-scrollbar"
+      ref={pageScrollRef}
+    >
       <div className="mx-auto flex min-h-full w-full max-w-[1440px] flex-col px-4 py-8 sm:px-6 lg:px-8">
         <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"></header>
 
@@ -540,7 +712,7 @@ export default function AITutorPage() {
             }
             isLoading={
               conversationsQuery.isLoading ||
-              (Boolean(deckContextId) &&
+              (Boolean(activeContextKey) &&
                 createConversationMutation.isPending &&
                 sidebarConversations.length === 0)
             }
@@ -550,11 +722,15 @@ export default function AITutorPage() {
             onDelete={(conversationId) =>
               deleteConversationMutation.mutate(conversationId)
             }
-            onNewChat={() => createConversationMutation.mutate(undefined)}
+            onNewChat={() => {
+              scrollPageToTop();
+              createConversationMutation.mutate(undefined);
+            }}
             onRename={(conversationId, title) =>
               renameConversationMutation.mutate({ conversationId, title })
             }
             onSelect={(conversationId) => {
+              scrollPageToTop();
               setActiveConversationId(conversationId);
               setPendingMessages([]);
               setLastFailedPrompt("");
@@ -577,9 +753,7 @@ export default function AITutorPage() {
                     {activeConversation?.title || "Quizzy study assistant"}
                   </h2>
                   <p className="text-xs font-semibold text-[#9a9692]">
-                    {activeConversation?.type === "deck_chat"
-                      ? `Deck chat - ${activeConversation.messageCount} messages`
-                      : `${activeConversation?.messageCount ?? 0} messages`}
+                    {getConversationMetaLabel(activeConversation)}
                   </p>
                 </div>
               </div>
@@ -610,7 +784,7 @@ export default function AITutorPage() {
                   <div ref={messagesEndRef} />
                 </>
               ) : (
-                <EmptyChatState />
+                <EmptyChatState contextTitle={activeContextTitle} />
               )}
             </div>
 
@@ -628,33 +802,77 @@ export default function AITutorPage() {
             />
           </section>
 
-          <FlashcardGenerator
-            cardCount={cardCount}
-            difficulty={difficulty}
-            file={pdfFile}
-            formError={displayFormError}
-            generateMode={generateMode}
-            isGenerating={isGenerating}
-            job={currentJob}
-            language={language}
-            onCardCountChange={setCardCount}
-            onDifficultyChange={setDifficulty}
-            onFileChange={handlePdfFileChange}
-            onGenerate={handleGenerate}
-            onLanguageChange={setLanguage}
-            onModeChange={setGenerateMode}
-            onRawTextChange={setRawText}
-            onTitleChange={setGenerateTitle}
-            rawText={rawText}
-            title={generateTitle}
-          />
+          <div className="space-y-5">
+            <AcademicDocumentBrowser
+              activeDocumentId={academicDocumentContextId}
+              departments={academicDepartments}
+              departmentsError={
+                academicDepartmentsQuery.isError
+                  ? academicDepartmentsQuery.error.message
+                  : undefined
+              }
+              documents={academicDocuments}
+              documentsError={
+                academicDocumentsQuery.isError
+                  ? academicDocumentsQuery.error.message
+                  : undefined
+              }
+              isDepartmentsLoading={academicDepartmentsQuery.isLoading}
+              isDocumentsLoading={academicDocumentsQuery.isLoading}
+              isSubjectsLoading={academicSubjectsQuery.isLoading}
+              onBack={handleAcademicBrowserBack}
+              onSelectDepartment={(department) => {
+                setSelectedAcademicDepartmentId(department._id);
+                setSelectedAcademicSemester(undefined);
+                setSelectedAcademicSubjectId(undefined);
+              }}
+              onSelectDocument={handleSelectAcademicDocument}
+              onSelectSemester={(semester) => {
+                setSelectedAcademicSemester(semester);
+                setSelectedAcademicSubjectId(undefined);
+              }}
+              onSelectSubject={(subject) =>
+                setSelectedAcademicSubjectId(subject._id)
+              }
+              selectedDepartment={selectedAcademicDepartment}
+              selectedSemester={selectedAcademicSemester}
+              selectedSubject={selectedAcademicSubject}
+              subjects={academicSubjects}
+              subjectsError={
+                academicSubjectsQuery.isError
+                  ? academicSubjectsQuery.error.message
+                  : undefined
+              }
+            />
+
+            <FlashcardGenerator
+              cardCount={cardCount}
+              difficulty={difficulty}
+              file={pdfFile}
+              formError={displayFormError}
+              generateMode={generateMode}
+              isGenerating={isGenerating}
+              job={currentJob}
+              language={language}
+              onCardCountChange={setCardCount}
+              onDifficultyChange={setDifficulty}
+              onFileChange={handlePdfFileChange}
+              onGenerate={handleGenerate}
+              onLanguageChange={setLanguage}
+              onModeChange={setGenerateMode}
+              onRawTextChange={setRawText}
+              onTitleChange={setGenerateTitle}
+              rawText={rawText}
+              title={generateTitle}
+            />
+          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function EmptyChatState() {
+function EmptyChatState({ contextTitle }: { contextTitle?: string }) {
   return (
     <div className="flex h-full min-h-[360px] items-center justify-center">
       <div className="max-w-[420px] text-center">
@@ -662,14 +880,39 @@ function EmptyChatState() {
           <BrainCircuit className="h-8 w-8" />
         </span>
         <h2 className="mt-5 text-2xl font-bold tracking-normal">
-          Ask about anything you are studying
+          {contextTitle
+            ? `Ask about ${contextTitle}`
+            : "Ask about anything you are studying"}
         </h2>
         <p className="mt-2 text-sm leading-6 text-[#777474]">
-          Paste a question, notes, or a concept you want Quizzy to unpack.
+          {contextTitle
+            ? "Quizzy will use the selected study context while answering."
+            : "Paste a question, notes, or a concept you want Quizzy to unpack."}
         </p>
       </div>
     </div>
   );
+}
+
+function getConversationMetaLabel(
+  conversation:
+    | {
+        type: "general" | "deck_chat" | "academic_document_chat";
+        messageCount: number;
+      }
+    | undefined,
+) {
+  if (!conversation) return "0 messages";
+
+  if (conversation.type === "deck_chat") {
+    return `Deck chat - ${conversation.messageCount} messages`;
+  }
+
+  if (conversation.type === "academic_document_chat") {
+    return `Document chat - ${conversation.messageCount} messages`;
+  }
+
+  return `${conversation.messageCount} messages`;
 }
 
 function isLocalMessage(
@@ -724,7 +967,7 @@ function FlashcardGenerator({
   onGenerate,
 }: FlashcardGeneratorProps) {
   return (
-    <aside className="space-y-5">
+    <div className="space-y-5">
       <section className="rounded-[28px] bg-[#311485] p-5 text-white shadow-[0_16px_40px_rgba(49,20,133,0.18)]">
         <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-[#f5d547]">
           <Wand2 className="h-6 w-6" />
@@ -898,6 +1141,6 @@ function FlashcardGenerator({
           {isGenerating ? "Generating..." : "Generate deck"}
         </button>
       </form>
-    </aside>
+    </div>
   );
 }

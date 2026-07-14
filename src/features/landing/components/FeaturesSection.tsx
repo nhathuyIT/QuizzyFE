@@ -29,12 +29,6 @@ const features: Feature[] = [
     desc: "Race the clock with timed quiz modes that sharpen recall under pressure — perfect for exam prep.",
   },
   {
-    bg: "fc-yellow",
-    icon: "👥",
-    title: "Study Groups",
-    desc: "Create rooms, challenge friends, and compete on leaderboards. Learning is better together.",
-  },
-  {
     bg: "fc-blue",
     icon: "📱",
     title: "Offline Mode",
@@ -50,7 +44,9 @@ export function FeaturesSection() {
       <section className="section fade-up">
         <div className="section-tag">Features</div>
         <h2 className="section-heading">
-          Everything you<br />need to ace it.
+          Everything you
+          <br />
+          need to ace it.
         </h2>
       </section>
 
@@ -58,7 +54,10 @@ export function FeaturesSection() {
         {features.map((feat, i) => (
           <div key={i} className={`feat-card ${feat.bg} fade-up`}>
             <div>
-              <div className="feat-icon" style={{ background: "rgba(0,0,0,0.1)" }}>
+              <div
+                className="feat-icon"
+                style={{ background: "rgba(0,0,0,0.1)" }}
+              >
                 {feat.icon}
               </div>
               <h3>{feat.title}</h3>
