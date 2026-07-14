@@ -72,7 +72,7 @@ function MetadataModal({ metadata, onClose }: { metadata: Record<string, unknown
   return (
     <div
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#1b1c19]/45 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#1b1c19]/45 p-4 backdrop-blur-sm text-left"
       role="dialog"
       onClick={onClose}
     >
