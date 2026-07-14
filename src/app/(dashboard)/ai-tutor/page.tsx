@@ -1,6 +1,13 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -61,6 +68,7 @@ export default function AITutorPage() {
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const handledContextRef = useRef<string | undefined>(undefined);
+  const pageScrollRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const academicDocumentContextId =
     searchParams.get("academicDocumentId")?.trim() || undefined;
@@ -229,6 +237,28 @@ export default function AITutorPage() {
     [messagesQuery.data?.data, pendingMessages],
   );
   const currentJob = jobQuery.data?.data;
+  const scrollPageToTop = useCallback((behavior: ScrollBehavior = "smooth") => {
+    pageScrollRef.current?.scrollTo({ top: 0, behavior });
+  }, []);
+
+  useEffect(() => {
+    scrollPageToTop("auto");
+  }, [activeContextKey, scrollPageToTop]);
+
+  useEffect(() => {
+    function handleScrollTopRequest() {
+      scrollPageToTop();
+    }
+
+    window.addEventListener("quizzy:ai-tutor-scroll-top", handleScrollTopRequest);
+
+    return () => {
+      window.removeEventListener(
+        "quizzy:ai-tutor-scroll-top",
+        handleScrollTopRequest,
+      );
+    };
+  }, [scrollPageToTop]);
 
   useEffect(() => {
     if (currentJob?.status === "done" && currentJob.targetDeckId) {
@@ -568,6 +598,7 @@ export default function AITutorPage() {
   function handleSelectAcademicDocument(document: AcademicDocument) {
     if (document.fileType !== "pdf") return;
 
+    scrollPageToTop();
     setActiveConversationId(undefined);
     setChatError("");
     setLastFailedPrompt("");
@@ -663,7 +694,10 @@ export default function AITutorPage() {
       : undefined;
 
   return (
-    <div className="h-full overflow-y-auto bg-[#fbf9f4] custom-scrollbar">
+    <div
+      className="h-full overflow-y-auto bg-[#fbf9f4] custom-scrollbar"
+      ref={pageScrollRef}
+    >
       <div className="mx-auto flex min-h-full w-full max-w-[1440px] flex-col px-4 py-8 sm:px-6 lg:px-8">
         <header className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"></header>
 
@@ -688,11 +722,15 @@ export default function AITutorPage() {
             onDelete={(conversationId) =>
               deleteConversationMutation.mutate(conversationId)
             }
-            onNewChat={() => createConversationMutation.mutate(undefined)}
+            onNewChat={() => {
+              scrollPageToTop();
+              createConversationMutation.mutate(undefined);
+            }}
             onRename={(conversationId, title) =>
               renameConversationMutation.mutate({ conversationId, title })
             }
             onSelect={(conversationId) => {
+              scrollPageToTop();
               setActiveConversationId(conversationId);
               setPendingMessages([]);
               setLastFailedPrompt("");

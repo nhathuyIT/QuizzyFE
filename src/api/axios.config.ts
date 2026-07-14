@@ -93,7 +93,7 @@ axiosClient.interceptors.response.use(
       throw new HttpError({
         status: 0,
         message:
-          "Khong the ket noi den may chu. Vui long kiem tra ket noi mang.",
+          "Cant reach the server. Please check your internet connection or try again later.",
         code: "ERR_NETWORK",
       });
     }

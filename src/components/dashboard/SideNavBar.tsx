@@ -11,7 +11,6 @@ import {
   Home,
   Library,
   Sparkles,
-  UsersRound,
   X,
 } from "lucide-react";
 
@@ -22,7 +21,6 @@ const mainLinks = [
   { href: "/flashcards", icon: BookOpenText, label: "Create cards" },
   { href: "/study-history", icon: History, label: "Study history" },
   { href: "/ai-tutor", icon: Sparkles, label: "AI Tutor" },
-  { href: "/classes", icon: UsersRound, label: "Study groups" },
 ];
 
 interface SideNavBarProps {
@@ -32,6 +30,14 @@ interface SideNavBarProps {
 
 export function SideNavBar({ isOpen = false, onClose }: SideNavBarProps) {
   const pathname = usePathname();
+
+  function handleLinkClick(href: string) {
+    if (href === "/ai-tutor" && pathname.startsWith(href)) {
+      window.dispatchEvent(new Event("quizzy:ai-tutor-scroll-top"));
+    }
+
+    onClose?.();
+  }
 
   return (
     <>
@@ -50,7 +56,11 @@ export function SideNavBar({ isOpen = false, onClose }: SideNavBarProps) {
         }`}
       >
         <div className="mb-8 flex items-center justify-between px-2">
-          <Link className="flex items-center gap-3" href="/home" onClick={onClose}>
+          <Link
+            className="flex items-center gap-3"
+            href="/home"
+            onClick={onClose}
+          >
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#1b1c19] text-white">
               <BrainCircuit aria-hidden="true" className="h-6 w-6" />
             </span>
@@ -58,7 +68,9 @@ export function SideNavBar({ isOpen = false, onClose }: SideNavBarProps) {
               <p className="[font-family:var(--font-outfit)] text-xl font-extrabold tracking-[-0.02em]">
                 Quizzy AI
               </p>
-              <p className="text-xs font-semibold text-[#777474]">Study workspace</p>
+              <p className="text-xs font-semibold text-[#777474]">
+                Study workspace
+              </p>
             </div>
           </Link>
 
@@ -86,7 +98,7 @@ export function SideNavBar({ isOpen = false, onClose }: SideNavBarProps) {
                 }`}
                 href={link.href}
                 key={link.href}
-                onClick={onClose}
+                onClick={() => handleLinkClick(link.href)}
               >
                 <Icon aria-hidden="true" className="h-5 w-5" />
                 {link.label}
@@ -108,7 +120,6 @@ export function SideNavBar({ isOpen = false, onClose }: SideNavBarProps) {
           <FolderPlus aria-hidden="true" className="h-5 w-5" />
           Create a new deck
         </Link>
-
       </aside>
     </>
   );
