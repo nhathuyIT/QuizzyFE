@@ -51,6 +51,7 @@ const moderationOptions: AdminDeckModerationStatus[] = [
   "hidden",
   "deleted",
 ];
+const adminDeckCardPageSize = 100;
 
 const defaultCreateForm: DeckFormState = {
   title: "",
@@ -112,8 +113,7 @@ export function DecksPanel() {
 
   const deckDetailQuery = useQuery({
     queryKey: ["admin", "decks", selectedDeckId, "detail"],
-    queryFn: () =>
-      adminAPI.getDeck(selectedDeckId ?? "", { cardPage: 1, cardTake: 8 }),
+    queryFn: () => getAdminDeckWithAllCards(selectedDeckId ?? ""),
     enabled: Boolean(selectedDeckId),
     retry: false,
   });
@@ -675,7 +675,7 @@ function DeckDetailModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-[#1b1c19]/45 p-4 backdrop-blur-sm"
       role="dialog"
     >
-      <div className="max-h-[92vh] w-full max-w-[920px] overflow-y-auto rounded-[32px] border border-black/5 bg-white p-5 shadow-2xl sm:p-6">
+      <div className="max-h-[calc(100dvh-2rem)] w-full max-w-[920px] overflow-y-scroll overscroll-contain rounded-[32px] border border-black/5 bg-white p-5 shadow-2xl [scrollbar-gutter:stable] sm:p-6">
         <div className="flex items-start justify-between gap-4 border-b border-black/5 pb-5">
           <div className="min-w-0">
             <p className="text-xs font-bold uppercase tracking-normal text-[#614db7]">
@@ -793,7 +793,7 @@ function DeckDetailModal({
               Save deck
             </button>
 
-            <RecentCards deck={deck} />
+            <RecentCards deck={deck} isLoading={isLoading} />
           </form>
 
           <aside className="space-y-4">
@@ -1066,8 +1066,27 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-function RecentCards({ deck }: { deck: AdminDeck | null }) {
+function RecentCards({
+  deck,
+  isLoading,
+}: {
+  deck: AdminDeck | null;
+  isLoading: boolean;
+}) {
   const cards = deck?.cards?.data ?? [];
+
+  if (isLoading) {
+    return (
+      <div
+        aria-live="polite"
+        className="flex min-h-[120px] items-center justify-center gap-2 rounded-[24px] border border-dashed border-[#cabeff] bg-[#fbf9f4] text-sm font-bold text-[#614db7]"
+        role="status"
+      >
+        <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+        Loading cards
+      </div>
+    );
+  }
 
   if (!cards.length) {
     return (
@@ -1080,7 +1099,9 @@ function RecentCards({ deck }: { deck: AdminDeck | null }) {
   return (
     <div className="rounded-[24px] border border-black/5">
       <div className="border-b border-black/5 px-4 py-3">
-        <p className="text-sm font-extrabold text-[#1b1c19]">Recent cards</p>
+        <p className="text-sm font-extrabold text-[#1b1c19]">
+          All cards ({formatNumber(cards.length)})
+        </p>
       </div>
       <div className="divide-y divide-black/5">
         {cards.map((card) => (
@@ -1096,6 +1117,48 @@ function RecentCards({ deck }: { deck: AdminDeck | null }) {
       </div>
     </div>
   );
+}
+
+async function getAdminDeckWithAllCards(deckId: string) {
+  const firstResponse = await adminAPI.getDeck(deckId, {
+    cardPage: 1,
+    cardTake: adminDeckCardPageSize,
+  });
+  const firstCards = firstResponse.data.cards;
+  const firstMeta = firstCards?.meta;
+  const pageCount = firstMeta?.pageCount ?? 1;
+
+  if (!firstCards || !firstMeta || pageCount <= 1) return firstResponse;
+
+  const remainingResponses = await Promise.all(
+    Array.from({ length: pageCount - 1 }, (_, index) =>
+      adminAPI.getDeck(deckId, {
+        cardPage: index + 2,
+        cardTake: adminDeckCardPageSize,
+      }),
+    ),
+  );
+  const cards = [
+    ...firstCards.data,
+    ...remainingResponses.flatMap((response) => response.data.cards?.data ?? []),
+  ];
+
+  return {
+    ...firstResponse,
+    data: {
+      ...firstResponse.data,
+      cards: {
+        data: cards,
+        meta: {
+          ...firstMeta,
+          take: cards.length,
+          itemCount: cards.length,
+          pageCount: 1,
+          hasNextPage: false,
+        },
+      },
+    },
+  };
 }
 
 function DecksLoading({ compact = false }: { compact?: boolean }) {
