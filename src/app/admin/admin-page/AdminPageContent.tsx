@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import { Gauge, HelpCircle } from "lucide-react";
 import type { AuthUser } from "@/services/api";
 import {
@@ -13,6 +12,8 @@ import { MonitoringPanel } from "./dashboard/components/MonitoringPanel";
 import { UsersPanel } from "./user/user-crud";
 import { ReportsPanel } from "./reports";
 import { AuditLogsPanel } from "./audit-logs";
+import { AcademicPanel } from "./academic";
+import { DocumentReviewPanel } from "./document-review";
 
 export function AdminPageContent({
   initialSection,
@@ -23,17 +24,17 @@ export function AdminPageContent({
   onLogout: () => void;
   user: AuthUser;
 }) {
-  const pathname = usePathname();
-  const router = useRouter();
   const [activeSection, setActiveSection] = useState<AdminSection>(() =>
     getAdminSection(initialSection),
   );
 
   function handleSectionChange(section: AdminSection) {
     setActiveSection(section);
+    // This is a same-page UI state change, so avoid dispatching a router navigation.
+    const pathname = window.location.pathname;
     const nextUrl =
       section === "dashboard" ? pathname : `${pathname}?section=${section}`;
-    router.replace(nextUrl, { scroll: false });
+    window.history.replaceState(null, "", nextUrl);
   }
 
   return (
@@ -51,10 +52,14 @@ export function AdminPageContent({
             <AdminPageHeader activeSection={activeSection} />
             {activeSection === "dashboard" ? <MonitoringPanel /> : null}
             {activeSection === "users" ? <UsersPanel /> : null}
+            {activeSection === "academic" ? <AcademicPanel /> : null}
+            {activeSection === "document-review" ? <DocumentReviewPanel /> : null}
             {activeSection === "reports" ? <ReportsPanel /> : null}
             {activeSection === "audit-logs" ? <AuditLogsPanel /> : null}
             {activeSection !== "dashboard" &&
             activeSection !== "users" &&
+            activeSection !== "academic" &&
+            activeSection !== "document-review" &&
             activeSection !== "reports" &&
             activeSection !== "audit-logs" ? (
               <AdminComingSoonPanel section={activeSection} />
@@ -68,6 +73,10 @@ export function AdminPageContent({
 }
 
 function AdminPageHeader({ activeSection }: { activeSection: AdminSection }) {
+  if (activeSection === "academic" || activeSection === "document-review") {
+    return null;
+  }
+
   if (activeSection === "dashboard") {
     return (
       <header>

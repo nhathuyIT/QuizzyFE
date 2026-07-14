@@ -3,6 +3,8 @@
 import {
   Activity,
   BarChart3,
+  FileCheck2,
+  GraduationCap,
   Home,
   Layers3,
   LogOut,
@@ -16,6 +18,8 @@ export const adminSidebarItems = [
   { id: "dashboard", title: "Home", icon: Home },
   { id: "users", title: "Users", icon: UsersRound },
   { id: "decks", title: "Decks", icon: Layers3 },
+  { id: "academic", title: "Academic", icon: GraduationCap },
+  { id: "document-review", title: "Document Review", icon: FileCheck2 },
   { id: "reports", title: "Reports", icon: BarChart3 },
   { id: "audit-logs", title: "Audit Logs", icon: Activity },
 ] as const;

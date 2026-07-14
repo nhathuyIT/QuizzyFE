@@ -1,4 +1,9 @@
-import { apiClient, type ApiResponse, type QueryParams } from "./client";
+import {
+  apiClient,
+  type ApiResponse,
+  type PageMeta,
+  type QueryParams,
+} from "./client";
 import type { Deck } from "./decks.api";
 
 export type AdminActivityInterval = "day" | "week" | "month";
@@ -191,6 +196,170 @@ export interface AdminAuditLogSearchParams extends QueryParams {
   to?: string;
 }
 
+export type AdminAcademicEntityStatus = "active" | "inactive" | "all";
+export type AdminAcademicDocumentStatus =
+  | "pending"
+  | "active"
+  | "rejected"
+  | "archived";
+export type AdminAcademicDocumentFileType =
+  | "pdf"
+  | "docx"
+  | "pptx"
+  | "xlsx"
+  | "other";
+
+export interface AdminAcademicDepartment {
+  _id?: string;
+  id?: string;
+  code: string;
+  name: string;
+  description?: string;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
+}
+
+export interface AdminAcademicSubject {
+  _id?: string;
+  id?: string;
+  code: string;
+  name: string;
+  departmentId: string | AdminAcademicDepartment;
+  semester: number;
+  documentCount?: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
+}
+
+export interface AdminAcademicDocumentUploader {
+  _id?: string;
+  id?: string;
+  name?: string;
+  email?: string;
+  avatarUrl?: string;
+}
+
+export interface AdminAcademicDocument {
+  _id?: string;
+  id?: string;
+  title: string;
+  description?: string;
+  subjectId: string | AdminAcademicSubject;
+  uploadedBy: string | AdminAcademicDocumentUploader;
+  fileUrl: string;
+  fileName: string;
+  fileType: AdminAcademicDocumentFileType;
+  fileSize: number;
+  storagePath?: string;
+  status: AdminAcademicDocumentStatus;
+  downloadCount?: number;
+  tags: string[];
+  reviewNote?: string;
+  note?: string;
+  reviewedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
+}
+
+export interface AdminAcademicDepartmentSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
+  status?: AdminAcademicEntityStatus;
+  keyword?: string;
+}
+
+export interface AdminCreateAcademicDepartmentInput {
+  code: string;
+  name: string;
+  description?: string;
+  isActive: boolean;
+}
+
+export interface AdminUpdateAcademicDepartmentInput {
+  name?: string;
+  description?: string;
+  isActive?: boolean;
+}
+
+export interface AdminAcademicSubjectSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
+  status?: AdminAcademicEntityStatus;
+  departmentId?: string;
+  semester?: number;
+  keyword?: string;
+}
+
+export interface AdminCreateAcademicSubjectInput {
+  code: string;
+  name: string;
+  departmentId: string;
+  semester: number;
+  isActive: boolean;
+}
+
+export interface AdminUpdateAcademicSubjectInput {
+  code?: string;
+  name?: string;
+  semester?: number;
+  isActive?: boolean;
+}
+
+export interface AdminAcademicDocumentSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
+  status?: AdminAcademicDocumentStatus | "all";
+  departmentId?: string;
+  subjectId?: string;
+  uploaderId?: string;
+  fileType?: AdminAcademicDocumentFileType;
+  keyword?: string;
+}
+
+export interface AdminUpdateAcademicDocumentInput {
+  title?: string;
+  description?: string;
+  subjectId?: string;
+  tags?: string[];
+}
+
+export interface AdminReviewAcademicDocumentInput {
+  status: Extract<
+    AdminAcademicDocumentStatus,
+    "pending" | "active" | "rejected"
+  >;
+  note?: string;
+}
+
+type AdminAcademicListPayload<T> =
+  | T[]
+  | {
+      data: T[];
+      meta?: PageMeta;
+    };
+
+async function getAdminAcademicList<T>(
+  endpoint: string,
+  params: QueryParams,
+): Promise<ApiResponse<T[]>> {
+  const response = await apiClient.get<ApiResponse<AdminAcademicListPayload<T>>>(
+    endpoint,
+    params,
+  );
+  const nestedPayload = Array.isArray(response.data) ? undefined : response.data;
+
+  return {
+    ...response,
+    data: Array.isArray(response.data) ? response.data : response.data.data,
+    meta: nestedPayload?.meta ?? response.meta,
+  };
+}
+
 export const adminAPI = {
   getDashboardSummary: () =>
     apiClient.get<ApiResponse<AdminDashboardSummary>>("/admin/dashboard/summary"),
@@ -251,4 +420,95 @@ export const adminAPI = {
   // Audit Logs
   getAuditLogs: (params: AdminAuditLogSearchParams = {}) =>
     apiClient.get<ApiResponse<AdminAuditLog[]>>("/admin/audit-logs", { ...params }),
+
+  // Academic Management - Departments
+  getAcademicDepartments: (
+    params: AdminAcademicDepartmentSearchParams = {},
+  ) => getAdminAcademicList<AdminAcademicDepartment>(
+    "/admin/academic/departments",
+    params,
+  ),
+  createAcademicDepartment: (data: AdminCreateAcademicDepartmentInput) =>
+    apiClient.post<ApiResponse<AdminAcademicDepartment>>(
+      "/admin/academic/departments",
+      data,
+    ),
+  updateAcademicDepartment: (
+    departmentId: string,
+    data: AdminUpdateAcademicDepartmentInput,
+  ) => apiClient.patch<ApiResponse<AdminAcademicDepartment>>(
+    `/admin/academic/departments/${departmentId}`,
+    data,
+  ),
+  deactivateAcademicDepartment: (departmentId: string) =>
+    apiClient.delete<ApiResponse<AdminAcademicDepartment>>(
+      `/admin/academic/departments/${departmentId}`,
+    ),
+  restoreAcademicDepartment: (departmentId: string) =>
+    apiClient.post<ApiResponse<AdminAcademicDepartment>>(
+      `/admin/academic/departments/${departmentId}/restore`,
+      {},
+    ),
+
+  // Academic Management - Subjects
+  getAcademicSubjects: (params: AdminAcademicSubjectSearchParams = {}) =>
+    getAdminAcademicList<AdminAcademicSubject>(
+      "/admin/academic/subjects",
+      params,
+    ),
+  createAcademicSubject: (data: AdminCreateAcademicSubjectInput) =>
+    apiClient.post<ApiResponse<AdminAcademicSubject>>(
+      "/admin/academic/subjects",
+      data,
+    ),
+  updateAcademicSubject: (
+    subjectId: string,
+    data: AdminUpdateAcademicSubjectInput,
+  ) => apiClient.patch<ApiResponse<AdminAcademicSubject>>(
+    `/admin/academic/subjects/${subjectId}`,
+    data,
+  ),
+  deactivateAcademicSubject: (subjectId: string) =>
+    apiClient.delete<ApiResponse<AdminAcademicSubject>>(
+      `/admin/academic/subjects/${subjectId}`,
+    ),
+  restoreAcademicSubject: (subjectId: string) =>
+    apiClient.post<ApiResponse<AdminAcademicSubject>>(
+      `/admin/academic/subjects/${subjectId}/restore`,
+      {},
+    ),
+
+  // Academic Management - Document Review
+  getAcademicDocuments: (params: AdminAcademicDocumentSearchParams = {}) =>
+    getAdminAcademicList<AdminAcademicDocument>(
+      "/admin/academic/documents",
+      params,
+    ),
+  getAcademicDocument: (documentId: string) =>
+    apiClient.get<ApiResponse<AdminAcademicDocument>>(
+      `/admin/academic/documents/${documentId}`,
+    ),
+  updateAcademicDocument: (
+    documentId: string,
+    data: AdminUpdateAcademicDocumentInput,
+  ) => apiClient.patch<ApiResponse<AdminAcademicDocument>>(
+    `/admin/academic/documents/${documentId}`,
+    data,
+  ),
+  reviewAcademicDocument: (
+    documentId: string,
+    data: AdminReviewAcademicDocumentInput,
+  ) => apiClient.patch<ApiResponse<AdminAcademicDocument>>(
+    `/admin/academic/documents/${documentId}/review`,
+    data,
+  ),
+  archiveAcademicDocument: (documentId: string) =>
+    apiClient.delete<ApiResponse<AdminAcademicDocument>>(
+      `/admin/academic/documents/${documentId}`,
+    ),
+  restoreAcademicDocument: (documentId: string) =>
+    apiClient.post<ApiResponse<AdminAcademicDocument>>(
+      `/admin/academic/documents/${documentId}/restore`,
+      {},
+    ),
 };
