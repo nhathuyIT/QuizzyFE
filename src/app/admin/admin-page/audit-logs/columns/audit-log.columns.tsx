@@ -42,11 +42,13 @@ function ActionBadge({ action }: { action: string }) {
   const displayAction = formattedAction.charAt(0).toUpperCase() + formattedAction.slice(1);
 
   return (
-    <span
-      className={`w-fit rounded-full px-3 py-1 text-[11px] font-extrabold tracking-wide ${bg} ${text}`}
-    >
-      {displayAction}
-    </span>
+    <div className="flex w-full items-center" title={displayAction}>
+      <span
+        className={`inline-flex max-w-full items-center rounded-full px-3 py-1 text-[11px] font-extrabold tracking-wide ${bg} ${text}`}
+      >
+        <span className="truncate">{displayAction}</span>
+      </span>
+    </div>
   );
 }
 
@@ -109,14 +111,16 @@ function MetadataCell({ metadata }: { metadata: Record<string, unknown> }) {
   const [isOpen, setIsOpen] = useState(false);
   const isEmpty = !metadata || Object.keys(metadata).length === 0;
 
-  if (isEmpty) return <span className="text-xs text-[#8a8784] italic">None</span>;
+  if (isEmpty) {
+    return <span className="text-xs text-[#8a8784] italic">None</span>;
+  }
 
   return (
     <>
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#f6f3ee] px-3 py-1.5 text-xs font-bold text-[#5f5e5e] transition hover:bg-[#ebe8e0] hover:text-[#1b1c19]"
+        className="inline-flex items-center gap-2 rounded-xl bg-[#f6f3ee] px-3 py-1.5 text-xs font-bold text-[#5f5e5e] transition hover:bg-[#ebe8e0] hover:text-[#1b1c19]"
       >
         <Eye aria-hidden="true" className="h-4 w-4" />
         View

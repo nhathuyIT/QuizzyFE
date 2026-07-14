@@ -20,28 +20,40 @@ export function AuditLogsTable({
 }) {
   return (
     <div className="flex flex-col gap-4">
-      <div className="overflow-hidden rounded-[26px] border border-black/5 bg-white shadow-sm">
-        <div className="grid min-w-[1000px] grid-cols-[170px_minmax(0,1fr)_140px_minmax(0,1.8fr)_minmax(0,2fr)] bg-[#f6f2ff] px-4 py-3 text-xs font-extrabold uppercase tracking-normal text-[#614db7]">
-          {auditLogColumns.map((column) => (
-            <span key={column.key}>{column.header}</span>
-          ))}
-        </div>
-
-        <div className="overflow-x-auto">
-          {isLoading ? <LogsLoading /> : null}
-          {isError ? <LogsError error={error} /> : null}
-          {!isLoading && !isError && !logs.length ? <LogsEmpty /> : null}
-
-          {logs.map((log) => (
-            <div
-              className="grid min-w-[1000px] grid-cols-[170px_minmax(0,1fr)_140px_minmax(0,1.8fr)_minmax(0,2fr)] items-start border-t border-black/5 px-4 py-4 text-sm text-[#1b1c19]"
-              key={log._id || log.id}
-            >
+      <div className="overflow-hidden rounded-[26px] border border-black/5 bg-white shadow-sm w-full">
+        <div className="w-full">
+          <div className="grid grid-cols-[170px_minmax(0,1fr)_220px_minmax(0,2fr)_100px] bg-[#f6f2ff] px-4 py-3 text-xs font-extrabold uppercase tracking-normal text-[#614db7]">
               {auditLogColumns.map((column) => (
-                <div key={column.key}>{column.render(log)}</div>
+                <span 
+                  key={column.key}
+                  className={column.key === "metadata" ? "text-center block w-full" : ""}
+                >
+                  {column.header}
+                </span>
               ))}
             </div>
-          ))}
+
+            <div className="w-full">
+              {isLoading ? <LogsLoading /> : null}
+              {isError ? <LogsError error={error} /> : null}
+              {!isLoading && !isError && !logs.length ? <LogsEmpty /> : null}
+
+              {logs.map((log) => (
+                <div
+                  className="grid grid-cols-[170px_minmax(0,1fr)_220px_minmax(0,2fr)_100px] items-center border-t border-black/5 px-4 py-4 text-sm text-[#1b1c19] w-full"
+                  key={log._id || log.id}
+                >
+                  {auditLogColumns.map((column) => (
+                    <div 
+                      className={`min-w-0 w-full ${column.key === "metadata" ? "text-center" : ""}`} 
+                      key={column.key}
+                    >
+                      {column.render(log)}
+                    </div>
+                  ))}
+                </div>
+              ))}
+          </div>
         </div>
       </div>
 
