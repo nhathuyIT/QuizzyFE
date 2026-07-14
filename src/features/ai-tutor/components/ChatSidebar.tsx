@@ -120,9 +120,7 @@ export function ChatSidebar({
                         {conversation.title || "AI Assistant"}
                       </span>
                       <span className="mt-1 block truncate text-xs font-semibold text-[#8a8784]">
-                        {conversation.type === "deck_chat"
-                          ? `Deck chat - ${conversation.messageCount} messages`
-                          : `${conversation.messageCount} messages`}
+                        {getConversationLabel(conversation)}
                       </span>
                     </span>
                   </button>
@@ -216,4 +214,16 @@ export function ChatSidebar({
       </div>
     </aside>
   );
+}
+
+function getConversationLabel(conversation: ChatConversation) {
+  if (conversation.type === "deck_chat") {
+    return `Deck chat - ${conversation.messageCount} messages`;
+  }
+
+  if (conversation.type === "academic_document_chat") {
+    return `Document chat - ${conversation.messageCount} messages`;
+  }
+
+  return `${conversation.messageCount} messages`;
 }

@@ -243,6 +243,7 @@ export default function StudySessionPage() {
       ? 100
       : (pairedMatchCount / totalItems) * 100
     : ((currentIndex + (feedback ? 1 : 0)) / totalItems) * 100;
+  const isCurrentFlashcard = !isMatchMode && currentItem && isFlashcardItem(currentItem);
 
   return (
     <div className="h-full overflow-y-auto bg-[#fbf9f4] p-4 sm:p-8">
@@ -274,7 +275,11 @@ export default function StudySessionPage() {
           </span>
         </div>
 
-        <section className="mt-6 rounded-[32px] border border-black/5 bg-white p-6 shadow-[0_20px_60px_rgba(27,28,25,0.07)] sm:p-10">
+        <section
+          className={`mt-6 rounded-[32px] border border-black/5 bg-white p-6 shadow-[0_20px_60px_rgba(27,28,25,0.07)] sm:p-10 ${
+            isCurrentFlashcard ? "min-h-[600px] sm:min-h-[660px]" : ""
+          }`}
+        >
           <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#614db7]">
             {deckQuery.data?.data.title ?? "Study card"}
           </p>

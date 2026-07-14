@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   BookOpenText,
   BrainCircuit,
+  FileText,
   History,
   FolderPlus,
   Home,
@@ -17,6 +18,7 @@ import {
 const mainLinks = [
   { href: "/home", icon: Home, label: "Home" },
   { href: "/my-library", icon: Library, label: "My decks" },
+  { href: "/academic", icon: FileText, label: "Academic docs" },
   { href: "/flashcards", icon: BookOpenText, label: "Create cards" },
   { href: "/study-history", icon: History, label: "Study history" },
   { href: "/ai-tutor", icon: Sparkles, label: "AI Tutor" },

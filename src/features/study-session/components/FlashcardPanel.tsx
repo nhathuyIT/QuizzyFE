@@ -32,7 +32,7 @@ export function FlashcardPanel({
         type="button"
       >
         <span
-          className={`relative block min-h-[340px] rounded-[30px] transition-transform duration-500 [transform-style:preserve-3d] ${
+          className={`relative block min-h-[420px] rounded-[30px] transition-transform duration-500 [transform-style:preserve-3d] sm:min-h-[460px] ${
             isBackVisible ? "[transform:rotateY(180deg)]" : ""
           }`}
         >
