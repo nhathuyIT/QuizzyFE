@@ -132,7 +132,10 @@ export default function AdminAuthPage({
     loginMutation.mutate();
   }
 
-  const currentAdminUser = loginAdminUser ?? adminSessionQuery.data ?? null;
+  // Query data can remain cached after logout. Only trust it while the token
+  // that authenticated that session is still present.
+  const currentAdminUser =
+    loginAdminUser ?? (hasStoredToken ? adminSessionQuery.data : null);
   const adminSessionError =
     adminSessionQuery.error instanceof Error
       ? adminSessionQuery.error.message
