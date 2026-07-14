@@ -1,8 +1,15 @@
-import { apiClient, type ApiResponse, type QueryParams } from "./client";
+import {
+  apiClient,
+  type ApiResponse,
+  type PageMeta,
+  type QueryParams,
+} from "./client";
 
 export type AdminActivityInterval = "day" | "week" | "month";
 export type AdminUserRole = "student" | "teacher" | "admin";
 export type AdminUserStatus = "active" | "suspended" | "deleted" | string;
+export type AdminDeckVisibility = "private" | "link" | "public";
+export type AdminDeckModerationStatus = "active" | "hidden" | "deleted";
 
 export interface AdminDashboardTotals {
   users: number;
@@ -70,6 +77,85 @@ export interface AdminUserSearchParams extends QueryParams {
   status?: AdminUserStatus;
 }
 
+export interface AdminDeckOwner {
+  _id?: string;
+  id?: string;
+  email?: string;
+  name?: string;
+  role?: AdminUserRole;
+}
+
+export interface AdminDeckCard {
+  _id?: string;
+  id?: string;
+  front?: string;
+  back?: string;
+  createdAt?: string;
+}
+
+export interface AdminDeckMetrics {
+  sessionCount: number;
+  learnerCount: number;
+  completionRate: number;
+  reviewCount: number;
+  accuracy: number;
+}
+
+export interface AdminDeck {
+  _id?: string;
+  id?: string;
+  title: string;
+  description?: string;
+  visibility: AdminDeckVisibility;
+  createdBy?: string;
+  owner?: AdminDeckOwner;
+  sourceType?: "manual" | "ai";
+  tags?: string[];
+  cardCount?: number;
+  lastStudiedAt?: string;
+  moderationStatus?: Exclude<AdminDeckModerationStatus, "deleted">;
+  moderationReason?: string;
+  moderatedAt?: string;
+  deletedAt?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+  metrics?: AdminDeckMetrics;
+  cards?: {
+    data: AdminDeckCard[];
+    meta?: PageMeta;
+  };
+}
+
+export interface AdminDeckSearchParams extends QueryParams {
+  page?: number;
+  take?: number;
+  keyword?: string;
+  visibility?: AdminDeckVisibility;
+  moderationStatus?: AdminDeckModerationStatus;
+  ownerId?: string;
+}
+
+export interface AdminCreateDeckInput {
+  title: string;
+  description?: string;
+  visibility?: AdminDeckVisibility;
+  tags?: string[];
+  ownerId: string;
+}
+
+export interface AdminUpdateDeckInput {
+  title?: string;
+  description?: string;
+  visibility?: AdminDeckVisibility;
+  tags?: string[];
+  ownerId?: string;
+}
+
+export interface AdminModerateDeckInput {
+  status: Exclude<AdminDeckModerationStatus, "deleted">;
+  reason?: string;
+}
+
 export interface AdminUpdateUserRoleInput {
   role: AdminUserRole;
 }
@@ -113,4 +199,23 @@ export const adminAPI = {
     apiClient.delete<ApiResponse<AdminUser>>(`/admin/users/${userId}`),
   restoreUser: (userId: string) =>
     apiClient.post<ApiResponse<AdminUser>>(`/admin/users/${userId}/restore`, {}),
+  getDecks: (params: AdminDeckSearchParams = {}) =>
+    apiClient.get<ApiResponse<AdminDeck[]>>("/admin/decks", { ...params }),
+  getDeck: (deckId: string, params: QueryParams = {}) =>
+    apiClient.get<ApiResponse<AdminDeck>>(`/admin/decks/${deckId}`, {
+      ...params,
+    }),
+  createDeck: (data: AdminCreateDeckInput) =>
+    apiClient.post<ApiResponse<AdminDeck>>("/admin/decks", data),
+  updateDeck: (deckId: string, data: AdminUpdateDeckInput) =>
+    apiClient.patch<ApiResponse<AdminDeck>>(`/admin/decks/${deckId}`, data),
+  moderateDeck: (deckId: string, data: AdminModerateDeckInput) =>
+    apiClient.patch<ApiResponse<AdminDeck>>(
+      `/admin/decks/${deckId}/moderation`,
+      data,
+    ),
+  deleteDeck: (deckId: string) =>
+    apiClient.delete<ApiResponse<AdminDeck>>(`/admin/decks/${deckId}`),
+  restoreDeck: (deckId: string) =>
+    apiClient.post<ApiResponse<AdminDeck>>(`/admin/decks/${deckId}/restore`, {}),
 };
