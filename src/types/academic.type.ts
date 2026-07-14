@@ -21,7 +21,7 @@ export interface Subject {
 }
 
 export type FileType = "pdf" | "docx" | "pptx" | "xlsx" | "other";
-export type DocumentStatus = "active" | "archived";
+export type DocumentStatus = "pending" | "active" | "rejected" | "archived";
 
 export interface AcademicDocument {
   _id: string;
@@ -35,6 +35,9 @@ export interface AcademicDocument {
   fileSize: number;
   storagePath: string;
   status: DocumentStatus;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  reviewNote?: string;
   downloadCount: number;
   tags: string[];
   createdAt: string;

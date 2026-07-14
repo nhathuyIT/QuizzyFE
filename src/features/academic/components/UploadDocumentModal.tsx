@@ -63,9 +63,12 @@ export function UploadDocumentModal({
         queryKey: ["academic", "documents", subject._id],
       });
       queryClient.invalidateQueries({
+        queryKey: ["academic", "documents", "my"],
+      });
+      queryClient.invalidateQueries({
         queryKey: ["academic", "subjects", subject.departmentId],
       });
-      window.setTimeout(onClose, 1000);
+      window.setTimeout(onClose, 1400);
     },
     onError: (error) => {
       setUploadProgress("error");
@@ -154,6 +157,10 @@ export function UploadDocumentModal({
             <h2 className="mt-2 text-2xl font-bold tracking-normal">
               Upload academic document
             </h2>
+            <p className="mt-2 max-w-[420px] text-sm font-medium leading-6 text-[#777474]">
+              Submitted files go into review first. They appear in the shared
+              list after approval.
+            </p>
           </div>
           <button
             aria-label="Close upload dialog"
@@ -169,9 +176,9 @@ export function UploadDocumentModal({
         {uploadProgress === "success" ? (
           <div className="py-12 text-center">
             <CheckCircle2 className="mx-auto h-14 w-14 text-[#2f9f61]" />
-            <p className="mt-4 text-lg font-bold">Uploaded successfully</p>
+            <p className="mt-4 text-lg font-bold">Submitted for review</p>
             <p className="mt-2 text-sm text-[#777474]">
-              The document list will refresh in a moment.
+              You can track it under your uploads while it waits for approval.
             </p>
           </div>
         ) : (
@@ -276,8 +283,8 @@ export function UploadDocumentModal({
               >
                 {isBusy && <Loader2 className="h-4 w-4 animate-spin" />}
                 {uploadProgress === "uploading" && "Uploading file"}
-                {uploadProgress === "saving" && "Saving info"}
-                {uploadProgress === "idle" && "Upload document"}
+                {uploadProgress === "saving" && "Submitting for review"}
+                {uploadProgress === "idle" && "Submit for review"}
                 {uploadProgress === "error" && "Try again"}
               </button>
             </div>

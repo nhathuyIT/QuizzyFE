@@ -2,13 +2,7 @@
 
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import {
-  ArrowRight,
-  BookOpenCheck,
-  Bot,
-  Code2,
-  Loader2,
-} from "lucide-react";
+import { ArrowRight, BookOpenCheck, Bot, Code2, Loader2 } from "lucide-react";
 import { academicApi } from "@/services/api";
 import type { Department } from "@/types/academic.type";
 
@@ -23,13 +17,15 @@ const departmentThemes: Record<
 > = {
   AI: {
     accent: "text-[#614db7]",
-    description: "Artificial Intelligence subjects, references, and shared course files.",
+    description:
+      "Artificial Intelligence subjects, references, and shared course files.",
     icon: Bot,
     panel: "bg-[#e6deff]",
   },
   SE: {
     accent: "text-[#276345]",
-    description: "Software Engineering syllabi, assignments, slides, and study documents.",
+    description:
+      "Software Engineering syllabi, assignments, slides, and study documents.",
     icon: Code2,
     panel: "bg-[#d7f2e3]",
   },
@@ -58,13 +54,6 @@ export default function AcademicPage() {
               <h1 className="text-3xl font-bold tracking-normal sm:text-5xl">
                 Choose your major library.
               </h1>
-              <p className="mt-4 text-sm leading-6 text-white/70 sm:text-base">
-                Browse course documents by department, semester, subject, and file type.
-                Uploads are stored in Supabase Storage and tracked through the Quizzy API.
-              </p>
-            </div>
-            <div className="rounded-[24px] bg-white/10 px-5 py-4 text-sm font-bold text-white/80">
-              Bucket: academic-documents
             </div>
           </div>
         </header>

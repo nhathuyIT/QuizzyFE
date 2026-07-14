@@ -22,6 +22,8 @@ import {
   fileTypeOptions,
   formatAcademicDate,
   formatFileSize,
+  getDocumentStatusClass,
+  getDocumentStatusLabel,
   getDocumentTypeLabel,
   getFileTypeClass,
   resolveDepartment,
@@ -118,6 +120,23 @@ export default function AcademicSemesterPage() {
       academicApi.getSubjectDocuments(resolvedSubjectId!, documentParams),
     enabled: Boolean(resolvedSubjectId),
   });
+
+  const myDocumentsQuery = useQuery({
+    queryKey: ["academic", "documents", "my", resolvedSubjectId, "review"],
+    queryFn: () => academicApi.getMyDocuments({ page: 1, limit: 100 }),
+    enabled: Boolean(resolvedSubjectId),
+  });
+
+  const reviewDocuments = useMemo(
+    () =>
+      (myDocumentsQuery.data?.data ?? []).filter((document) => {
+        return (
+          document.subjectId === resolvedSubjectId &&
+          (document.status === "pending" || document.status === "rejected")
+        );
+      }),
+    [myDocumentsQuery.data?.data, resolvedSubjectId],
+  );
 
   const generateJobQuery = useQuery({
     queryKey: ["chatbot", "generate-job", activeGenerateJobId],
@@ -342,6 +361,13 @@ export default function AcademicSemesterPage() {
               </div>
             </div>
 
+            <MyReviewUploadsPanel
+              documents={reviewDocuments}
+              error={myDocumentsQuery.error?.message}
+              isError={myDocumentsQuery.isError}
+              isLoading={myDocumentsQuery.isFetching}
+            />
+
             <DocumentTable
               documents={documents}
               error={documentsQuery.error?.message}
@@ -363,6 +389,7 @@ export default function AcademicSemesterPage() {
                 isStarting: generateAcademicMutation.isPending,
                 status: currentGenerateJob?.status,
               }}
+              hasReviewDocuments={reviewDocuments.length > 0}
               selectedSubject={selectedSubject}
             />
 
@@ -442,6 +469,90 @@ function SubjectButton({
   );
 }
 
+function MyReviewUploadsPanel({
+  documents,
+  error,
+  isError,
+  isLoading,
+}: {
+  documents: AcademicDocument[];
+  error?: string;
+  isError: boolean;
+  isLoading: boolean;
+}) {
+  if (isLoading && !documents.length) {
+    return (
+      <div className="mt-5 rounded-[22px] bg-[#f6f3ee] px-5 py-4 text-sm font-bold text-[#777474]">
+        Checking your uploads under review...
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="mt-5 rounded-[22px] bg-[#fff0f0] px-5 py-4 text-sm font-bold text-[#a33a3a]">
+        {error ?? "Could not load your upload review status."}
+      </div>
+    );
+  }
+
+  if (!documents.length) {
+    return null;
+  }
+
+  return (
+    <div className="mt-5 rounded-[24px] border border-[#f5d547]/50 bg-[#fff9df] p-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="text-sm font-extrabold text-[#493600]">
+            Your uploads under review
+          </h3>
+          <p className="mt-1 text-xs font-semibold text-[#7a6830]">
+            These files are visible to you now and will appear in the shared
+            list after approval.
+          </p>
+        </div>
+        <span className="w-fit rounded-full bg-white/80 px-3 py-1 text-xs font-extrabold text-[#7a5600]">
+          {documents.length} waiting
+        </span>
+      </div>
+
+      <div className="mt-4 grid gap-3 lg:grid-cols-2">
+        {documents.map((document) => (
+          <div
+            className="rounded-[18px] border border-black/5 bg-white px-4 py-3"
+            key={document._id}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-bold text-[#1b1c19]">
+                  {document.title}
+                </p>
+                <p className="mt-1 truncate text-xs font-semibold text-[#777474]">
+                  {document.fileName}
+                </p>
+              </div>
+              <span
+                className={cn(
+                  "shrink-0 rounded-full px-3 py-1 text-[11px] font-extrabold",
+                  getDocumentStatusClass(document.status),
+                )}
+              >
+                {getDocumentStatusLabel(document.status)}
+              </span>
+            </div>
+            {document.reviewNote ? (
+              <p className="mt-2 rounded-2xl bg-[#fff0f0] px-3 py-2 text-xs font-semibold text-[#a33a3a]">
+                {document.reviewNote}
+              </p>
+            ) : null}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function DocumentTable({
   documents,
   error,
@@ -451,6 +562,7 @@ function DocumentTable({
   onAskAi,
   onDownload,
   onGenerate,
+  hasReviewDocuments,
   selectedSubject,
 }: {
   documents: AcademicDocument[];
@@ -466,6 +578,7 @@ function DocumentTable({
   onAskAi: (document: AcademicDocument) => void;
   onDownload: (document: AcademicDocument) => void;
   onGenerate: (document: AcademicDocument) => void;
+  hasReviewDocuments: boolean;
   selectedSubject?: Subject;
 }) {
   if (!selectedSubject) {
@@ -499,6 +612,10 @@ function DocumentTable({
         {error ?? "Failed to load documents."}
       </div>
     );
+  }
+
+  if (!documents.length && hasReviewDocuments) {
+    return null;
   }
 
   if (!documents.length) {
